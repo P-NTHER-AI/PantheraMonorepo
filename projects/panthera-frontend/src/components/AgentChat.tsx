@@ -54,7 +54,8 @@ interface AgentChatProps {
 }
 
 const AgentChat: React.FC<AgentChatProps> = ({ agentAddress, agentName, agentInstructions, isOpen, onClose }) => {
-  const { address: userAddress } = useWallet();
+  const { address: userAddressRaw } = useWallet();
+  const userAddress = userAddressRaw ?? undefined;
   const { latestInteraction } = useAgentInteractions(agentAddress);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);

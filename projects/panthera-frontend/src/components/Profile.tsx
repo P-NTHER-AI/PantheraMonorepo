@@ -17,6 +17,7 @@ import {
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { useAgents } from "../hooks/useAgents";
+import { useWallet } from "../hooks/useWallet";
 import apiService from "../services/api";
 
 type ActivityItem = {
@@ -195,7 +196,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
   };
 
   // Dynamic profile state (setter yok; cüzdandan türetiyoruz)
-  const { address: connectedWallet } = useAccount();
+  const { address: connectedWallet } = useWallet();
 
   // URL ?wallet= veya ?handle= varsa kullan; yoksa bağlı cüzdanı al
   const walletAddress = React.useMemo(() => {

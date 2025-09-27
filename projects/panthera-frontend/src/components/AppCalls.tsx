@@ -1,6 +1,6 @@
 import { AlgorandClient } from "@algorandfoundation/algokit-utils";
 import { OnSchemaBreak, OnUpdate } from "@algorandfoundation/algokit-utils/types/app";
-import { useWallet } from "@txnlab/use-wallet-react";
+import { useWallet } from "../hooks/useWallet";
 import { useState } from "react";
 import { HelloWorldFactory } from "../contracts/HelloWorld";
 import { getAlgodConfigFromViteEnvironment, getIndexerConfigFromViteEnvironment } from "../utils/network/getAlgoClientConfigs";
@@ -13,7 +13,7 @@ interface AppCallsInterface {
 const AppCalls = ({ openModal, setModalState }: AppCallsInterface) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [contractInput, setContractInput] = useState<string>("");
-  const { transactionSigner, activeAddress } = useWallet();
+  const { transactionSigner, address } = useWallet();
 
   const algodConfig = getAlgodConfigFromViteEnvironment();
   const indexerConfig = getIndexerConfigFromViteEnvironment();
@@ -21,7 +21,9 @@ const AppCalls = ({ openModal, setModalState }: AppCallsInterface) => {
     algodConfig,
     indexerConfig,
   });
-  algorand.setDefaultSigner(transactionSigner);
+  if (transactionSigner) {
+    algorand.setDefaultSigner(transactionSigner);
+  }
 
   const sendAppCall = async () => {
     setLoading(true);
@@ -32,7 +34,7 @@ const AppCalls = ({ openModal, setModalState }: AppCallsInterface) => {
     // Given the simplicity of the starter contract, we are deploying it on the frontend
     // for demonstration purposes.
     const factory = new HelloWorldFactory({
-      defaultSender: activeAddress ?? undefined,
+      defaultSender: address ?? undefined,
       algorand,
     });
     const deployResult = await factory

@@ -29,7 +29,21 @@ interface AgentCreationProps {
 
 const AgentCreation: React.FC<AgentCreationProps> = ({ onBack }) => {
   // Wallet and contract hooks
-  const { isConnected, connectWallet, isOnCoreNetwork, switchToCore, address } = useWallet();
+  const { isConnected, connectWallet, networks, activeNetwork, setActiveNetwork, address } = useWallet();
+
+  const preferredNetwork = networks.find((network) => network.isDefault) ?? activeNetwork;
+  const preferredNetworkId = preferredNetwork
+    ? (preferredNetwork.metadata?.walletNetworkId ?? preferredNetwork.id).toString()
+    : null;
+
+  const isOnCoreNetwork = preferredNetworkId
+    ? preferredNetworkId === (activeNetwork?.metadata?.walletNetworkId ?? activeNetwork?.id).toString()
+    : Boolean(activeNetwork);
+
+  const switchToCore = async () => {
+    if (!preferredNetworkId) return;
+    await setActiveNetwork(preferredNetworkId);
+  };
   const { createAgentToken, creationFee } = useAgentFactory();
 
   // Form state
@@ -203,14 +217,9 @@ const AgentCreation: React.FC<AgentCreationProps> = ({ onBack }) => {
         console.log("✅ Wallet connected successfully:", address);
       } catch (error) {
         console.error("❌ Wallet connection error:", error);
-        const errorMessage = `Wallet connection failed. Please:
-
-1. Make sure MetaMask is installed and unlocked
-2. Click the MetaMask extension icon
-3. Connect this site to your wallet
-4. Refresh the page and try again
-
-Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+        const errorMessage = `Wallet connection failed. Please ensure your Algorand wallet (Pera, Defly, Exodus, etc.) is unlocked and approved for this site, then try again.\n\nError: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`;
         alert(errorMessage);
         return;
       }
@@ -219,10 +228,10 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
     // Check network
     if (!isOnCoreNetwork) {
       try {
-        switchToCore();
+        await switchToCore();
         return;
       } catch {
-        alert("Please switch to Core testnet to deploy agents");
+        alert("Please switch to the configured Algorand network to deploy agents");
         return;
       }
     }
@@ -811,7 +820,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                   {/* Initial Price Calculation */}
                   <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl p-6">
                     <h4 className="text-white font-medium mb-4">Initial Price</h4>
-                    <div className="text-2xl font-bold text-[#d8e9ea] mb-2">$0.001 CORE</div>
+                    <div className="text-2xl font-bold text-[#d8e9ea] mb-2">0.100 ALGO</div>
                     <p className="text-[#a0a0a0] text-sm">Starting price per token</p>
                   </div>
 
@@ -891,7 +900,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#a0a0a0]">Platform Fee</span>
-                    <span className="text-[#d8e9ea] font-medium">{creationFee} CORE</span>
+                    <span className="text-[#d8e9ea] font-medium">{creationFee} ALGO</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#a0a0a0]">Gas Estimation</span>
@@ -900,7 +909,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                   <div className="border-t border-[#2a2a2a] pt-4">
                     <div className="flex justify-between items-center">
                       <span className="text-white font-semibold text-lg">Total Cost</span>
-                      <span className="text-[#d8e9ea] font-bold text-lg">{creationFee} CORE</span>
+                      <span className="text-[#d8e9ea] font-bold text-lg">{creationFee} ALGO</span>
                     </div>
                   </div>
                 </div>
@@ -945,7 +954,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                 <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4">
                   <div className="flex items-center gap-2 text-red-400">
                     <AlertCircle size={16} />
-                    <span className="text-sm">Please switch to Core DAO network</span>
+                    <span className="text-sm">Please switch to the configured Algorand network</span>
                   </div>
                 </div>
               )}
@@ -971,7 +980,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                     ) : !isOnCoreNetwork ? (
                       <>
                         <AlertCircle size={20} />
-                        Switch to Core Network
+                        Switch to Algorand Network
                       </>
                     ) : (
                       <>

@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { apiService } from "../services/api";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import bondingCurveService, { type GraduationStatus as ServiceGraduationStatus } from "../services/bondingCurve";
 
-// Professional graduation status interface
 export interface ProfessionalGraduationMetrics {
   reserveRatio: number;
   graduationVelocity: number;
@@ -25,7 +24,8 @@ export interface GraduationStatus {
   lastUpdate: Date | null;
 }
 
-// Professional metrics calculation
+const DEFAULT_THRESHOLD = 30000;
+
 const calculateProfessionalMetrics = (status: GraduationStatus): ProfessionalGraduationMetrics => {
   const { isGraduated, currentReserve, graduationThreshold, progressPercentage, marketCap, currentPrice } = status;
 
@@ -61,15 +61,32 @@ const calculateProfessionalMetrics = (status: GraduationStatus): ProfessionalGra
   };
 };
 
-export const useGraduationStatus = (tokenAddress: string, autoRefresh = false) => {
-  const publicClient = usePublicClient();
+const mapServiceToStatus = (service: ServiceGraduationStatus): GraduationStatus => {
+  const graduationThreshold = service.marketCap > 0 ? service.marketCap : DEFAULT_THRESHOLD;
+  const progressPercentage = graduationThreshold > 0 ? Math.min((service.reserveBalance / graduationThreshold) * 100, 100) : 0;
+  const remainingToGraduation = Math.max(graduationThreshold - service.reserveBalance, 0);
 
+  return {
+    isGraduated: service.isGraduated,
+    currentReserve: service.reserveBalance,
+    graduationThreshold,
+    progressPercentage,
+    remainingToGraduation,
+    marketCap: service.marketCap,
+    currentPrice: service.currentPrice,
+    loading: false,
+    error: service.error ?? null,
+    lastUpdate: new Date(service.lastUpdate),
+  };
+};
+
+export const useGraduationStatus = (tokenAddress: string, autoRefresh = false) => {
   const [status, setStatus] = useState<GraduationStatus>({
     isGraduated: false,
     currentReserve: 0,
-    graduationThreshold: 30000,
+    graduationThreshold: DEFAULT_THRESHOLD,
     progressPercentage: 0,
-    remainingToGraduation: 30000,
+    remainingToGraduation: DEFAULT_THRESHOLD,
     marketCap: 0,
     currentPrice: 0,
     loading: true,
@@ -78,154 +95,40 @@ export const useGraduationStatus = (tokenAddress: string, autoRefresh = false) =
   });
 
   const fetchGraduationStatus = useCallback(async () => {
-    if (!publicClient || !tokenAddress) return;
+    if (!tokenAddress) return;
+
+    setStatus((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
-      console.log(`🔍 Professional graduation status detection for ${tokenAddress}`);
-
-      // First, get real price from backend API
-      let realCurrentPrice = 0;
-      try {
-        const agentResponse = await apiService.get(`/agents/${tokenAddress}`);
-        const agent = agentResponse.data.data || agentResponse.data;
-        realCurrentPrice = parseFloat(agent.currentPrice || "0");
-        console.log(`💰 Real current price from backend: ${realCurrentPrice} CORE`);
-      } catch (priceError) {
-        console.warn("⚠️ Could not fetch real price from backend:", priceError);
-      }
-
-      // Use professional contract service
-      const contractService = createContractService(publicClient);
-      const graduationData = await contractService.getGraduationStatus(tokenAddress);
-
-      // Override price with real backend data if available
-      if (realCurrentPrice > 0) {
-        graduationData.currentPrice = realCurrentPrice;
-        console.log(`✅ Using real price from backend: ${realCurrentPrice} CORE`);
-      }
-
-      // Calculate progress metrics
-      const progressPercentage = Math.min((graduationData.currentReserve / graduationData.graduationThreshold) * 100, 100);
-      const remainingToGraduation = Math.max(graduationData.graduationThreshold - graduationData.currentReserve, 0);
-
-      let isGraduatedFinal = graduationData.isGraduated;
-
-      // Secondary real check via backend trading API to avoid on-chain mismatch
-      if (!isGraduatedFinal) {
-        // Precheck cache to avoid repeated GRADUATED_TOKEN spam
-        const cacheKey = `grad-precheck:${tokenAddress.toLowerCase()}`;
-        const lastChecked = (window as any).__PANTHERA_GRAD_CACHE?.get(cacheKey);
-        const now = Date.now();
-        const ttlMs = 5 * 60 * 1000; // 5 minutes
-        if (!((window as any).__PANTHERA_GRAD_CACHE instanceof Map)) {
-          (window as any).__PANTHERA_GRAD_CACHE = new Map();
-        }
-
-        if (!lastChecked || now - lastChecked > ttlMs) {
-          try {
-            // Use backend blockchain quote endpoint to avoid frontend-specific trading API quirks
-            await apiService.getPurchaseQuote(tokenAddress, "0.01");
-          } catch (e) {
-            const msg = e instanceof Error ? e.message.toLowerCase() : String(e).toLowerCase();
-            if (msg.includes("graduated_token")) {
-              isGraduatedFinal = true;
-            }
-          } finally {
-            (window as any).__PANTHERA_GRAD_CACHE.set(cacheKey, now);
-          }
-        }
-      }
-
-      const newStatus: GraduationStatus = {
-        isGraduated: isGraduatedFinal,
-        currentReserve: graduationData.currentReserve,
-        graduationThreshold: graduationData.graduationThreshold,
-        progressPercentage,
-        remainingToGraduation,
-        marketCap: graduationData.marketCap,
-        currentPrice: graduationData.currentPrice,
+      const serviceStatus = await bondingCurveService.getGraduationStatus(tokenAddress);
+      setStatus(mapServiceToStatus(serviceStatus));
+    } catch (error) {
+      console.error("Failed to load graduation status", error);
+      setStatus((prev) => ({
+        ...prev,
         loading: false,
-        error: graduationData.error || null,
-        lastUpdate: new Date(),
-      };
-
-      console.log(
-        `✅ Professional graduation status (${graduationData.confidence} confidence, ${graduationData.method}) [final=${isGraduatedFinal}]:`,
-        newStatus
-      );
-      setStatus(newStatus);
-    } catch (error: unknown) {
-      console.error("❌ Critical error in graduation status detection:", error);
-
-      // Try to get real data from backend even in fallback
-      let fallbackPrice = 0.00000003; // Default fallback
-      let fallbackReserve = 1000;
-      let fallbackMarketCap = 50000;
-
-      try {
-        const agentResponse = await apiService.get(`/agents/${tokenAddress}`);
-        const agent = agentResponse.data.data || agentResponse.data;
-        fallbackPrice = parseFloat(agent.currentPrice || "0") || fallbackPrice;
-        fallbackReserve = parseFloat(agent.bondingCurveInfo?.reserve || "0") || fallbackReserve;
-        fallbackMarketCap = parseFloat(agent.bondingCurveInfo?.marketCap || "0") || fallbackMarketCap;
-        console.log(`✅ Using real fallback data from backend: price=${fallbackPrice}, reserve=${fallbackReserve}`);
-      } catch (backendError) {
-        console.warn("⚠️ Could not fetch fallback data from backend, using defaults");
-      }
-
-      // Professional fallback status - use real backend data when possible
-      const fallbackStatus: GraduationStatus = {
-        isGraduated: false,
-        currentReserve: fallbackReserve,
-        graduationThreshold: 30000,
-        progressPercentage: 0, // Will be calculated below
-        remainingToGraduation: 0, // Will be calculated below
-        marketCap: fallbackMarketCap,
-        currentPrice: fallbackPrice, // Use real price from backend
-        loading: false,
-        error: `Contract unavailable: ${error instanceof Error ? error.message : "Unknown error"}`,
-        lastUpdate: new Date(),
-      };
-
-      // Calculate realistic progress metrics for fallback
-      fallbackStatus.progressPercentage = Math.min((fallbackStatus.currentReserve / fallbackStatus.graduationThreshold) * 100, 100);
-      fallbackStatus.remainingToGraduation = Math.max(fallbackStatus.graduationThreshold - fallbackStatus.currentReserve, 0);
-
-      // Check if should be graduated based on reserve
-      if (fallbackStatus.currentReserve >= fallbackStatus.graduationThreshold) {
-        fallbackStatus.isGraduated = true;
-        fallbackStatus.progressPercentage = 100;
-        fallbackStatus.remainingToGraduation = 0;
-      }
-
-      setStatus(fallbackStatus);
+        error: "Unable to load graduation status",
+      }));
     }
-  }, [publicClient, tokenAddress]);
+  }, [tokenAddress]);
 
-  // Initial fetch
   useEffect(() => {
-    if (tokenAddress && publicClient) {
-      fetchGraduationStatus();
-    }
-  }, [fetchGraduationStatus, tokenAddress, publicClient]);
+    fetchGraduationStatus();
+  }, [fetchGraduationStatus]);
 
-  // Auto refresh - reduced frequency
   useEffect(() => {
-    if (!autoRefresh || !tokenAddress) return;
-
-    const interval = setInterval(() => {
-      fetchGraduationStatus();
-    }, 120000); // Refresh every 2 minutes instead of 30 seconds
-
+    if (!autoRefresh) return;
+    const interval = setInterval(fetchGraduationStatus, 15000);
     return () => clearInterval(interval);
-  }, [autoRefresh, fetchGraduationStatus, tokenAddress]);
+  }, [autoRefresh, fetchGraduationStatus]);
 
-  // Calculate professional metrics
-  const professionalMetrics = calculateProfessionalMetrics(status);
+  const metrics = useMemo(() => calculateProfessionalMetrics(status), [status]);
 
   return {
     ...status,
-    refetch: fetchGraduationStatus,
-    professionalMetrics,
+    metrics,
+    refresh: fetchGraduationStatus,
   };
 };
+
+export default useGraduationStatus;

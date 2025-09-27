@@ -1,369 +1,185 @@
-import React, { createContext, useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import {
+  SupportedWallet,
+  WalletId,
+  WalletManager,
+  WalletProvider as TxnWalletProvider,
+  type NetworkConfig,
+  type WalletManagerConfig,
+} from "@txnlab/use-wallet-react";
+import {
+  chainRegistry,
+  contractRegistry,
+  getContractsForChain,
+} from "../multichain/registry";
+import {
+  type ChainAdapter,
+  type ChainMetadata,
+  type ChainType,
+  type ConnectionResult,
+  type ContractDefinition,
+  type NetworkMetadata,
+  type WalletAccount,
+  type WalletBalance,
+  type WalletConnector,
+} from "../multichain/types";
+import { useAlgorandAdapter, useEvmPlaceholderAdapter } from "../multichain";
+import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from "../utils/network/getAlgoClientConfigs";
 
-interface WalletBalance {
-  decimals: number;
-  formatted: string;
-  symbol: string;
-  value: bigint;
-}
+export interface WalletContextValue {
+  chainId: ChainType;
+  chain: ChainMetadata;
+  chains: ChainMetadata[];
+  setActiveChain: (chainId: ChainType) => void;
 
-interface WalletConnector {
-  id: string;
-  name: string;
-  ready: boolean;
-  icon?: string;
-}
+  address: string | null;
+  accounts: WalletAccount[];
+  connectors: WalletConnector[];
+  connectWallet: (connectorId?: string) => Promise<ConnectionResult>;
+  disconnectWallet: () => Promise<void>;
+  disconnect: () => Promise<void>;
 
-interface ConnectionResult {
-  success: boolean;
-  error?: string;
-}
-
-interface WalletState {
-  // Connection state
-  address: string | undefined;
   isConnected: boolean;
   isConnecting: boolean;
-  isReconnecting: boolean;
-
-  // Balance
+  isBalanceLoading: boolean;
   balance: WalletBalance | null;
   balanceSymbol: string;
+  refreshBalance: () => Promise<void>;
 
-  // Network state
-  chain: Chain | undefined;
-  isOnCoreNetwork: boolean;
-  isOnTestnet: boolean;
-  isOnMainnet: boolean;
-  isSwitchLoading: boolean;
+  networks: NetworkMetadata[];
+  activeNetwork: NetworkMetadata;
+  setActiveNetwork: (networkId: string) => Promise<void>;
 
-  // Web3 signer
-  signer: ethers.Signer | null;
+  supportsSignData: boolean;
+  transactionSigner: ChainAdapter["transactionSigner"];
 
-  // Actions
-  connectWallet: (connectorId?: string) => Promise<ConnectionResult>;
-  disconnect: () => void;
-  disconnectWallet: () => void;
-  switchToCore: (mainnet?: boolean) => void;
-
-  // Loading states
-  isConnectLoading: boolean;
-
-  // Available connectors
-  connectors: WalletConnector[];
-  pendingConnector: WalletConnector | null;
-
-  // Errors
   connectError: Error | null;
+  lastError: Error | null;
 
-  // Persistence
-  isWalletPersisted: boolean;
-  lastConnectedWallet: string | null;
-  connectionAttempts: number;
+  contracts: ContractDefinition[];
 }
 
-export const WalletContext = createContext<WalletState | undefined>(undefined);
+const WalletContext = createContext<WalletContextValue | undefined>(undefined);
 
-// Local storage keys
-const WALLET_STORAGE_KEYS = {
-  CONNECTED: "ursus_wallet_connected",
-  LAST_CONNECTOR: "ursus_last_connector",
-  AUTO_CONNECT: "ursus_auto_connect",
-  CONNECTION_TIME: "ursus_connection_time",
-  USER_DISCONNECTED: "ursus_user_disconnected",
+const buildWalletManager = () => {
+  const algodConfig = getAlgodConfigFromViteEnvironment();
+
+  const networks: Record<string, NetworkConfig> = {
+    [algodConfig.network]: {
+      algod: {
+        baseServer: algodConfig.server,
+        port: algodConfig.port,
+        token: String(algodConfig.token ?? ""),
+      },
+      isTestnet: algodConfig.network !== "mainnet",
+    },
+  };
+
+  let supportedWallets: SupportedWallet[] = [];
+
+  if (algodConfig.network === "localnet") {
+    const kmdConfig = getKmdConfigFromViteEnvironment();
+    supportedWallets = [
+      {
+        id: WalletId.KMD,
+        options: {
+          baseServer: kmdConfig.server,
+          token: String(kmdConfig.token ?? ""),
+          port: String(kmdConfig.port ?? ""),
+        },
+      },
+    ];
+  } else {
+    supportedWallets = [
+      { id: WalletId.DEFLY },
+      { id: WalletId.PERA },
+      { id: WalletId.EXODUS },
+      { id: WalletId.LUTE },
+    ];
+  }
+
+  const managerConfig: WalletManagerConfig = {
+    wallets: supportedWallets,
+    defaultNetwork: algodConfig.network,
+    networks,
+    options: {
+      resetNetwork: true,
+    },
+  };
+
+  return new WalletManager(managerConfig);
 };
 
-interface WalletProviderProps {
-  children: React.ReactNode;
-}
+const adapters: ChainType[] = ["algorand", "evm"];
 
-export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
-  const { address, isConnected, isConnecting, isReconnecting } = useAccount();
-  const { connect, connectors, error: connectError, isLoading: isConnectLoading, pendingConnector } = useConnect();
-  const { disconnect } = useDisconnect();
-  const { chain } = useNetwork();
-  const { switchNetwork, isLoading: isSwitchLoading } = useSwitchNetwork();
-  const { data: balance } = useBalance({
-    address: address,
-    enabled: !!address,
-  });
+const WalletContextBridge: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const algorandAdapter = useAlgorandAdapter();
+  const evmAdapter = useEvmPlaceholderAdapter();
 
-  // Ethers signer state
-  const [signer, setSigner] = useState<ethers.Signer | null>(null);
-
-  // Local state for persistence
-  const [isWalletPersisted, setIsWalletPersisted] = useState(false);
-  const [lastConnectedWallet, setLastConnectedWallet] = useState<string | null>(null);
-  const [connectionAttempts, setConnectionAttempts] = useState(0);
-  const [autoConnectEnabled, setAutoConnectEnabled] = useState(true);
-
-  // Initialize persistence state
-  useEffect(() => {
-    const wasConnected = localStorage.getItem(WALLET_STORAGE_KEYS.CONNECTED) === "true";
-    const lastConnector = localStorage.getItem(WALLET_STORAGE_KEYS.LAST_CONNECTOR);
-    const autoConnect = localStorage.getItem(WALLET_STORAGE_KEYS.AUTO_CONNECT) !== "false";
-    const userDisconnected = localStorage.getItem(WALLET_STORAGE_KEYS.USER_DISCONNECTED) === "true";
-
-    setIsWalletPersisted(wasConnected);
-    setLastConnectedWallet(lastConnector);
-    setAutoConnectEnabled(autoConnect && !userDisconnected);
-
-    console.log("🔌 Wallet persistence state:", {
-      wasConnected,
-      lastConnector,
-      autoConnect,
-      userDisconnected,
-    });
-  }, []);
-
-  // Auto-connect once on mount if previously connected and not explicitly disconnected
-  useEffect(() => {
-    let cancelled = false;
-    const attemptAutoConnect = async () => {
-      try {
-        const wasConnected = localStorage.getItem(WALLET_STORAGE_KEYS.CONNECTED) === "true";
-        const userDisconnected = localStorage.getItem(WALLET_STORAGE_KEYS.USER_DISCONNECTED) === "true";
-        const lastConnector = localStorage.getItem(WALLET_STORAGE_KEYS.LAST_CONNECTOR);
-        const autoConnectPref = localStorage.getItem(WALLET_STORAGE_KEYS.AUTO_CONNECT);
-        const autoPref = autoConnectPref === null ? true : autoConnectPref !== "false";
-        if (!wasConnected || userDisconnected || !autoPref || isConnected || isConnecting || isReconnecting) return;
-        const target = lastConnector ? connectors.find((c) => c.id === lastConnector) : connectors.find((c) => c.ready) || connectors[0];
-        if (!target) return;
-        console.log("🔁 Auto-connecting wallet with connector:", target.id);
-        await connect({ connector: target });
-        if (!cancelled) {
-          localStorage.setItem(WALLET_STORAGE_KEYS.CONNECTED, "true");
-          setIsWalletPersisted(true);
-        }
-      } catch (e) {
-        console.warn("Auto-connect failed:", (e as Error).message);
-      }
-    };
-    attemptAutoConnect();
-    return () => {
-      cancelled = true;
-    };
-  }, [connect, connectors, isConnected, isConnecting, isReconnecting]);
-
-  // Reset connection attempts on successful connection
-  useEffect(() => {
-    if (isConnected) {
-      setConnectionAttempts(0);
-      localStorage.removeItem(WALLET_STORAGE_KEYS.USER_DISCONNECTED);
-    }
-  }, [isConnected]);
-
-  // Auto-switch to Core network if connected to wrong network
-  useEffect(() => {
-    if (isConnected && chain && ![coreTestnet.id, coreMainnet.id].includes(chain.id as typeof coreTestnet.id)) {
-      console.log("🔄 Auto-switching to Core network...");
-      switchNetwork?.(coreTestnet.id);
-    }
-  }, [isConnected, chain, switchNetwork]);
-
-  // Persist connection state
-  useEffect(() => {
-    if (isConnected && address) {
-      localStorage.setItem(WALLET_STORAGE_KEYS.CONNECTED, "true");
-      localStorage.setItem(WALLET_STORAGE_KEYS.CONNECTION_TIME, Date.now().toString());
-      setIsWalletPersisted(true);
-
-      console.log("✅ Wallet connection persisted:", address);
-    } else if (!isConnected && !isConnecting && !isReconnecting) {
-      // Only clear if user explicitly disconnected
-      const userDisconnected = localStorage.getItem(WALLET_STORAGE_KEYS.USER_DISCONNECTED) === "true";
-      if (userDisconnected) {
-        localStorage.setItem(WALLET_STORAGE_KEYS.CONNECTED, "false");
-        setIsWalletPersisted(false);
-      }
-    }
-  }, [isConnected, address, isConnecting, isReconnecting]);
-
-  const connectWallet = useCallback(
-    async (connectorId?: string): Promise<ConnectionResult> => {
-      try {
-        console.log("🔗 Professional wallet connection initiated...");
-
-        // Clear user disconnected flag
-        localStorage.removeItem(WALLET_STORAGE_KEYS.USER_DISCONNECTED);
-
-        const connector = connectorId ? connectors.find((c) => c.id === connectorId) : connectors[0]; // Default to first connector (MetaMask)
-
-        if (!connector) {
-          const errorMessage = "No wallet connector found. Please install MetaMask.";
-          console.error("❌", errorMessage);
-          return { success: false, error: errorMessage };
-        }
-
-        console.log("🔌 Using professional connector:", connector.name);
-
-        // Store last used connector
-        localStorage.setItem(WALLET_STORAGE_KEYS.LAST_CONNECTOR, connector.id);
-        setLastConnectedWallet(connector.id);
-
-        // Attempt connection
-        const result = await connect({ connector });
-        console.log("🔗 Professional connection result:", result);
-
-        console.log("✅ Professional wallet connection successful");
-        return { success: true };
-      } catch (error) {
-        console.error("❌ Professional wallet connection failed:", error);
-        setConnectionAttempts((prev) => prev + 1);
-
-        // Provide professional error messages
-        let errorMessage = "Failed to connect wallet";
-
-        if (error instanceof Error) {
-          if (error.message.includes("User rejected")) {
-            errorMessage = "Connection rejected by user. Please approve the connection in MetaMask.";
-          } else if (error.message.includes("No provider")) {
-            errorMessage = "MetaMask not found. Please install MetaMask extension.";
-          } else if (error.message.includes("unauthorized")) {
-            errorMessage = "Unauthorized access. Please unlock MetaMask and try again.";
-          } else {
-            errorMessage = error.message;
-          }
-        }
-
-        return { success: false, error: errorMessage };
-      }
-    },
-    [connect, connectors]
-  );
-
-  const disconnectWallet = useCallback(() => {
-    console.log("🔌 Disconnecting wallet...");
-
-    // Mark as user-initiated disconnect
-    localStorage.setItem(WALLET_STORAGE_KEYS.USER_DISCONNECTED, "true");
-    localStorage.setItem(WALLET_STORAGE_KEYS.CONNECTED, "false");
-
-    setIsWalletPersisted(false);
-    setAutoConnectEnabled(false);
-    setConnectionAttempts(0);
-
-    disconnect();
-  }, [disconnect]);
-
-  const switchToCore = useCallback(
-    (mainnet = false) => {
-      const targetChainId = mainnet ? coreMainnet.id : coreTestnet.id;
-      if (switchNetwork && chain?.id !== targetChainId) {
-        console.log(`🔄 Switching to Core ${mainnet ? "Mainnet" : "Testnet"}...`);
-        switchNetwork(targetChainId);
-      }
-    },
-    [switchNetwork, chain]
-  );
-
-  // Auto-reconnect logic (after connectWallet is defined)
-  useEffect(() => {
-    if (!isConnected && !isConnecting && !isReconnecting && autoConnectEnabled && lastConnectedWallet && connectionAttempts < 3) {
-      const timeoutId = setTimeout(() => {
-        console.log("🔄 Attempting professional auto-reconnect...");
-        connectWallet(lastConnectedWallet);
-        setConnectionAttempts((prev) => prev + 1);
-      }, 1000 + connectionAttempts * 2000); // Exponential backoff
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [isConnected, isConnecting, isReconnecting, autoConnectEnabled, lastConnectedWallet, connectionAttempts, connectWallet]);
-
-  const isOnCoreNetwork = chain?.id === coreTestnet.id || chain?.id === coreMainnet.id;
-  const isOnTestnet = chain?.id === coreTestnet.id;
-  const isOnMainnet = chain?.id === coreMainnet.id;
-
-  // Initialize signer when wallet/address available
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        if (address && typeof window !== "undefined" && (window as any).ethereum) {
-          const provider = new ethers.BrowserProvider((window as any).ethereum);
-          const s = await provider.getSigner();
-          if (!cancelled) setSigner(s);
-        } else {
-          if (!cancelled) setSigner(null);
-        }
-      } catch (e) {
-        console.warn("Failed to get signer", e);
-        if (!cancelled) setSigner(null);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [address]);
-
-  // Professional type conversions
-  const professionalBalance: WalletBalance | null = balance
-    ? {
-        decimals: balance.decimals,
-        formatted: balance.formatted,
-        symbol: balance.symbol,
-        value: balance.value,
-      }
-    : null;
-
-  const professionalConnectors: WalletConnector[] = connectors.map((connector) => ({
-    id: connector.id,
-    name: connector.name,
-    ready: connector.ready,
-    icon: undefined, // Professional connector icon handling
-  }));
-
-  const professionalPendingConnector: WalletConnector | null = pendingConnector
-    ? {
-        id: pendingConnector.id,
-        name: pendingConnector.name,
-        ready: pendingConnector.ready,
-        icon: undefined, // Professional connector icon handling
-      }
-    : null;
-
-  const value: WalletState = {
-    // Connection state
-    address,
-    isConnected,
-    isConnecting: isConnecting || isReconnecting || isConnectLoading,
-    isReconnecting,
-
-    // Balance
-    balance: professionalBalance,
-    balanceSymbol: professionalBalance?.symbol || "CORE",
-
-    // Network state
-    chain,
-    isOnCoreNetwork,
-    isOnTestnet,
-    isOnMainnet,
-    isSwitchLoading,
-
-    // Web3 signer
-    signer,
-
-    // Actions
-    connectWallet,
-    disconnect: disconnectWallet,
-    disconnectWallet,
-    switchToCore,
-
-    // Loading states
-    isConnectLoading,
-
-    // Available connectors
-    connectors: professionalConnectors,
-    pendingConnector: professionalPendingConnector,
-
-    // Errors
-    connectError,
-
-    // Persistence
-    isWalletPersisted,
-    lastConnectedWallet,
-    connectionAttempts,
+  const adapterMap: Record<ChainType, ChainAdapter> = {
+    algorand: algorandAdapter,
+    evm: evmAdapter,
   };
+
+  const [activeChainId, setActiveChainId] = useState<ChainType>("algorand");
+
+  const activeAdapter = adapterMap[activeChainId];
+
+  const value = useMemo<WalletContextValue>(() => {
+    const chain = chainRegistry.find((entry) => entry.id === activeChainId) ?? chainRegistry[0];
+    const contractsForChain = getContractsForChain(activeChainId);
+    const balanceSymbol = activeAdapter.balance?.symbol ?? (activeChainId === "algorand" ? "ALGO" : "ETH");
+
+    const connectWallet = async (connectorId?: string) => activeAdapter.connectWallet(connectorId);
+    const disconnectWallet = async () => activeAdapter.disconnectWallet();
+
+    return {
+      chainId: activeChainId,
+      chain,
+      chains: chainRegistry,
+      setActiveChain: setActiveChainId,
+      address: activeAdapter.address,
+      accounts: activeAdapter.accounts,
+      connectors: activeAdapter.connectors,
+      connectWallet,
+      disconnectWallet,
+      disconnect: disconnectWallet,
+      isConnected: activeAdapter.isConnected,
+      isConnecting: activeAdapter.isConnecting,
+      isBalanceLoading: activeAdapter.isBalanceLoading,
+      balance: activeAdapter.balance,
+      balanceSymbol,
+      refreshBalance: activeAdapter.refreshBalance,
+      networks: activeAdapter.networks,
+      activeNetwork: activeAdapter.activeNetwork,
+      setActiveNetwork: activeAdapter.setActiveNetwork,
+      supportsSignData: activeAdapter.supportsSignData,
+      transactionSigner: activeAdapter.transactionSigner,
+      connectError: activeAdapter.lastError,
+      lastError: activeAdapter.lastError,
+      contracts: contractsForChain,
+    };
+  }, [activeAdapter, activeChainId]);
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
 };
+
+export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const manager = useMemo(() => buildWalletManager(), []);
+
+  return (
+    <TxnWalletProvider manager={manager}>
+      <WalletContextBridge>{children}</WalletContextBridge>
+    </TxnWalletProvider>
+  );
+};
+
+export const useWalletContext = () => {
+  const context = useContext(WalletContext);
+  if (!context) {
+    throw new Error("useWalletContext must be used within a WalletProvider");
+  }
+  return context;
+};
+
+export { WalletContext };

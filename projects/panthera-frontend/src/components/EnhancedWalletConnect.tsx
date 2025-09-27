@@ -23,6 +23,7 @@ const EnhancedWalletConnect: React.FC<EnhancedWalletConnectProps> = ({
     supportedNetworks,
     switchToCoreTestnet,
     switchToCoreMainnet,
+    switchToNetwork,
     autoSwitchEnabled,
     setAutoSwitchEnabled,
     isSwitchLoading,
@@ -298,20 +299,25 @@ const EnhancedWalletConnect: React.FC<EnhancedWalletConnectProps> = ({
 
                 <div className="space-y-2">
                   <span className="text-sm font-medium text-gray-900">Switch Network</span>
-                  {supportedNetworks.map((network) => (
-                    <button
-                      key={network.id}
-                      onClick={() => (network.id === 1115 ? switchToCoreTestnet() : switchToCoreMainnet())}
-                      disabled={isSwitchLoading || networkStatus.currentNetwork?.id === network.id}
-                      className="w-full flex items-center justify-between p-2 border border-gray-200 rounded hover:border-blue-300 disabled:opacity-50 transition-colors"
-                    >
-                      <div className="text-left">
-                        <div className="text-sm font-medium">{network.name}</div>
-                        <div className="text-xs text-gray-500">{network.isTestnet ? "Testnet" : "Mainnet"}</div>
-                      </div>
-                      {networkStatus.currentNetwork?.id === network.id && <div className="w-2 h-2 bg-green-500 rounded-full" />}
-                    </button>
-                  ))}
+                  {supportedNetworks.map((network) => {
+                    const networkKey = (network.metadata?.walletNetworkId ?? network.id).toString();
+                    const isCurrent = networkStatus.currentNetwork?.id === network.id;
+                    return (
+                      <button
+                        key={network.id}
+                        onClick={() => switchToNetwork(network)}
+                        disabled={isSwitchLoading || isCurrent}
+                        className="w-full flex items-center justify-between p-2 border border-gray-200 rounded hover:border-blue-300 disabled:opacity-50 transition-colors"
+                      >
+                        <div className="text-left">
+                          <div className="text-sm font-medium">{network.name}</div>
+                          <div className="text-xs text-gray-500">{network.tier === "mainnet" ? "Mainnet" : network.tier === "testnet" ? "Testnet" : network.tier === "localnet" ? "LocalNet" : "Custom"}</div>
+                          <div className="text-[10px] text-gray-400">ID: {networkKey}</div>
+                        </div>
+                        {isCurrent && <div className="w-2 h-2 bg-green-500 rounded-full" />}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 <label className="flex items-center space-x-2">

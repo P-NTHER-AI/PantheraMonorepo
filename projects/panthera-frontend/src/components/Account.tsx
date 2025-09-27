@@ -1,10 +1,10 @@
-import { useWallet } from '@txnlab/use-wallet-react'
-import { useMemo } from 'react'
-import { ellipseAddress } from '../utils/ellipseAddress'
-import { getAlgodConfigFromViteEnvironment } from '../utils/network/getAlgoClientConfigs'
+import { useMemo } from "react";
+import { useWallet } from "../hooks/useWallet";
+import { ellipseAddress } from "../utils/ellipseAddress";
+import { getAlgodConfigFromViteEnvironment } from "../utils/network/getAlgoClientConfigs";
 
 const Account = () => {
-  const { activeAddress } = useWallet()
+  const { address } = useWallet();
   const algoConfig = getAlgodConfigFromViteEnvironment()
 
   const networkName = useMemo(() => {
@@ -13,9 +13,13 @@ const Account = () => {
 
   return (
     <div>
-      <a className="text-xl" target="_blank" href={`https://lora.algokit.io/${networkName}/account/${activeAddress}/`}>
-        Address: {ellipseAddress(activeAddress)}
-      </a>
+      {address ? (
+        <a className="text-xl" target="_blank" href={`https://lora.algokit.io/${networkName}/account/${address}/`}>
+          Address: {ellipseAddress(address)}
+        </a>
+      ) : (
+        <span className="text-xl">No wallet connected</span>
+      )}
       <div className="text-xl">Network: {networkName}</div>
     </div>
   )

@@ -1,5 +1,5 @@
 import { algo, AlgorandClient } from "@algorandfoundation/algokit-utils";
-import { useWallet } from "@txnlab/use-wallet-react";
+import { useWallet } from "../hooks/useWallet";
 import { useState } from "react";
 import { getAlgodConfigFromViteEnvironment } from "../utils/network/getAlgoClientConfigs";
 
@@ -15,12 +15,12 @@ const Transact = ({ openModal, setModalState }: TransactInterface) => {
   const algodConfig = getAlgodConfigFromViteEnvironment();
   const algorand = AlgorandClient.fromConfig({ algodConfig });
 
-  const { transactionSigner, activeAddress } = useWallet();
+  const { transactionSigner, address } = useWallet();
 
   const handleSubmitAlgo = async () => {
     setLoading(true);
 
-    if (!transactionSigner || !activeAddress) {
+    if (!transactionSigner || !address) {
       alert("Please connect wallet first");
       return;
     }
@@ -29,7 +29,7 @@ const Transact = ({ openModal, setModalState }: TransactInterface) => {
       alert("Sending transaction...");
       const result = await algorand.send.payment({
         signer: transactionSigner,
-        sender: activeAddress,
+        sender: address,
         receiver: receiverAddress,
         amount: algo(1),
       });

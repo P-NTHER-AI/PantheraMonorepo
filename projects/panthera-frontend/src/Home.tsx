@@ -1,5 +1,5 @@
 // src/components/Home.tsx
-import { useWallet } from '@txnlab/use-wallet-react'
+import { useWallet } from './hooks/useWallet'
 import React, { useState } from 'react'
 import ConnectWallet from './components/ConnectWallet'
 import Transact from './components/Transact'
@@ -11,7 +11,7 @@ const Home: React.FC<HomeProps> = () => {
   const [openWalletModal, setOpenWalletModal] = useState<boolean>(false)
   const [openDemoModal, setOpenDemoModal] = useState<boolean>(false)
   const [appCallsDemoModal, setAppCallsDemoModal] = useState<boolean>(false)
-  const { activeAddress } = useWallet()
+  const { address } = useWallet()
 
   const toggleWalletModal = () => {
     setOpenWalletModal(!openWalletModal)
@@ -51,13 +51,13 @@ const Home: React.FC<HomeProps> = () => {
               Wallet Connection
             </button>
 
-            {activeAddress && (
+            {address && (
               <button data-test-id="transactions-demo" className="btn m-2" onClick={toggleDemoModal}>
                 Transactions Demo
               </button>
             )}
 
-            {activeAddress && (
+            {address && (
               <button data-test-id="appcalls-demo" className="btn m-2" onClick={toggleAppCallsModal}>
                 Contract Interactions Demo
               </button>

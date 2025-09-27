@@ -132,7 +132,6 @@ export const useChartData = (
     priceChange24h: null,
   });
 
-  const publicClient = usePublicClient();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { latestTrade } = useTradeEvents(agentAddress);
 
@@ -152,47 +151,25 @@ export const useChartData = (
     }
   }, [agentAddress]);
 
-  // Fetch market data from blockchain
+  // Fetch market data from backend
   const fetchMarketData = useCallback(async () => {
-    if (!agentAddress || !publicClient) return null;
+    if (!agentAddress) return null;
 
     try {
-      console.log(`📊 Fetching market data from blockchain: ${agentAddress}`);
-
-      const bondingCurveInfo = (await publicClient.readContract({
-        address: agentAddress as `0x${string}`,
-        abi: [
-          {
-            name: "getBondingCurveInfo",
-            type: "function",
-            stateMutability: "view",
-            inputs: [],
-            outputs: [
-              { name: "currentSupply_", type: "uint256" },
-              { name: "reserveBalance_", type: "uint256" },
-              { name: "price", type: "uint256" },
-              { name: "marketCap", type: "uint256" },
-              { name: "isGraduated_", type: "bool" },
-            ],
-          },
-        ],
-        functionName: "getBondingCurveInfo",
-      })) as [bigint, bigint, bigint, bigint, boolean];
-
-      const [currentSupply, reserveBalance, price, marketCap, isGraduated] = bondingCurveInfo;
-
+      const response = await apiService.getAgentDetails(agentAddress);
+      const data = (response as any)?.data?.data ?? (response as any)?.data ?? {};
       return {
-        currentSupply: parseFloat((Number(currentSupply) / 1e18).toString()),
-        reserveBalance: parseFloat((Number(reserveBalance) / 1e18).toString()),
-        price: parseFloat((Number(price) / 1e18).toString()),
-        marketCap: parseFloat((Number(marketCap) / 1e18).toString()),
-        isGraduated,
+        currentSupply: Number.parseFloat(data.totalSupply ?? "0"),
+        reserveBalance: Number.parseFloat(data.bondingCurveInfo?.reserve ?? "0"),
+        price: Number.parseFloat(data.currentPrice ?? "0"),
+        marketCap: Number.parseFloat(data.bondingCurveInfo?.marketCap ?? "0"),
+        isGraduated: Boolean(data.metadata?.isGraduated),
       };
     } catch (error) {
-      console.error("❌ Failed to fetch market data from blockchain:", error);
+      console.error("❌ Failed to fetch market data from backend:", error);
       return null;
     }
-  }, [agentAddress, publicClient]);
+  }, [agentAddress]);
 
   const getIntervalMs = useCallback((interval: string): number => {
     const intervals: Record<string, number> = {
@@ -385,7 +362,7 @@ export const useChartData = (
   }, [agentAddress, options.interval, options.limit, fetchLivePrice, fetchMarketData]);
 
   const updateOnChainPrice = useCallback(async () => {
-    if (!agentAddress || !publicClient) return;
+    if (!agentAddress) return;
 
     try {
       const onChain = await fetchLivePrice();
@@ -404,7 +381,7 @@ export const useChartData = (
         connectionStatus: "error",
       }));
     }
-  }, [agentAddress, publicClient, fetchLivePrice]);
+  }, [agentAddress, fetchLivePrice]);
 
   const updateWithNewTrade = useCallback(
     (trade: TradeData) => {

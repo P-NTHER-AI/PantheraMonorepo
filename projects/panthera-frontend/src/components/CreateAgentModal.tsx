@@ -23,7 +23,19 @@ interface FormData {
 
 const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose }) => {
   // Wallet and contract hooks
-  const { isConnected, connectWallet, isOnCoreNetwork, switchToCore, address } = useWallet();
+  const { isConnected, connectWallet, networks, activeNetwork, setActiveNetwork, address } = useWallet();
+  const preferredNetwork = networks.find((network) => network.isDefault) ?? activeNetwork;
+  const preferredNetworkId = preferredNetwork
+    ? (preferredNetwork.metadata?.walletNetworkId ?? preferredNetwork.id).toString()
+    : null;
+  const isOnCoreNetwork = preferredNetworkId
+    ? preferredNetworkId === (activeNetwork?.metadata?.walletNetworkId ?? activeNetwork?.id).toString()
+    : Boolean(activeNetwork);
+  const switchToCore = async () => {
+    if (!preferredNetworkId) return;
+    await setActiveNetwork(preferredNetworkId);
+  };
+  const networkDisplayName = preferredNetwork?.name ?? "Algorand Network";
   const { createAgentToken } = useAgentFactory();
 
   const [step, setStep] = useState(1);
@@ -174,10 +186,10 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose }) 
     // Check network
     if (!isOnCoreNetwork) {
       try {
-        switchToCore();
+        await switchToCore();
         return;
       } catch {
-        setDeploymentError('Please switch to Core testnet to deploy agents');
+        setDeploymentError('Please switch to the configured Algorand network to deploy agents');
         setDeploymentStatus('error');
         return;
       }
@@ -200,8 +212,8 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose }) 
         imageUrl: formData.imageUrl,
       };
 
-      // Deploy agent to Core testnet with success callback
-      const tx = await createAgentToken(agentParams, async (agentAddress: string) => {
+      // Deploy agent on the selected Algorand network with success callback
+      const createdAgentAddress = await createAgentToken(agentParams, async (agentAddress: string) => {
         console.log('🎯 Agent deployed successfully at:', agentAddress);
 
         // Send agent creation data to backend (use apiService for proxy & CORS safety)
@@ -217,7 +229,7 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose }) 
             imageUrl: agentParams.imageUrl,
             avatar: agentParams.avatar,
             contractAddress: agentAddress,
-            txHash: tx.hash,
+            txHash: agentAddress,
           });
           console.log('✅ Agent data sent to backend successfully');
         } catch (error) {
@@ -242,7 +254,7 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose }) 
 
       });
 
-      console.log('🚀 Transaction submitted:', tx);
+      console.log('🚀 Agent creation submitted:', createdAgentAddress);
 
       // Auto-close after success
       setTimeout(() => {
@@ -288,7 +300,7 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose }) 
         <div className="flex items-center justify-between p-6 border-b border-[#2a2a2a]">
           <div>
             <h2 className="text-white text-xl font-bold">Create AI Agent</h2>
-            <p className="text-gray-400 text-sm">Deploy your AI agent on Core testnet</p>
+            <p className="text-gray-400 text-sm">Deploy your AI agent on {networkDisplayName}</p>
           </div>
           <button
             onClick={onClose}
@@ -529,7 +541,7 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose }) 
                         <div>
                           <div className="text-blue-400 font-medium text-sm">Ready to Deploy</div>
                           <div className="text-gray-300 text-sm mt-1">
-                            Your agent will be deployed to Core testnet. Make sure you have enough CORE tokens for gas fees.
+                            Your agent will be deployed to {networkDisplayName}. Make sure you have enough ALGO tokens for fees.
                           </div>
                         </div>
                       </div>
@@ -555,7 +567,7 @@ const CreateAgentModal: React.FC<CreateAgentModalProps> = ({ isOpen, onClose }) 
                       Contract Address: {deployedAddress}
                     </div>
                     <div className="text-green-400 text-sm">
-                      Your agent is now live on Core testnet
+                      Your agent is now live on {networkDisplayName}
                     </div>
                   </div>
                 )}

@@ -43,7 +43,7 @@ export interface TradingState {
 }
 
 export const useBondingCurveTrading = (tokenAddress?: string) => {
-  const { address: userAddress, signer } = useWallet();
+  const { address: userAddress } = useWallet();
 
   // Trading State
   const [state, setState] = useState<TradingState>({
@@ -59,13 +59,6 @@ export const useBondingCurveTrading = (tokenAddress?: string) => {
     priceHistory: [],
     marketDataLoading: false,
   });
-
-  // Set signer when available
-  useEffect(() => {
-    if (signer) {
-      bondingCurveService.setSigner(signer);
-    }
-  }, [signer]);
 
   // Fetch token information
   const fetchTokenInfo = useCallback(async (address: string) => {
@@ -213,7 +206,12 @@ export const useBondingCurveTrading = (tokenAddress?: string) => {
         }
       } catch (error) {
         const code = error instanceof BondingCurveError ? error.code : "TRADE_ERROR";
-        const message = error instanceof BondingCurveError ? error.message : `Failed to ${type} tokens`;
+        const message =
+          error instanceof BondingCurveError
+            ? error.code === "NOT_IMPLEMENTED"
+              ? "Bonding curve trading is not yet available on this network"
+              : error.message
+            : `Failed to ${type} tokens`;
         setState((prev) => ({
           ...prev,
           isTrading: false,
@@ -323,7 +321,7 @@ export const useBondingCurveTrading = (tokenAddress?: string) => {
 
     // Utilities
     isConnected: !!userAddress,
-    canTrade: !!userAddress && !!signer && !isGraduated,
+    canTrade: !!userAddress && !isGraduated,
   };
 };
 
