@@ -1,0 +1,39 @@
+[
+  {"type":"function","name":"creationFee","stateMutability":"view","inputs":[],"outputs":[{"type":"uint256","name":""}]},
+  {"type":"function","name":"getTotalAgents","stateMutability":"view","inputs":[],"outputs":[{"type":"uint256","name":""}]},
+  {"type":"function","name":"getAllAgents","stateMutability":"view","inputs":[{"type":"uint256","name":"offset"},{"type":"uint256","name":"limit"}],"outputs":[{"type":"address[]","name":"agents"},{"type":"uint256","name":"total"}]},
+  {"type":"function","name":"getTrendingAgents","stateMutability":"view","inputs":[{"type":"uint256","name":"limit"}],"outputs":[{"type":"address[]","name":""}]},
+  {"type":"function","name":"agentMetadata","stateMutability":"view","inputs":[{"type":"address","name":"agent"}],"outputs":[
+    {"type":"address","name":"tokenAddress"},
+    {"type":"string","name":"name"},
+    {"type":"string","name":"symbol"},
+    {"type":"string","name":"description"},
+    {"type":"string","name":"category"},
+    {"type":"address","name":"creator"},
+    {"type":"uint256","name":"createdAt"},
+    {"type":"bool","name":"isActive"}
+  ]},
+  {"type":"function","name":"createAgent","stateMutability":"payable","inputs":[
+    {"type":"string","name":"name"},
+    {"type":"string","name":"symbol"},
+    {"type":"string","name":"description"},
+    {"type":"string","name":"instructions"},
+    {"type":"string","name":"model"},
+    {"type":"string","name":"category"}
+  ],"outputs":[{"type":"address","name":"agentAddress"}]},
+  {"type":"event","name":"AgentCreated","inputs":[
+    {"type":"address","name":"tokenAddress","indexed":true},
+    {"type":"address","name":"creator","indexed":true},
+    {"type":"string","name":"name","indexed":false},
+    {"type":"string","name":"symbol","indexed":false}
+  ],"anonymous":false},
+  {"type":"event","name":"AgentCreated","inputs":[
+    {"type":"address","name":"tokenAddress","indexed":true},
+    {"type":"address","name":"creator","indexed":true},
+    {"type":"string","name":"name","indexed":false},
+    {"type":"string","name":"symbol","indexed":false},
+    {"type":"string","name":"description","indexed":false},
+    {"type":"string","name":"category","indexed":false}
+  ],"anonymous":false}
+]
+
