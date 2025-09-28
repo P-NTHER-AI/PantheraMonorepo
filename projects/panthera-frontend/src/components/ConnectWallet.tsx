@@ -43,8 +43,8 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
   };
 
   const getNetworkStatusColor = () => {
-    if (!activeAddress) return "text-gray-400";
-    return "text-green-400";
+    if (!activeAddress) return "bg-gray-400";
+    return "bg-green-400";
   };
 
   const getNetworkStatusText = () => {
