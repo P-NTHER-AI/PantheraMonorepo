@@ -565,34 +565,6 @@ The platform provides real-time updates through WebSocket connections:
 
 *Connection URL*: ws://localhost:3001 (development)
 
-#### Message Types
-
-*Subscribe to Updates*
-
-```json
-{
-  "type": "subscribe",
-  "channel": "platform" | "agent:0x..."
-}
-```
-
-*Unsubscribe from Updates*
-
-```json
-{
-  "type": "unsubscribe",
-  "channel": "platform" | "agent:0x..."
-}
-```
-
-*Ping/Pong*
-
-```json
-{
-  "type": "ping"
-}
-```
-
 #### Event Types
 
 - agentCreated: New agent deployment
@@ -921,13 +893,6 @@ class WebSocketService {
 
 ### Subscription Management
 
-*Channel Types:*
-
-- platform: Global platform events
-- agent:0x...: Agent-specific events
-- user:0x...: User-specific events
-- trading: Trading-related events
-
 *Event Broadcasting:*
 
 ```javascript
@@ -1046,14 +1011,15 @@ describe('TradingInterface', () => {
 
 ```bash
 # Smart contract tests
-npm test
+cd projects/panthera-contracts
+python tests/test_agent_factory.py
 
 # Backend tests
-cd panthera-backend
+cd projects/panthera-backend
 npm test
 
 # Frontend tests
-cd panthera-frontend
+cd projects/panthera-frontend
 npm test
 
 # Coverage reports
@@ -1062,7 +1028,7 @@ npm run test:coverage
 
 ### Test Outputs
 
-```
+```text
 Testing Agent Factory Contract with FIXED Graduation System on TESTNET...
 App ID: 746512710
 Using account: 4FIIQZ5MH5VHVO7AB53M7CFYUP6GLVFTD4MYL44WE6HV2Z4Q7VHUJ6AWRU
