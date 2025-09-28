@@ -133,13 +133,13 @@ export const ProfessionalQuoteDisplay: React.FC<ProfessionalQuoteDisplayProps> =
           <div className="bg-[#2a2a2a] rounded-lg p-3">
             <div className="text-xs text-[#a0a0a0] mb-1">You {isBuy ? "Pay" : "Sell"}</div>
             <div className="text-lg font-bold text-white">{formatNumber(parseFloat(inputAmount || amount), { decimals: 6 })}</div>
-            <div className="text-xs text-[#a0a0a0]">{isBuy ? "CORE" : "TOKENS"}</div>
+            <div className="text-xs text-[#a0a0a0]">{isBuy ? "ALGO" : "TOKENS"}</div>
           </div>
 
           <div className="bg-[#2a2a2a] rounded-lg p-3">
             <div className="text-xs text-[#a0a0a0] mb-1">You {isBuy ? "Receive" : "Get"}</div>
             <div className="text-lg font-bold text-[#d8e9ea]">{formatNumber(parseFloat(outputAmount || "0"), { decimals: 6 })}</div>
-            <div className="text-xs text-[#a0a0a0]">{isBuy ? "TOKENS" : "CORE"}</div>
+            <div className="text-xs text-[#a0a0a0]">{isBuy ? "TOKENS" : "ALGO"}</div>
           </div>
         </div>
 
@@ -151,7 +151,7 @@ export const ProfessionalQuoteDisplay: React.FC<ProfessionalQuoteDisplayProps> =
                 <DollarSign className="w-3 h-3 text-[#a0a0a0]" />
                 <span className="text-xs text-[#a0a0a0]">Current Price</span>
               </div>
-              <div className="text-sm font-medium text-white">{formatPrice(parseFloat(quote.currentPrice || "0"))} CORE</div>
+              <div className="text-sm font-medium text-white">{formatPrice(parseFloat(quote.currentPrice || "0"))} ALGO</div>
             </div>
 
             <div className="bg-[#2a2a2a] rounded-lg p-3">
@@ -159,7 +159,7 @@ export const ProfessionalQuoteDisplay: React.FC<ProfessionalQuoteDisplayProps> =
                 <DollarSign className="w-3 h-3 text-[#a0a0a0]" />
                 <span className="text-xs text-[#a0a0a0]">New Price</span>
               </div>
-              <div className="text-sm font-medium text-white">{formatNumber(parseFloat(quote.newPrice || "0"), { decimals: 8 })} CORE</div>
+              <div className="text-sm font-medium text-white">{formatNumber(parseFloat(quote.newPrice || "0"), { decimals: 8 })} ALGO</div>
             </div>
           </div>
         )}
@@ -214,7 +214,7 @@ export const ProfessionalQuoteDisplay: React.FC<ProfessionalQuoteDisplayProps> =
             <span className="text-xs text-[#a0a0a0]">Minimum Received</span>
           </div>
           <div className="text-sm font-medium text-white">
-            {formatNumber(parseFloat(quote.minimumReceived), { decimals: 6 })} {isBuy ? "TOKENS" : "CORE"}
+            {formatNumber(parseFloat(quote.minimumReceived), { decimals: 6 })} {isBuy ? "TOKENS" : "ALGO"}
           </div>
           <div className="text-xs text-[#a0a0a0] mt-1">You will receive at least this amount or the transaction will revert</div>
         </div>

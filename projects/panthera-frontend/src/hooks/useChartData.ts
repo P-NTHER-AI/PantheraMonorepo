@@ -144,7 +144,7 @@ export const useChartData = (
       const p = (res as any)?.data?.data?.currentPrice ?? (res as any)?.data?.currentPrice;
       const priceNum = p != null ? parseFloat(String(p)) : NaN;
       if (!Number.isFinite(priceNum)) return null;
-      console.log(`💰 Backend on-chain price (reference): ${priceNum} CORE`);
+      console.log(`💰 Backend on-chain price (reference): ${priceNum} ALGO`);
       return priceNum;
     } catch (error) {
       console.error("❌ Failed to fetch on-chain price via backend:", error);
@@ -353,10 +353,10 @@ export const useChartData = (
       }));
 
       if (onChainPrice != null) {
-        console.log(`💰 On-chain contract price (reference): ${onChainPrice} CORE`);
+        console.log(`💰 On-chain contract price (reference): ${onChainPrice} ALGO`);
       }
       // if (marketData) {
-      //   console.log(`📊 Market data - Cap: ${marketData.marketCap} CORE, Supply: ${marketData.currentSupply}`);
+      //   console.log(`📊 Market data - Cap: ${marketData.marketCap} ALGO, Supply: ${marketData.currentSupply}`);
       // }
 
       if (candles.length === 0 && trades.length === 0) {

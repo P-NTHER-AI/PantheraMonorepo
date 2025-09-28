@@ -316,7 +316,7 @@ const AgentDetail: React.FC = () => {
                       <div className="space-y-4">
                         <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4">
                           <div className="text-sm text-[#a0a0a0] mb-1">24h Volume</div>
-                          <div className="text-xl font-bold text-white">{formatNumber(currentStats?.volume24h || 0)} CORE</div>
+                          <div className="text-xl font-bold text-white">{formatNumber(currentStats?.volume24h || 0)} ALGO</div>
                         </div>
                         <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4">
                           <div className="text-sm text-[#a0a0a0] mb-1">24h Change</div>
@@ -329,7 +329,7 @@ const AgentDetail: React.FC = () => {
                         </div>
                         <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4">
                           <div className="text-sm text-[#a0a0a0] mb-1">Market Cap</div>
-                          <div className="text-xl font-bold text-white">{formatPrice(agent?.bondingCurveInfo?.marketCap || 0)} CORE</div>
+                          <div className="text-xl font-bold text-white">{formatPrice(agent?.bondingCurveInfo?.marketCap || 0)} ALGO</div>
                         </div>
                       </div>
                     </div>
@@ -371,7 +371,7 @@ const AgentDetail: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <p className="text-[#a0a0a0] text-sm">Current Price</p>
-                  <p className="text-2xl font-bold text-white">{formatPrice(livePrice ?? agent.currentPrice ?? 0)} CORE</p>
+                  <p className="text-2xl font-bold text-white">{formatPrice(livePrice ?? agent.currentPrice ?? 0)} ALGO</p>
                 </div>
                 <div>
                   <p className="text-[#a0a0a0] text-sm">24h Change</p>

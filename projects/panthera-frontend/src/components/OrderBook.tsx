@@ -351,7 +351,7 @@ const OrderBook: React.FC<OrderBookProps> = ({ agentAddress, currentPrice = 0 })
         {/* Sell Orders */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm font-medium text-[#a0a0a0] border-b border-[#2a2a2a] pb-2">
-            <span>Price (CORE)</span>
+            <span>Price (ALGO)</span>
             <span>Amount</span>
             <span>Total</span>
           </div>
@@ -385,7 +385,7 @@ const OrderBook: React.FC<OrderBookProps> = ({ agentAddress, currentPrice = 0 })
           <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-4 text-center">
             <div className="text-sm text-[#a0a0a0] mb-1">Current Price</div>
             <div className="text-2xl font-bold text-white">{formatPrice(currentPrice)}</div>
-            <div className="text-sm text-[#a0a0a0]">CORE</div>
+            <div className="text-sm text-[#a0a0a0]">ALGO</div>
           </div>
 
           {/* Recent Trades */}
@@ -412,7 +412,7 @@ const OrderBook: React.FC<OrderBookProps> = ({ agentAddress, currentPrice = 0 })
         {/* Buy Orders */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm font-medium text-[#a0a0a0] border-b border-[#2a2a2a] pb-2">
-            <span>Price (CORE)</span>
+            <span>Price (ALGO)</span>
             <span>Amount</span>
             <span>Total</span>
           </div>

@@ -372,7 +372,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ agentAddress
       <div className="p-4 border-b border-[#2a2a2a]">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h3 className="text-lg font-semibold text-white">{tokenSymbol}/CORE</h3>
+            <h3 className="text-lg font-semibold text-white">{tokenSymbol}/ALGO</h3>
             <div className="flex items-center space-x-2">
               <div className={`w-2 h-2 rounded-full ${status.color.replace("text-", "bg-")}`} />
               <span className={`text-sm ${status.color}`}>{status.text}</span>
@@ -383,7 +383,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ agentAddress
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <div className="text-xl font-bold text-white">
-                  {formatNumber(currentPrice.toString(), { maxDecimals: 10, minDecimals: 6 })} CORE
+                  {formatNumber(currentPrice.toString(), { maxDecimals: 10, minDecimals: 6 })} ALGO
                 </div>
                 <div className={`text-sm ${priceChange >= 0 ? "text-green-400" : "text-red-400"}`}>
                   {priceChange >= 0 ? "+" : ""}

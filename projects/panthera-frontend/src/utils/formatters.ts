@@ -118,7 +118,7 @@ export const formatCompactNumber = (value: number, options: { prefix?: string; s
 /**
  * Format cryptocurrency prices with appropriate precision
  */
-export const formatPrice = (price: string | number | null | undefined, currency: string = "CORE"): string => {
+export const formatPrice = (price: string | number | null | undefined, currency: string = "ALGO"): string => {
   if (!price) return `0.000000000000 ${currency}`;
 
   const numPrice = typeof price === "string" ? parseFloat(price) : price;
@@ -158,7 +158,7 @@ export const formatPercentage = (value: string | number | null | undefined, deci
 /**
  * Format market cap values
  */
-export const formatMarketCap = (value: string | number | null | undefined, currency: string = "CORE"): string => {
+export const formatMarketCap = (value: string | number | null | undefined, currency: string = "ALGO"): string => {
   if (!value) return `0 ${currency}`;
 
   const numValue = typeof value === "string" ? parseFloat(value) : value;
@@ -178,7 +178,7 @@ export const formatMarketCap = (value: string | number | null | undefined, curre
 /**
  * Format volume values
  */
-export const formatVolume = (value: string | number | null | undefined, currency: string = "CORE"): string => {
+export const formatVolume = (value: string | number | null | undefined, currency: string = "ALGO"): string => {
   if (!value) return `0 ${currency}`;
 
   const numValue = typeof value === "string" ? parseFloat(value) : value;

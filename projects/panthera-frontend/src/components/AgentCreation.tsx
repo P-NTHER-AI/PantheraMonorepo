@@ -1,3 +1,4 @@
+import { useWallet } from "@txnlab/use-wallet-react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -18,7 +19,6 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { AgentCreationParams, useAgentFactory } from "../hooks/useAgentFactory";
-import { useWallet } from "../hooks/useWallet";
 import apiService from "../services/api";
 import StepIndicator from "./StepIndicator";
 import TemplateCard from "./TemplateCard";
@@ -29,7 +29,7 @@ interface AgentCreationProps {
 
 const AgentCreation: React.FC<AgentCreationProps> = ({ onBack }) => {
   // Wallet and contract hooks
-  const { isConnected, connectWallet, isOnCoreNetwork, switchToCore, address } = useWallet();
+  const { activeAddress } = useWallet();
   const { createAgentToken, creationFee } = useAgentFactory();
 
   // Form state
@@ -188,44 +188,44 @@ const AgentCreation: React.FC<AgentCreationProps> = ({ onBack }) => {
   };
 
   const handleDeploy = async () => {
-    // Check wallet connection
-    if (!isConnected || !address) {
-      try {
-        console.log("🔗 Wallet not connected, attempting to connect...");
-        await connectWallet();
-        // Wait a bit for connection to establish
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+    //     // Check wallet connection
+    //     if (!isConnected || !address) {
+    //       try {
+    //         console.log("🔗 Wallet not connected, attempting to connect...");
+    //         await connectWallet();
+    //         // Wait a bit for connection to establish
+    //         await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        // Check again after connection attempt
-        if (!isConnected || !address) {
-          throw new Error("Wallet connection failed");
-        }
-        console.log("✅ Wallet connected successfully:", address);
-      } catch (error) {
-        console.error("❌ Wallet connection error:", error);
-        const errorMessage = `Wallet connection failed. Please:
+    //         // Check again after connection attempt
+    //         if (!isConnected || !address) {
+    //           throw new Error("Wallet connection failed");
+    //         }
+    //         console.log("✅ Wallet connected successfully:", address);
+    //       } catch (error) {
+    //         console.error("❌ Wallet connection error:", error);
+    //         const errorMessage = `Wallet connection failed. Please:
 
-1. Make sure MetaMask is installed and unlocked
-2. Click the MetaMask extension icon
-3. Connect this site to your wallet
-4. Refresh the page and try again
+    // 1. Make sure MetaMask is installed and unlocked
+    // 2. Click the MetaMask extension icon
+    // 3. Connect this site to your wallet
+    // 4. Refresh the page and try again
 
-Error: ${error instanceof Error ? error.message : "Unknown error"}`;
-        alert(errorMessage);
-        return;
-      }
-    }
+    // Error: ${error instanceof Error ? error.message : "Unknown error"}`;
+    //         alert(errorMessage);
+    //         return;
+    //       }
+    //     }
 
-    // Check network
-    if (!isOnCoreNetwork) {
-      try {
-        switchToCore();
-        return;
-      } catch {
-        alert("Please switch to Core testnet to deploy agents");
-        return;
-      }
-    }
+    //     // Check network
+    //     if (!isOnCoreNetwork) {
+    //       try {
+    //         switchToCore();
+    //         return;
+    //       } catch {
+    //         alert("Please switch to Core testnet to deploy agents");
+    //         return;
+    //       }
+    //     }
 
     // Validate form data
     if (!tokenName || !tokenSymbol || !instructions || !selectedModel || !tokenDescription || !tokenCategory) {
@@ -811,7 +811,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                   {/* Initial Price Calculation */}
                   <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-xl p-6">
                     <h4 className="text-white font-medium mb-4">Initial Price</h4>
-                    <div className="text-2xl font-bold text-[#d8e9ea] mb-2">$0.001 CORE</div>
+                    <div className="text-2xl font-bold text-[#d8e9ea] mb-2">$0.001 ALGO</div>
                     <p className="text-[#a0a0a0] text-sm">Starting price per token</p>
                   </div>
 
@@ -891,7 +891,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#a0a0a0]">Platform Fee</span>
-                    <span className="text-[#d8e9ea] font-medium">{creationFee} CORE</span>
+                    <span className="text-[#d8e9ea] font-medium">{creationFee} ALGO</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-[#a0a0a0]">Gas Estimation</span>
@@ -900,7 +900,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                   <div className="border-t border-[#2a2a2a] pt-4">
                     <div className="flex justify-between items-center">
                       <span className="text-white font-semibold text-lg">Total Cost</span>
-                      <span className="text-[#d8e9ea] font-bold text-lg">{creationFee} CORE</span>
+                      <span className="text-[#d8e9ea] font-bold text-lg">{creationFee} ALGO</span>
                     </div>
                   </div>
                 </div>
@@ -932,7 +932,7 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
               </div>
 
               {/* Wallet Status */}
-              {!isConnected && (
+              {!activeAddress && (
                 <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4">
                   <div className="flex items-center gap-2 text-yellow-400">
                     <AlertCircle size={16} />
@@ -941,14 +941,14 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                 </div>
               )}
 
-              {isConnected && !isOnCoreNetwork && (
+              {/* {activeAddress && !isOnCoreNetwork && (
                 <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4">
                   <div className="flex items-center gap-2 text-red-400">
                     <AlertCircle size={16} />
                     <span className="text-sm">Please switch to Core DAO network</span>
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Deploy Button */}
               <div className="space-y-4">
@@ -963,17 +963,17 @@ Error: ${error instanceof Error ? error.message : "Unknown error"}`;
                         <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
                         Deploying... {deployProgress}%
                       </>
-                    ) : !isConnected ? (
+                    ) : !activeAddress ? (
                       <>
                         <Wallet size={20} />
                         Connect Wallet to Deploy
                       </>
-                    ) : !isOnCoreNetwork ? (
-                      <>
-                        <AlertCircle size={20} />
-                        Switch to Core Network
-                      </>
                     ) : (
+                      // ) : !isOnCoreNetwork ? (
+                      //   <>
+                      //     <AlertCircle size={20} />
+                      //     Switch to Core Network
+                      //   </>
                       <>
                         <Zap size={20} />
                         Deploy Agent & Launch Token

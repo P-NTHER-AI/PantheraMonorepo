@@ -79,21 +79,21 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, onCardClick, onChatClick, 
 
   const formatPrice = (value: number | string) => {
     const numValue = typeof value === "string" ? parseFloat(value) : value;
-    if (isNaN(numValue) || numValue === 0) return "0.000000000000 CORE";
+    if (isNaN(numValue) || numValue === 0) return "0.000000000000 ALGO";
 
     // Always use decimal format, never scientific notation
     if (numValue < 0.000000000001) {
-      return `${numValue.toFixed(18)} CORE`;
+      return `${numValue.toFixed(18)} ALGO`;
     } else if (numValue < 0.000000001) {
-      return `${numValue.toFixed(15)} CORE`;
+      return `${numValue.toFixed(15)} ALGO`;
     } else if (numValue < 0.000001) {
-      return `${numValue.toFixed(12)} CORE`;
+      return `${numValue.toFixed(12)} ALGO`;
     } else if (numValue < 0.001) {
-      return `${numValue.toFixed(9)} CORE`;
+      return `${numValue.toFixed(9)} ALGO`;
     } else if (numValue < 1) {
-      return `${numValue.toFixed(6)} CORE`;
+      return `${numValue.toFixed(6)} ALGO`;
     } else {
-      return `${numValue.toFixed(4)} CORE`;
+      return `${numValue.toFixed(4)} ALGO`;
     }
   };
 

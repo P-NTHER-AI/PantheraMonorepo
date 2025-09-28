@@ -38,7 +38,7 @@ export const useDEXTrading = (tokenAddress: string, userAddress?: string) => {
       // }
       // setState((prev) => ({ ...prev, loading: true, error: null }));
       // try {
-      //   console.log(`🔄 Getting professional DEX quote: ${amount} ${isBuy ? "CORE -> TOKEN" : "TOKEN -> CORE"}`);
+      //   console.log(`🔄 Getting professional DEX quote: ${amount} ${isBuy ? "ALGO -> TOKEN" : "TOKEN -> ALGO"}`);
       //   // Use professional DEX service
       //   const dexService = createDEXService(publicClient, tokenAddress);
       //   const serviceQuote = await dexService.getDEXQuote(amount, isBuy, slippage);

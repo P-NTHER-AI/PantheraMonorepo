@@ -221,7 +221,7 @@ export const ProfessionalTradingStatus: React.FC<ProfessionalTradingStatusProps>
             <DollarSign className="w-4 h-4 text-green-400" />
             <span className="text-xs text-gray-400">24h Volume</span>
           </div>
-          <div className="text-lg font-bold text-green-400">{formatNumber(realTimeStats.volume24h)} CORE</div>
+          <div className="text-lg font-bold text-green-400">{formatNumber(realTimeStats.volume24h)} ALGO</div>
         </div>
 
         <div className="bg-[#2a2a2a] rounded-lg p-3">
@@ -311,11 +311,11 @@ export const ProfessionalTradingStatus: React.FC<ProfessionalTradingStatusProps>
                   <div className="text-xs text-gray-400 mt-1">
                     {event.tradeType === "buy" ? (
                       <>
-                        Bought {formatNumber(event.amount)} {agent?.tokenSymbol || "tokens"} with CORE
+                        Bought {formatNumber(event.amount)} {agent?.tokenSymbol || "tokens"} with ALGO
                       </>
                     ) : (
                       <>
-                        Sold {formatNumber(event.amount)} {agent?.tokenSymbol || "tokens"} for CORE
+                        Sold {formatNumber(event.amount)} {agent?.tokenSymbol || "tokens"} for ALGO
                       </>
                     )}
                   </div>

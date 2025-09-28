@@ -86,7 +86,7 @@ export const useGraduationStatus = (tokenAddress: string, autoRefresh = false) =
   //       const agentResponse = await apiService.get(`/agents/${tokenAddress}`);
   //       const agent = agentResponse.data.data || agentResponse.data;
   //       realCurrentPrice = parseFloat(agent.currentPrice || "0");
-  //       console.log(`💰 Real current price from backend: ${realCurrentPrice} CORE`);
+  //       console.log(`💰 Real current price from backend: ${realCurrentPrice} ALGO`);
   //     } catch (priceError) {
   //       console.warn("⚠️ Could not fetch real price from backend:", priceError);
   //     }
@@ -98,7 +98,7 @@ export const useGraduationStatus = (tokenAddress: string, autoRefresh = false) =
   //     // Override price with real backend data if available
   //     if (realCurrentPrice > 0) {
   //       graduationData.currentPrice = realCurrentPrice;
-  //       console.log(`✅ Using real price from backend: ${realCurrentPrice} CORE`);
+  //       console.log(`✅ Using real price from backend: ${realCurrentPrice} ALGO`);
   //     }
 
   //     // Calculate progress metrics

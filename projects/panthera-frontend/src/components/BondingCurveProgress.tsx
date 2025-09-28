@@ -79,7 +79,7 @@ export const BondingCurveProgress: React.FC<BondingCurveProgressProps> = ({
       return {
         icon: <Zap className="w-5 h-5 text-orange-400" />,
         text: "Almost Graduated!",
-        subtext: `${formatNumber(remainingToGraduation)} CORE to go`,
+        subtext: `${formatNumber(remainingToGraduation)} ALGO to go`,
         color: "text-orange-400",
         bgColor: "bg-orange-500/10 border-orange-500/20",
       };
@@ -89,7 +89,7 @@ export const BondingCurveProgress: React.FC<BondingCurveProgressProps> = ({
       return {
         icon: <TrendingUp className="w-5 h-5 text-purple-400" />,
         text: "Approaching Graduation",
-        subtext: `${formatNumber(remainingToGraduation)} CORE remaining`,
+        subtext: `${formatNumber(remainingToGraduation)} ALGO remaining`,
         color: "text-purple-400",
         bgColor: "bg-purple-500/10 border-purple-500/20",
       };
@@ -99,7 +99,7 @@ export const BondingCurveProgress: React.FC<BondingCurveProgressProps> = ({
       return {
         icon: <TrendingUp className="w-5 h-5 text-blue-400" />,
         text: "Growing Strong",
-        subtext: `${formatNumber(remainingToGraduation)} CORE to graduation`,
+        subtext: `${formatNumber(remainingToGraduation)} ALGO to graduation`,
         color: "text-blue-400",
         bgColor: "bg-blue-500/10 border-blue-500/20",
       };
@@ -108,7 +108,7 @@ export const BondingCurveProgress: React.FC<BondingCurveProgressProps> = ({
     return {
       icon: <Target className="w-5 h-5 text-gray-400" />,
       text: "Early Stage",
-      subtext: `${formatNumber(remainingToGraduation)} CORE to graduation`,
+      subtext: `${formatNumber(remainingToGraduation)} ALGO to graduation`,
       color: "text-gray-400",
       bgColor: "bg-gray-500/10 border-gray-500/20",
     };
@@ -172,7 +172,7 @@ export const BondingCurveProgress: React.FC<BondingCurveProgressProps> = ({
         </div>
 
         <div className="text-xs text-[#a0a0a0]">
-          {formatNumber(currentReserve)} / {formatNumber(graduationThreshold)} CORE
+          {formatNumber(currentReserve)} / {formatNumber(graduationThreshold)} ALGO
         </div>
       </div>
     );
@@ -189,7 +189,7 @@ export const BondingCurveProgress: React.FC<BondingCurveProgressProps> = ({
         </div>
         <div className="text-right">
           <div className="text-sm font-medium text-white">
-            {formatNumber(currentReserve)} / {formatNumber(graduationThreshold)} CORE
+            {formatNumber(currentReserve)} / {formatNumber(graduationThreshold)} ALGO
           </div>
           <div className="text-xs text-gray-400">{formatProgress(progressPercentage)}% Complete</div>
         </div>

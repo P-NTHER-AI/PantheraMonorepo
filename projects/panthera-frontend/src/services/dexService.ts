@@ -32,7 +32,7 @@ export class DEXService {
    * Professional DEX quote with multiple fallback methods
    */
   async getDEXQuote(amount: string, isBuy: boolean, slippageTolerance: number = 2): Promise<DEXQuote> {
-    console.log(`🔄 Getting DEX quote: ${amount} ${isBuy ? "CORE -> TOKEN" : "TOKEN -> CORE"}`);
+    console.log(`🔄 Getting DEX quote: ${amount} ${isBuy ? "ALGO -> TOKEN" : "TOKEN -> ALGO"}`);
 
     // Only real DEX router is allowed (no simulation, no fallback)
     const realQuote = await this.getRealDEXQuote(amount, isBuy, slippageTolerance);

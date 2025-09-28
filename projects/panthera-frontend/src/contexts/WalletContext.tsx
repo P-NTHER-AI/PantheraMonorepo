@@ -339,7 +339,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
     // Balance
     balance: professionalBalance,
-    balanceSymbol: professionalBalance?.symbol || "CORE",
+    balanceSymbol: professionalBalance?.symbol || "ALGO",
 
     // Network state
     chain,

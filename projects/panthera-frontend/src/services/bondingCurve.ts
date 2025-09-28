@@ -136,7 +136,7 @@ class BondingCurveService {
    */
   private getMockBuyQuote(coreAmount: string): BondingCurveQuote {
     const coreAmountNum = parseFloat(coreAmount);
-    const basePrice = 0.001; // Base price in CORE
+    const basePrice = 0.001; // Base price in ALGO
     const tokenAmount = coreAmountNum / basePrice;
     const priceImpact = Math.min(coreAmountNum * 0.1, 5); // Max 5% impact
     const newPrice = basePrice * (1 + priceImpact / 100);
@@ -163,7 +163,7 @@ class BondingCurveService {
    */
   private getMockSellQuote(tokenAmount: string): BondingCurveQuote {
     const tokenAmountNum = parseFloat(tokenAmount);
-    const basePrice = 0.001; // Base price in CORE
+    const basePrice = 0.001; // Base price in ALGO
     const coreAmount = tokenAmountNum * basePrice;
     const priceImpact = Math.min(tokenAmountNum * 0.0001, 5); // Max 5% impact
     const newPrice = basePrice * (1 - priceImpact / 100);
@@ -669,7 +669,7 @@ class BondingCurveService {
 
       // Constants from contract
       const BONDING_CURVE_SUPPLY = ethers.parseEther("800000000"); // 800M tokens
-      const GRADUATION_THRESHOLD = ethers.parseEther("30000"); // 30,000 CORE
+      const GRADUATION_THRESHOLD = ethers.parseEther("30000"); // 30,000 ALGO
 
       const progressPercentage = (Number(reserveBalance) / Number(GRADUATION_THRESHOLD)) * 100;
       const remainingToGraduation = GRADUATION_THRESHOLD - reserveBalance;

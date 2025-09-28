@@ -517,9 +517,9 @@ export const useAgentFactory = () => {
         const actualCreationFeeString = creationFee ? formatEther(creationFee) : PLATFORM_CONFIG.PLATFORM_FEE_FIXED;
 
         console.log("📝 Deploying to Core testnet contract:", contractAddress);
-        console.log("💰 Creation fee:", actualCreationFeeString, "CORE");
+        console.log("💰 Creation fee:", actualCreationFeeString, "ALGO");
         const requiredAmount = parseEther(actualCreationFeeString);
-        console.log("💳 Required amount:", actualCreationFeeString, "CORE");
+        console.log("💳 Required amount:", actualCreationFeeString, "ALGO");
 
         // Prepare transaction data
         // Try long signature first with writeContract; fallback to short signature
@@ -795,7 +795,7 @@ export const useAgentFactory = () => {
           }
         }
 
-        // Get sell quote and calculate minimum CORE out (with 2% slippage tolerance)
+        // Get sell quote and calculate minimum ALGO out (with 2% slippage tolerance)
         const sellQuote = (await publicClient?.readContract({
           address: tokenAddress as `0x${string}`,
           abi: AGENT_TOKEN_ABI,
@@ -806,8 +806,8 @@ export const useAgentFactory = () => {
         const coreAmount = sellQuote[0]; // First return value is coreAmount
         const minCoreOut = (coreAmount * 98n) / 100n; // 2% slippage tolerance
 
-        console.log("💰 Expected CORE:", formatEther(coreAmount));
-        console.log("💰 Minimum CORE (with slippage):", formatEther(minCoreOut));
+        console.log("💰 Expected ALGO:", formatEther(coreAmount));
+        console.log("💰 Minimum ALGO (with slippage):", formatEther(minCoreOut));
 
         // Encode sellTokens function call with token amount only
         const data = encodeFunctionData({

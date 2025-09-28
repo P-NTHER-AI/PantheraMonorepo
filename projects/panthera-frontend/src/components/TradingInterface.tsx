@@ -117,7 +117,7 @@ const TradingInterface: React.FC = () => {
 
     // Minimum amount validation (aligned with backend)
     if (numAmount < 0.0001) {
-      setError("Minimum trade amount is 0.0001 CORE. Please increase your amount.");
+      setError("Minimum trade amount is 0.0001 ALGO. Please increase your amount.");
       return;
     }
 
@@ -306,7 +306,7 @@ const TradingInterface: React.FC = () => {
             } else if (errorMessage.includes("BAD_REQUEST") || errorMessage.includes("Validation failed")) {
               // Check for specific validation errors
               if (errorMessage.includes("Amount must be at least")) {
-                setError("Minimum trade amount is 0.0001 CORE. Please increase your amount.");
+                setError("Minimum trade amount is 0.0001 ALGO. Please increase your amount.");
               } else if (errorMessage.includes("Invalid agent address")) {
                 setError("Invalid token address. Please check the address format.");
               } else {
@@ -372,7 +372,7 @@ const TradingInterface: React.FC = () => {
         }
 
         if (numAmount < 0.0001) {
-          setError("Minimum trade amount is 0.0001 CORE. Please increase your amount.");
+          setError("Minimum trade amount is 0.0001 ALGO. Please increase your amount.");
           return;
         }
 
@@ -548,15 +548,15 @@ const TradingInterface: React.FC = () => {
           // DEX için miktarları dexQuote'tan alalım
           const coreAmountStr =
             activeTab === "buy"
-              ? String(amount) // BUY: harcanan CORE
-              : String(dexQuote.outputAmount); // SELL: alınan CORE
+              ? String(amount) // BUY: harcanan ALGO
+              : String(dexQuote.outputAmount); // SELL: alınan ALGO
 
           const tokenAmountStr =
             activeTab === "buy"
               ? String(dexQuote.outputAmount) // BUY: alınan token
               : String(amount); // SELL: satılan token
 
-          // fiyat = CORE / token  (küçük sayı olabilir; düz ondalık string’e çevir)
+          // fiyat = ALGO / token  (küçük sayı olabilir; düz ondalık string’e çevir)
           let priceNum = safeNumber(coreAmountStr) / safeNumber(tokenAmountStr);
           if (!Number.isFinite(priceNum)) {
             priceNum = safeNumber(quote?.currentPrice) || safeNumber(quote?.newPrice) || safeNumber(graduationStatus.currentPrice);
@@ -585,7 +585,7 @@ const TradingInterface: React.FC = () => {
 
         setSuccessMessage(
           `${activeTab === "buy" ? "Bought" : "Sold"} ${formatNumber(amount)} ` +
-            `${activeTab === "buy" ? agent?.tokenSymbol || "tokens" : "CORE"} successfully via Professional DEX!`
+            `${activeTab === "buy" ? agent?.tokenSymbol || "tokens" : "ALGO"} successfully via Professional DEX!`
         );
         setTimeout(() => setSuccessMessage(null), 5000);
 
@@ -624,7 +624,7 @@ const TradingInterface: React.FC = () => {
             console.log("✅ Professional DEX transaction successful (post-precheck):", { txHash });
             setSuccessMessage(
               `${activeTab === "buy" ? "Bought" : "Sold"} ${formatNumber(amount)} ${
-                activeTab === "buy" ? agent?.tokenSymbol || "tokens" : "CORE"
+                activeTab === "buy" ? agent?.tokenSymbol || "tokens" : "ALGO"
               } successfully via Professional DEX!`
             );
             setTimeout(() => setSuccessMessage(null), 5000);
@@ -638,13 +638,13 @@ const TradingInterface: React.FC = () => {
         }
 
         if (activeTab === "buy") {
-          // Buy tokens with CORE using bonding curve
+          // Buy tokens with ALGO using bonding curve
           await buyTokens(id, amount, (txHash) => {
             console.log("✅ Buy transaction successful:", txHash);
 
             (async () => {
               try {
-                // BUY: CORE = girilen amount, TOKEN = quote.tokensReceived
+                // BUY: ALGO = girilen amount, TOKEN = quote.tokensReceived
                 const coreAmountStr = String(amount);
                 const tokenAmountStr = String(quote?.tokensReceived ?? "0");
 
@@ -661,7 +661,7 @@ const TradingInterface: React.FC = () => {
                   transactionHash: txHash,
                   trader: address!,
                   type: "buy", // BUY
-                  coreAmount: coreAmountStr, // girilen CORE
+                  coreAmount: coreAmountStr, // girilen ALGO
                   tokenAmount: tokenAmountStr, // alınan token
                   price: priceStr,
                   timestamp: new Date().toISOString(),
@@ -693,13 +693,13 @@ const TradingInterface: React.FC = () => {
             );
           });
         } else {
-          // Sell tokens for CORE using bonding curve
+          // Sell tokens for ALGO using bonding curve
           await sellTokens(id, amount, (txHash) => {
             console.log("✅ Sell transaction successful:", txHash);
 
             (async () => {
               try {
-                // SELL: TOKEN = girilen amount, CORE = quote.coreReceived
+                // SELL: TOKEN = girilen amount, ALGO = quote.coreReceived
                 const tokenAmountStr = String(amount);
                 const coreAmountStr = String(quote?.coreReceived ?? "0");
 
@@ -716,7 +716,7 @@ const TradingInterface: React.FC = () => {
                   transactionHash: txHash,
                   trader: address!,
                   type: "sell", // SELL
-                  coreAmount: coreAmountStr, // alınan CORE
+                  coreAmount: coreAmountStr, // alınan ALGO
                   tokenAmount: tokenAmountStr, // satılan token
                   price: priceStr,
                   timestamp: new Date().toISOString(),
@@ -899,14 +899,14 @@ const TradingInterface: React.FC = () => {
                     <span className="text-sm text-[#a0a0a0]">Current Price</span>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-medium text-white">{formatPrice(graduationStatus.currentPrice)} CORE</div>
+                    <div className="text-lg font-medium text-white">{formatPrice(graduationStatus.currentPrice)} ALGO</div>
                     <div className="text-xs text-[#a0a0a0]">per {agent.tokenSymbol}</div>
                   </div>
                 </div>
                 {graduationStatus.marketCap > 0 && (
                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#2a2a2a]">
                     <span className="text-sm text-[#a0a0a0]">Market Cap</span>
-                    <span className="text-sm font-medium text-white">{formatNumber(graduationStatus.marketCap.toString())} CORE</span>
+                    <span className="text-sm font-medium text-white">{formatNumber(graduationStatus.marketCap.toString())} ALGO</span>
                   </div>
                 )}
               </div>
@@ -935,7 +935,7 @@ const TradingInterface: React.FC = () => {
             {/* Amount Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-[#a0a0a0] mb-2">
-                {activeTab === "buy" ? "CORE Amount" : `${agent.tokenSymbol} Amount`}
+                {activeTab === "buy" ? "ALGO Amount" : `${agent.tokenSymbol} Amount`}
               </label>
               <div className="relative">
                 <input
@@ -959,7 +959,7 @@ const TradingInterface: React.FC = () => {
 
                     // Check minimum amount
                     if (numValue > 0 && numValue < 0.0001) {
-                      setError("Minimum trade amount is 0.0001 CORE");
+                      setError("Minimum trade amount is 0.0001 ALGO");
                       // Maximum amount validation removed
                     } else if (activeTab === "sell" && tokenBalance && numValue > parseFloat(tokenBalance)) {
                       setError("Insufficient token balance");
@@ -978,7 +978,7 @@ const TradingInterface: React.FC = () => {
                   }`}
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <span className="text-[#a0a0a0] text-sm">{activeTab === "buy" ? "CORE" : agent.tokenSymbol}</span>
+                  <span className="text-[#a0a0a0] text-sm">{activeTab === "buy" ? "ALGO" : agent.tokenSymbol}</span>
                 </div>
               </div>
 
@@ -1003,7 +1003,7 @@ const TradingInterface: React.FC = () => {
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-sm text-[#a0a0a0]">
                     Balance: {activeTab === "sell" ? formatNumber(tokenBalance) : balance ? formatNumber(balance.formatted) : "0.00"}{" "}
-                    {activeTab === "buy" ? "CORE" : agent.tokenSymbol}
+                    {activeTab === "buy" ? "ALGO" : agent.tokenSymbol}
                   </span>
                   {activeTab === "sell" && parseFloat(tokenBalance) > 0 && (
                     <button
@@ -1084,15 +1084,15 @@ const TradingInterface: React.FC = () => {
                   <span className="text-[#a0a0a0]">Current Price</span>
                   <span className="text-white font-medium">
                     {graduationStatus.currentPrice > 0
-                      ? `${formatPrice(graduationStatus.currentPrice)} CORE`
-                      : `${formatPrice(parseFloat(agent?.currentPrice?.toString() || "0"))} CORE`}
+                      ? `${formatPrice(graduationStatus.currentPrice)} ALGO`
+                      : `${formatPrice(parseFloat(agent?.currentPrice?.toString() || "0"))} ALGO`}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#a0a0a0]">Market Cap</span>
                   <span className="text-white font-medium">
                     {graduationStatus.marketCap > 0
-                      ? `${formatNumber(graduationStatus.marketCap.toString())} CORE`
+                      ? `${formatNumber(graduationStatus.marketCap.toString())} ALGO`
                       : formatNumber(agent?.bondingCurveInfo?.marketCap || "0", { prefix: "$", compact: true })}
                   </span>
                 </div>
@@ -1104,7 +1104,7 @@ const TradingInterface: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#a0a0a0]">Reserve Balance</span>
-                  <span className="text-white font-medium">{formatNumber(graduationStatus.currentReserve.toString())} CORE</span>
+                  <span className="text-white font-medium">{formatNumber(graduationStatus.currentReserve.toString())} ALGO</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#a0a0a0]">Graduation Progress</span>
@@ -1193,7 +1193,7 @@ const TradingInterface: React.FC = () => {
                     </div>
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-                      <span>Need {formatNumber(graduationStatus.remainingToGraduation.toString())} CORE to graduate</span>
+                      <span>Need {formatNumber(graduationStatus.remainingToGraduation.toString())} ALGO to graduate</span>
                     </div>
                   </>
                 )}

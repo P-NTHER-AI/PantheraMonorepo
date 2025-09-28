@@ -254,11 +254,11 @@ const TransactionHistory: React.FC<TransactionHistoryProps> = ({ tokenAddress })
                   </div>
                   <div className="text-sm text-[#a0a0a0]">
                     {tx.type === "token_creation" ? (
-                      <span>Fee: {tx.total} CORE</span>
+                      <span>Fee: {tx.total} ALGO</span>
                     ) : (
                       <span>
                         {tx.type === "token_purchase" ? "-" : "+"}
-                        {tx.total} CORE
+                        {tx.total} ALGO
                       </span>
                     )}
                   </div>
