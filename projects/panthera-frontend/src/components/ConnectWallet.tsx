@@ -1,11 +1,6 @@
 import { Wallet, WalletId, useNetwork, useWallet } from "@txnlab/use-wallet-react";
-import { Activity, AlertCircle, Check, ChevronDown, Copy, Wallet as LucideWallet, RefreshCw, Settings, Shield, Zap } from "lucide-react";
+import { Activity, Check, ChevronDown, Copy, Wallet as LucideWallet, Settings, Shield, Zap } from "lucide-react";
 import React, { useEffect, useState } from "react";
-
-const SUPPORTED_NETWORKS = [
-  { id: 1116, name: "Core Mainnet", isTestnet: false },
-  { id: 1114, name: "Core Testnet", isTestnet: true },
-];
 
 interface ConnectWalletProps {
   className?: string;
@@ -24,13 +19,14 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
   const [showSettings, setShowSettings] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "transactions" | "network">("overview");
+  const [balance, setBalance] = useState(0);
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
-  const formatBalance = (bal: string) => {
-    const num = parseFloat(bal);
+  const formatBalance = (bal: number) => {
+    const num = bal / 1e6;
     if (num === 0) return "0";
     if (num < 0.001) return "<0.001";
     if (num < 1) return num.toFixed(4);
@@ -71,7 +67,14 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  console.log(algodClient.accountInformation(activeAddress!));
+  // Get ALGO balance
+  useEffect(() => {
+    (async () => {
+      if (!activeAddress) return;
+      const accountInfo = await algodClient.accountInformation(activeAddress).do();
+      setBalance(Number(accountInfo.amount));
+    })();
+  }, [activeAddress, algodClient]);
 
   if (!activeAddress) {
     return (
@@ -161,7 +164,7 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
 
             <div className="mt-2">
               <span className="text-xs text-[#a0a0a0]">Balance</span>
-              <p className="text-lg font-semibold text-white">{formatBalance(balance?.formatted || "0")} ALGO</p>
+              <p className="text-lg font-semibold text-white">{formatBalance(balance)} ALGO</p>
             </div>
           </div>
 
@@ -192,15 +195,15 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-3">
                     <div className="text-xs text-[#a0a0a0]">Pending</div>
-                    <div className="text-lg font-semibold text-orange-400">{pendingTransactions.length}</div>
+                    <div className="text-lg font-semibold text-orange-400">0</div>
                   </div>
                   <div className="bg-[#0a0a0a] border border-[#2a2a2a] rounded-lg p-3">
                     <div className="text-xs text-[#a0a0a0]">Success Rate</div>
-                    <div className="text-lg font-semibold text-green-400">{transactionStats.successRate.toFixed(1)}%</div>
+                    <div className="text-lg font-semibold text-green-400">100.0%</div>
                   </div>
                 </div>
 
-                {!networkStatus.isOnCoreNetwork && (
+                {/* {!networkStatus.isOnCoreNetwork && (
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3">
                     <div className="flex items-center space-x-2">
                       <AlertCircle className="w-4 h-4 text-yellow-400" />
@@ -215,25 +218,25 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
                       {isSwitchLoading ? "Switching..." : "Switch to Core Testnet"}
                     </button>
                   </div>
-                )}
+                )} */}
               </div>
             )}
 
             {activeTab === "transactions" && showTransactions && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-900">Recent Transactions</span>
-                  {isProcessing && <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />}
+                  <span className="text-sm font-medium">Recent Transactions</span>
+                  {/* {isProcessing && <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />} */}
                 </div>
 
-                {recentTransactions.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">No transactions yet</p>
-                ) : (
+                {/* {recentTransactions.length === 0 ? ( */}
+                <p className="text-sm text-gray-500 text-center py-4">No transactions yet</p>
+                {/* ) : (
                   <div className="space-y-2">
                     {recentTransactions.map((tx) => (
                       <div key={tx.hash} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                         <div>
-                          <div className="text-xs font-medium text-gray-900 capitalize">{tx.type}</div>
+                          <div className="text-xs font-medium capitalize">{tx.type}</div>
                           <div className="text-xs text-gray-500">{formatAddress(tx.hash)}</div>
                         </div>
                         <div
@@ -250,22 +253,22 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
                       </div>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
             )}
 
             {activeTab === "network" && showNetworkInfo && (
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm font-medium text-gray-900">Current Network</span>
-                  <div className="mt-1 p-2 bg-gray-50 rounded">
-                    <div className="text-sm font-medium">{networkStatus.currentNetwork?.name}</div>
-                    <div className="text-xs text-gray-500">Chain ID: {networkStatus.currentNetwork?.id}</div>
+                  <span className="text-sm font-medium">Current Network</span>
+                  <div className="mt-1 p-2 bg-white/5 rounded">
+                    <div className="text-sm font-medium">{activeNetwork}</div>
+                    {/* <div className="text-xs">Chain ID: {activeNetworkConfig.caipChainId}</div> */}
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <span className="text-sm font-medium text-gray-900">Switch Network</span>
+                {/* <div className="space-y-2">
+                  <span className="text-sm font-medium">Switch Network</span>
                   {supportedNetworks.map((network) => (
                     <button
                       key={network.id}
@@ -280,7 +283,7 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
                       {networkStatus.currentNetwork?.id === network.id && <div className="w-2 h-2 bg-green-500 rounded-full" />}
                     </button>
                   ))}
-                </div>
+                </div> */}
               </div>
             )}
           </div>
@@ -288,7 +291,20 @@ const ConnectWallet: React.FC<ConnectWalletProps> = ({ className = "", showTrans
           {/* Footer */}
           <div className="p-4 border-t border-[#2a2a2a]">
             <button
-              onClick={disconnectWallet}
+              onClick={async () => {
+                if (wallets) {
+                  const activeWallet = wallets.find((w) => w.isActive);
+                  if (activeWallet) {
+                    await activeWallet.disconnect();
+                  } else {
+                    // Required for logout/cleanup of inactive providers
+                    // For instance, when you login to localnet wallet and switch network
+                    // to testnet/mainnet or vice verse.
+                    localStorage.removeItem("@txnlab/use-wallet:v3");
+                    window.location.reload();
+                  }
+                }
+              }}
               className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 hover:border-red-500/40 text-sm py-2 rounded transition-colors"
             >
               Disconnect Wallet

@@ -4,7 +4,7 @@ import { useWatchlist } from "../contexts/WatchlistContext";
 import { useTrendingAgents } from "../hooks/useAgents";
 import { Agent } from "../types";
 import AgentGrid from "./AgentGrid";
-import EnhancedWalletConnect from "./EnhancedWalletConnect";
+import ConnectWallet from "./ConnectWallet";
 import FilterBar from "./FilterBar";
 import NotificationBar from "./NotificationBar";
 import SearchBar from "./SearchBar";
@@ -130,7 +130,7 @@ export const HomePage = ({ agents, agentsLoading, agentsError, refetchAgents, se
           </div>
 
           <div className="flex items-center gap-3">
-            <EnhancedWalletConnect className="ml-auto" showTransactions={true} showNetworkInfo={true} />
+            <ConnectWallet className="ml-auto" showTransactions={true} showNetworkInfo={true} />
           </div>
         </div>
 

@@ -41,29 +41,28 @@ interface AppNotification {
   };
 }
 
-let supportedWallets: SupportedWallet[];
+let supportedWallets: SupportedWallet[] = [];
 if (import.meta.env.VITE_ALGOD_NETWORK === "localnet") {
   const kmdConfig = getKmdConfigFromViteEnvironment();
-  supportedWallets = [
-    {
-      id: WalletId.KMD,
-      options: {
-        baseServer: kmdConfig.server,
-        token: String(kmdConfig.token),
-        port: String(kmdConfig.port),
-      },
+  supportedWallets.push({
+    id: WalletId.KMD,
+    options: {
+      baseServer: kmdConfig.server,
+      token: String(kmdConfig.token),
+      port: String(kmdConfig.port),
     },
-  ];
-} else {
-  supportedWallets = [
-    { id: WalletId.DEFLY },
-    { id: WalletId.PERA },
-    { id: WalletId.EXODUS },
-    { id: WalletId.LUTE },
-    // If you are interested in WalletConnect v2 provider
-    // refer to https://github.com/TxnLab/use-wallet for detailed integration instructions
-  ];
+  });
 }
+
+supportedWallets = [
+  ...supportedWallets,
+  { id: WalletId.DEFLY },
+  { id: WalletId.PERA },
+  { id: WalletId.EXODUS },
+  { id: WalletId.LUTE },
+  // If you are interested in WalletConnect v2 provider
+  // refer to https://github.com/TxnLab/use-wallet for detailed integration instructions
+];
 
 export default function App() {
   const navigate = useNavigate();

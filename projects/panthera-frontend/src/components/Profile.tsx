@@ -1,3 +1,4 @@
+import { useWallet } from "@txnlab/use-wallet-react";
 import {
   Activity,
   ArrowLeft,
@@ -195,15 +196,15 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
   };
 
   // Dynamic profile state (setter yok; cüzdandan türetiyoruz)
-  const { address: connectedWallet } = useAccount();
+  const { activeAddress } = useWallet();
 
   // URL ?wallet= veya ?handle= varsa kullan; yoksa bağlı cüzdanı al
   const walletAddress = React.useMemo(() => {
-    if (typeof window === "undefined") return connectedWallet ?? "";
+    if (typeof window === "undefined") return activeAddress ?? "";
     const qs = new URLSearchParams(window.location.search);
-    const val = qs.get("wallet") ?? qs.get("handle") ?? connectedWallet ?? "";
+    const val = qs.get("wallet") ?? qs.get("handle") ?? activeAddress ?? "";
     return (val || "").toLowerCase();
-  }, [connectedWallet]);
+  }, [activeAddress]);
 
   const [profile, setProfile] = React.useState<UserProfile | null>(null);
   const profileLoading = false as const;
