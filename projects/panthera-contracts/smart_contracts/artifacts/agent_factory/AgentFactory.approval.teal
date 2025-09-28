@@ -3,60 +3,144 @@
 
 // smart_contracts.agent_factory.contract.AgentFactory.__algopy_entrypoint_with_init() -> uint64:
 main:
-    intcblock 0 1 1000000 2
-    bytecblock 0x151f7c75 "current_supply" "reserve_balance" "VIRTUAL_CORE" "VIRTUAL_TOKEN" "owner" "paused" "total_agents" "reward_pool" "creation_fee" "DECIMALS" "TOTAL_SUPPLY" "treasury" "asa_id" "graduated"
+    intcblock 0 1 1000 1000000
+    bytecblock "reserve_balance" 0x151f7c75 "current_supply" "owner" "graduated" "paused" "total_agents" "graduation_initiated" "VIRTUAL_CORE" "VIRTUAL_TOKEN" "GRADUATION_THRESHOLD" "reward_pool" "asa_id" "treasury" "creation_fee" "graduation_timestamp" "graduation_funds_withdrawn" "TOTAL_SUPPLY" "pool_token_id" "LIQUIDITY_PERCENTAGE" "CREATOR_PERCENTAGE" "DECIMALS"
     txn ApplicationID
     bnz main_after_if_else@2
-    // smart_contracts/agent_factory/contract.py:19-20
-    // # Constants
-    // self.DECIMALS = UInt64(6)
-    bytec 10 // "DECIMALS"
+    // smart_contracts/agent_factory/contract.py:18
+    // self.DECIMALS = algopy.UInt64(6)
+    bytec 21 // "DECIMALS"
     pushint 6 // 6
     app_global_put
-    // smart_contracts/agent_factory/contract.py:21
-    // self.TOTAL_SUPPLY = UInt64(1_000_000_000 * (10**6))  # Pre-calculated
-    bytec 11 // "TOTAL_SUPPLY"
+    // smart_contracts/agent_factory/contract.py:19
+    // self.TOTAL_SUPPLY = algopy.UInt64(1_000_000_000 * (10**6))
+    bytec 17 // "TOTAL_SUPPLY"
     pushint 1000000000000000 // 1000000000000000
     app_global_put
+    // smart_contracts/agent_factory/contract.py:20
+    // self.VIRTUAL_CORE = algopy.UInt64(30_000)
+    bytec 8 // "VIRTUAL_CORE"
+    pushint 30000 // 30000
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:21
+    // self.VIRTUAL_TOKEN = algopy.UInt64(1_073_000)
+    bytec 9 // "VIRTUAL_TOKEN"
+    pushint 1073000 // 1073000
+    app_global_put
     // smart_contracts/agent_factory/contract.py:22
-    // self.VIRTUAL_CORE = UInt64(30_000_000)
-    bytec_3 // "VIRTUAL_CORE"
-    pushint 30000000 // 30000000
-    app_global_put
-    // smart_contracts/agent_factory/contract.py:23
-    // self.VIRTUAL_TOKEN = UInt64(1_073_000_000_000)
-    bytec 4 // "VIRTUAL_TOKEN"
-    pushint 1073000000000 // 1073000000000
-    app_global_put
-    // smart_contracts/agent_factory/contract.py:24
-    // self.GRADUATION_THRESHOLD = UInt64(30_000_000_000)
-    pushbytes "GRADUATION_THRESHOLD"
-    pushint 30000000000 // 30000000000
-    app_global_put
-    // smart_contracts/agent_factory/contract.py:25
-    // self.PLATFORM_FEE_BP = UInt64(100)  # 1%
+    // self.PLATFORM_FEE_BP = algopy.UInt64(100)
     pushbytes "PLATFORM_FEE_BP"
     pushint 100 // 100
     app_global_put
+    // smart_contracts/agent_factory/contract.py:24
+    // self.GRADUATION_THRESHOLD = algopy.UInt64(5_000_000)
+    bytec 10 // "GRADUATION_THRESHOLD"
+    pushint 5000000 // 5000000
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:31
+    // self.LIQUIDITY_PERCENTAGE = algopy.UInt64(80)
+    bytec 19 // "LIQUIDITY_PERCENTAGE"
+    pushint 80 // 80
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:32
+    // self.CREATOR_PERCENTAGE = algopy.UInt64(15)
+    bytec 20 // "CREATOR_PERCENTAGE"
+    pushint 15 // 15
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:33
+    // self.PLATFORM_PERCENTAGE = algopy.UInt64(5)
+    pushbytes "PLATFORM_PERCENTAGE"
+    pushint 5 // 5
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:35
+    // self.owner.value = algopy.Txn.sender
+    bytec_3 // "owner"
+    txn Sender
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:36
+    // self.treasury.value = algopy.Txn.sender
+    bytec 13 // "treasury"
+    txn Sender
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:37
+    // self.creation_fee.value = algopy.UInt64(0)
+    bytec 14 // "creation_fee"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:38
+    // self.paused.value = algopy.UInt64(0)
+    bytec 5 // "paused"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:39
+    // self.total_agents.value = algopy.UInt64(0)
+    bytec 6 // "total_agents"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:40
+    // self.current_supply.value = algopy.UInt64(0)
+    bytec_2 // "current_supply"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:41
+    // self.reserve_balance.value = algopy.UInt64(0)
+    bytec_0 // "reserve_balance"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:42
+    // self.graduated.value = algopy.UInt64(0)
+    bytec 4 // "graduated"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:43
+    // self.reward_pool.value = algopy.UInt64(0)
+    bytec 11 // "reward_pool"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:44
+    // self.asa_id.value = algopy.UInt64(0)
+    bytec 12 // "asa_id"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:45
+    // self.graduation_initiated.value = algopy.UInt64(0)
+    bytec 7 // "graduation_initiated"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:46
+    // self.graduation_timestamp.value = algopy.UInt64(0)
+    bytec 15 // "graduation_timestamp"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:47
+    // self.pool_token_id.value = algopy.UInt64(0)
+    bytec 18 // "pool_token_id"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:48
+    // self.graduation_funds_withdrawn.value = algopy.UInt64(0)
+    bytec 16 // "graduation_funds_withdrawn"
+    intc_0 // 0
+    app_global_put
 
 main_after_if_else@2:
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     txn NumAppArgs
-    bz main_bare_routing@22
-    pushbytess 0x116ee485 0xfc4b88b7 0x0178f94b 0x1b529de8 0xa01a47ca 0xec2a2dd2 0x71e9ac4c 0xab9c81f1 0x211d50ce 0xdf5297d0 0x5456b455 0xa6d970c5 0x5c38efef 0x8bcc2ed3 0xf1bab4bc 0x02bece11 0x1a873ef1 // method "set_treasury(account)void", method "set_fee(uint64)void", method "pause()void", method "unpause()void", method "create_agent(string,string)uint64", method "buy_agent_tokens(uint64)uint64", method "sell(uint64)uint64", method "get_total_agents()uint64", method "get_current_price()uint64", method "get_buy_quote(uint64)(uint64,uint64,uint64)", method "get_sell_quote(uint64)(uint64,uint64,uint64)", method "get_bonding_curve_info()(uint64,uint64,uint64,uint64)", method "get_metadata()(uint64,uint64,uint64)", method "distribute_rewards()void", method "claim_rewards()uint64", method "hello(string)string", method "debug_test()string"
+    bz main_bare_routing@31
+    pushbytess 0xd6e8714d 0xa01a47ca 0xec2a2dd2 0x71e9ac4c 0x8cc31e68 0x3ba0dfa1 0x0aa52a8e 0x040efc92 0x74f76f08 0xf6995911 0xab9c81f1 0x211d50ce 0xdf5297d0 0x5456b455 0xa6d970c5 0xed6b8644 0x5c38efef 0x116ee485 0xfc4b88b7 0x0178f94b 0x1b529de8 0xf6dbfb8a 0x8bcc2ed3 0xf1bab4bc 0x02bece11 0x1a873ef1 // method "create()string", method "create_agent(string,string)uint64", method "buy_agent_tokens(uint64)uint64", method "sell(uint64)uint64", method "check_graduation_eligibility()(uint64,uint64,uint64)", method "prepare_graduation()(uint64,uint64,uint64)", method "withdraw_graduation_funds(account)uint64", method "mint_graduation_tokens(account,uint64)uint64", method "confirm_tinyman_pool(account,uint64)string", method "get_graduation_preview()(uint64,uint64,uint64,uint64)", method "get_total_agents()uint64", method "get_current_price()uint64", method "get_buy_quote(uint64)(uint64,uint64,uint64)", method "get_sell_quote(uint64)(uint64,uint64,uint64)", method "get_bonding_curve_info()(uint64,uint64,uint64,uint64)", method "get_graduation_status()(uint64,uint64,uint64,uint64)", method "get_metadata()(uint64,uint64,uint64)", method "set_treasury(account)void", method "set_fee(uint64)void", method "pause()void", method "unpause()void", method "emergency_graduation_reset()string", method "distribute_rewards()void", method "claim_rewards()uint64", method "hello(string)string", method "debug_test()string"
     txna ApplicationArgs 0
-    match main_set_treasury_route@5 main_set_fee_route@6 main_pause_route@7 main_unpause_route@8 main_create_agent_route@9 main_buy_agent_tokens_route@10 main_sell_route@11 main_get_total_agents_route@12 main_get_current_price_route@13 main_get_buy_quote_route@14 main_get_sell_quote_route@15 main_get_bonding_curve_info_route@16 main_get_metadata_route@17 main_distribute_rewards_route@18 main_claim_rewards_route@19 main_hello_route@20 main_debug_test_route@21
+    match main_create_route@5 main_create_agent_route@6 main_buy_agent_tokens_route@7 main_sell_route@8 main_check_graduation_eligibility_route@9 main_prepare_graduation_route@10 main_withdraw_graduation_funds_route@11 main_mint_graduation_tokens_route@12 main_confirm_tinyman_pool_route@13 main_get_graduation_preview_route@14 main_get_total_agents_route@15 main_get_current_price_route@16 main_get_buy_quote_route@17 main_get_sell_quote_route@18 main_get_bonding_curve_info_route@19 main_get_graduation_status_route@20 main_get_metadata_route@21 main_set_treasury_route@22 main_set_fee_route@23 main_pause_route@24 main_unpause_route@25 main_emergency_graduation_reset_route@26 main_distribute_rewards_route@27 main_claim_rewards_route@28 main_hello_route@29 main_debug_test_route@30
 
-main_after_if_else@24:
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
+main_after_if_else@33:
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     intc_0 // 0
     return
 
-main_debug_test_route@21:
-    // smart_contracts/agent_factory/contract.py:347
-    // @abimethod
+main_debug_test_route@30:
+    // smart_contracts/agent_factory/contract.py:432
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
@@ -67,20 +151,20 @@ main_debug_test_route@21:
     intc_1 // 1
     return
 
-main_hello_route@20:
-    // smart_contracts/agent_factory/contract.py:342
-    // @abimethod
+main_hello_route@29:
+    // smart_contracts/agent_factory/contract.py:428
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     txna ApplicationArgs 1
     extract 2 0
-    // smart_contracts/agent_factory/contract.py:342
-    // @abimethod
+    // smart_contracts/agent_factory/contract.py:428
+    // @algopy.arc4.abimethod
     callsub hello
     dup
     len
@@ -88,16 +172,16 @@ main_hello_route@20:
     extract 6 2
     swap
     concat
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_claim_rewards_route@19:
-    // smart_contracts/agent_factory/contract.py:323
-    // @abimethod
+main_claim_rewards_route@28:
+    // smart_contracts/agent_factory/contract.py:414
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
@@ -105,16 +189,16 @@ main_claim_rewards_route@19:
     assert // can only call when not creating
     callsub claim_rewards
     itob
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_distribute_rewards_route@18:
-    // smart_contracts/agent_factory/contract.py:313
-    // @abimethod
+main_distribute_rewards_route@27:
+    // smart_contracts/agent_factory/contract.py:406
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
@@ -124,9 +208,92 @@ main_distribute_rewards_route@18:
     intc_1 // 1
     return
 
-main_get_metadata_route@17:
-    // smart_contracts/agent_factory/contract.py:299
-    // @abimethod
+main_emergency_graduation_reset_route@26:
+    // smart_contracts/agent_factory/contract.py:394
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub emergency_graduation_reset
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_unpause_route@25:
+    // smart_contracts/agent_factory/contract.py:389
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub unpause
+    intc_1 // 1
+    return
+
+main_pause_route@24:
+    // smart_contracts/agent_factory/contract.py:384
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub pause
+    intc_1 // 1
+    return
+
+main_set_fee_route@23:
+    // smart_contracts/agent_factory/contract.py:379
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    // smart_contracts/agent_factory/contract.py:379
+    // @algopy.arc4.abimethod
+    callsub set_fee
+    intc_1 // 1
+    return
+
+main_set_treasury_route@22:
+    // smart_contracts/agent_factory/contract.py:374
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    txnas Accounts
+    // smart_contracts/agent_factory/contract.py:374
+    // @algopy.arc4.abimethod
+    callsub set_treasury
+    intc_1 // 1
+    return
+
+main_get_metadata_route@21:
+    // smart_contracts/agent_factory/contract.py:366
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
@@ -143,16 +310,47 @@ main_get_metadata_route@17:
     concat
     swap
     concat
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_get_bonding_curve_info_route@16:
-    // smart_contracts/agent_factory/contract.py:286
-    // @abimethod
+main_get_graduation_status_route@20:
+    // smart_contracts/agent_factory/contract.py:355
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub get_graduation_status
+    uncover 3
+    itob
+    uncover 3
+    itob
+    uncover 3
+    itob
+    uncover 3
+    itob
+    uncover 3
+    uncover 3
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_get_bonding_curve_info_route@19:
+    // smart_contracts/agent_factory/contract.py:346
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
@@ -174,27 +372,27 @@ main_get_bonding_curve_info_route@16:
     concat
     swap
     concat
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_get_sell_quote_route@15:
-    // smart_contracts/agent_factory/contract.py:263
-    // @abimethod
+main_get_sell_quote_route@18:
+    // smart_contracts/agent_factory/contract.py:328
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     txna ApplicationArgs 1
     btoi
-    // smart_contracts/agent_factory/contract.py:263
-    // @abimethod
+    // smart_contracts/agent_factory/contract.py:328
+    // @algopy.arc4.abimethod
     callsub get_sell_quote
     uncover 2
     itob
@@ -206,27 +404,27 @@ main_get_sell_quote_route@15:
     concat
     swap
     concat
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_get_buy_quote_route@14:
-    // smart_contracts/agent_factory/contract.py:240
-    // @abimethod
+main_get_buy_quote_route@17:
+    // smart_contracts/agent_factory/contract.py:310
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     txna ApplicationArgs 1
     btoi
-    // smart_contracts/agent_factory/contract.py:240
-    // @abimethod
+    // smart_contracts/agent_factory/contract.py:310
+    // @algopy.arc4.abimethod
     callsub get_buy_quote
     uncover 2
     itob
@@ -238,16 +436,16 @@ main_get_buy_quote_route@14:
     concat
     swap
     concat
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_get_current_price_route@13:
-    // smart_contracts/agent_factory/contract.py:235
-    // @abimethod
+main_get_current_price_route@16:
+    // smart_contracts/agent_factory/contract.py:306
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
@@ -255,16 +453,16 @@ main_get_current_price_route@13:
     assert // can only call when not creating
     callsub get_current_price
     itob
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_get_total_agents_route@12:
-    // smart_contracts/agent_factory/contract.py:230
-    // @abimethod
+main_get_total_agents_route@15:
+    // smart_contracts/agent_factory/contract.py:302
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
@@ -272,150 +470,275 @@ main_get_total_agents_route@12:
     assert // can only call when not creating
     callsub get_total_agents
     itob
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_sell_route@11:
-    // smart_contracts/agent_factory/contract.py:146
-    // @abimethod
+main_get_graduation_preview_route@14:
+    // smart_contracts/agent_factory/contract.py:246
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
+    callsub get_graduation_preview
+    uncover 3
+    itob
+    uncover 3
+    itob
+    uncover 3
+    itob
+    uncover 3
+    itob
+    uncover 3
+    uncover 3
+    concat
+    uncover 2
+    concat
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_confirm_tinyman_pool_route@13:
+    // smart_contracts/agent_factory/contract.py:234
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     txna ApplicationArgs 1
     btoi
-    // smart_contracts/agent_factory/contract.py:146
-    // @abimethod
+    txnas Accounts
+    txna ApplicationArgs 2
+    btoi
+    // smart_contracts/agent_factory/contract.py:234
+    // @algopy.arc4.abimethod
+    callsub confirm_tinyman_pool
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_mint_graduation_tokens_route@12:
+    // smart_contracts/agent_factory/contract.py:214
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    txnas Accounts
+    txna ApplicationArgs 2
+    btoi
+    // smart_contracts/agent_factory/contract.py:214
+    // @algopy.arc4.abimethod
+    callsub mint_graduation_tokens
+    itob
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_withdraw_graduation_funds_route@11:
+    // smart_contracts/agent_factory/contract.py:194
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    txnas Accounts
+    // smart_contracts/agent_factory/contract.py:194
+    // @algopy.arc4.abimethod
+    callsub withdraw_graduation_funds
+    itob
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_prepare_graduation_route@10:
+    // smart_contracts/agent_factory/contract.py:161
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub prepare_graduation
+    uncover 2
+    itob
+    uncover 2
+    itob
+    uncover 2
+    itob
+    cover 2
+    concat
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_check_graduation_eligibility_route@9:
+    // smart_contracts/agent_factory/contract.py:150
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    callsub check_graduation_eligibility
+    uncover 2
+    itob
+    uncover 2
+    itob
+    uncover 2
+    itob
+    cover 2
+    concat
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+main_sell_route@8:
+    // smart_contracts/agent_factory/contract.py:130
+    // @algopy.arc4.abimethod
+    txn OnCompletion
+    !
+    assert // OnCompletion is not NoOp
+    txn ApplicationID
+    assert // can only call when not creating
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
+    txna ApplicationArgs 1
+    btoi
+    // smart_contracts/agent_factory/contract.py:130
+    // @algopy.arc4.abimethod
     callsub sell
     itob
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_buy_agent_tokens_route@10:
-    // smart_contracts/agent_factory/contract.py:114
-    // @abimethod
+main_buy_agent_tokens_route@7:
+    // smart_contracts/agent_factory/contract.py:105
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     txna ApplicationArgs 1
     btoi
-    // smart_contracts/agent_factory/contract.py:114
-    // @abimethod
+    // smart_contracts/agent_factory/contract.py:105
+    // @algopy.arc4.abimethod
     callsub buy_agent_tokens
     itob
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_create_agent_route@9:
-    // smart_contracts/agent_factory/contract.py:68
-    // @abimethod
+main_create_agent_route@6:
+    // smart_contracts/agent_factory/contract.py:66
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     txna ApplicationArgs 1
     extract 2 0
     txna ApplicationArgs 2
     extract 2 0
-    // smart_contracts/agent_factory/contract.py:68
-    // @abimethod
+    // smart_contracts/agent_factory/contract.py:66
+    // @algopy.arc4.abimethod
     callsub create_agent
     itob
-    bytec_0 // 0x151f7c75
+    bytec_1 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
 
-main_unpause_route@8:
-    // smart_contracts/agent_factory/contract.py:60
-    // @abimethod
+main_create_route@5:
+    // smart_contracts/agent_factory/contract.py:50
+    // @algopy.arc4.abimethod
     txn OnCompletion
     !
     assert // OnCompletion is not NoOp
     txn ApplicationID
     assert // can only call when not creating
-    callsub unpause
+    callsub create
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
     intc_1 // 1
     return
 
-main_pause_route@7:
-    // smart_contracts/agent_factory/contract.py:54
-    // @abimethod
+main_bare_routing@31:
+    // smart_contracts/agent_factory/contract.py:4
+    // class AgentFactory(algopy.arc4.ARC4Contract):
     txn OnCompletion
-    !
-    assert // OnCompletion is not NoOp
-    txn ApplicationID
-    assert // can only call when not creating
-    callsub pause
-    intc_1 // 1
-    return
-
-main_set_fee_route@6:
-    // smart_contracts/agent_factory/contract.py:48
-    // @abimethod
-    txn OnCompletion
-    !
-    assert // OnCompletion is not NoOp
-    txn ApplicationID
-    assert // can only call when not creating
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
-    txna ApplicationArgs 1
-    btoi
-    // smart_contracts/agent_factory/contract.py:48
-    // @abimethod
-    callsub set_fee
-    intc_1 // 1
-    return
-
-main_set_treasury_route@5:
-    // smart_contracts/agent_factory/contract.py:42
-    // @abimethod
-    txn OnCompletion
-    !
-    assert // OnCompletion is not NoOp
-    txn ApplicationID
-    assert // can only call when not creating
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
-    txna ApplicationArgs 1
-    btoi
-    txnas Accounts
-    // smart_contracts/agent_factory/contract.py:42
-    // @abimethod
-    callsub set_treasury
-    intc_1 // 1
-    return
-
-main_bare_routing@22:
-    // smart_contracts/agent_factory/contract.py:5
-    // class AgentFactory(ARC4Contract):
-    txn OnCompletion
-    bnz main_after_if_else@24
+    bnz main_after_if_else@33
     txn ApplicationID
     !
     assert // can only call when creating
@@ -423,171 +746,154 @@ main_bare_routing@22:
     return
 
 
-// smart_contracts.agent_factory.contract.AgentFactory.set_treasury(new_treasury: bytes) -> void:
-set_treasury:
-    // smart_contracts/agent_factory/contract.py:42-43
-    // @abimethod
-    // def set_treasury(self, new_treasury: Account) -> None:
-    proto 1 0
-    // smart_contracts/agent_factory/contract.py:45
-    // assert Txn.sender == self.owner.value, "Only owner"
-    txn Sender
-    intc_0 // 0
-    bytec 5 // "owner"
-    app_global_get_ex
-    assert // check self.owner exists
-    ==
-    assert // Only owner
-    // smart_contracts/agent_factory/contract.py:46
-    // self.treasury.value = new_treasury
-    bytec 12 // "treasury"
-    frame_dig -1
-    app_global_put
-    retsub
-
-
-// smart_contracts.agent_factory.contract.AgentFactory.set_fee(new_fee: uint64) -> void:
-set_fee:
-    // smart_contracts/agent_factory/contract.py:48-49
-    // @abimethod
-    // def set_fee(self, new_fee: UInt64) -> None:
-    proto 1 0
-    // smart_contracts/agent_factory/contract.py:51
-    // assert Txn.sender == self.owner.value, "Only owner"
-    txn Sender
-    intc_0 // 0
-    bytec 5 // "owner"
-    app_global_get_ex
-    assert // check self.owner exists
-    ==
-    assert // Only owner
+// smart_contracts.agent_factory.contract.AgentFactory.create() -> bytes:
+create:
     // smart_contracts/agent_factory/contract.py:52
-    // self.creation_fee.value = new_fee
-    bytec 9 // "creation_fee"
-    frame_dig -1
+    // self.owner.value = algopy.Txn.sender
+    bytec_3 // "owner"
+    txn Sender
     app_global_put
-    retsub
-
-
-// smart_contracts.agent_factory.contract.AgentFactory.pause() -> void:
-pause:
+    // smart_contracts/agent_factory/contract.py:53
+    // self.treasury.value = algopy.Txn.sender
+    bytec 13 // "treasury"
+    txn Sender
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:54
+    // self.creation_fee.value = algopy.UInt64(0)
+    bytec 14 // "creation_fee"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:55
+    // self.paused.value = algopy.UInt64(0)
+    bytec 5 // "paused"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:56
+    // self.total_agents.value = algopy.UInt64(0)
+    bytec 6 // "total_agents"
+    intc_0 // 0
+    app_global_put
     // smart_contracts/agent_factory/contract.py:57
-    // assert Txn.sender == self.owner.value, "Only owner"
-    txn Sender
+    // self.current_supply.value = algopy.UInt64(0)
+    bytec_2 // "current_supply"
     intc_0 // 0
-    bytec 5 // "owner"
-    app_global_get_ex
-    assert // check self.owner exists
-    ==
-    assert // Only owner
+    app_global_put
     // smart_contracts/agent_factory/contract.py:58
-    // self.paused.value = UInt64(1)  # True = 1
-    bytec 6 // "paused"
-    intc_1 // 1
+    // self.reserve_balance.value = algopy.UInt64(0)
+    bytec_0 // "reserve_balance"
+    intc_0 // 0
     app_global_put
-    retsub
-
-
-// smart_contracts.agent_factory.contract.AgentFactory.unpause() -> void:
-unpause:
+    // smart_contracts/agent_factory/contract.py:59
+    // self.graduated.value = algopy.UInt64(0)
+    bytec 4 // "graduated"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:60
+    // self.reward_pool.value = algopy.UInt64(0)
+    bytec 11 // "reward_pool"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:61
+    // self.graduation_initiated.value = algopy.UInt64(0)
+    bytec 7 // "graduation_initiated"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:62
+    // self.graduation_timestamp.value = algopy.UInt64(0)
+    bytec 15 // "graduation_timestamp"
+    intc_0 // 0
+    app_global_put
     // smart_contracts/agent_factory/contract.py:63
-    // assert Txn.sender == self.owner.value, "Only owner"
-    txn Sender
-    intc_0 // 0
-    bytec 5 // "owner"
-    app_global_get_ex
-    assert // check self.owner exists
-    ==
-    assert // Only owner
-    // smart_contracts/agent_factory/contract.py:64
-    // self.paused.value = UInt64(0)  # False = 0
-    bytec 6 // "paused"
+    // self.graduation_funds_withdrawn.value = algopy.UInt64(0)
+    bytec 16 // "graduation_funds_withdrawn"
     intc_0 // 0
     app_global_put
+    // smart_contracts/agent_factory/contract.py:64
+    // return algopy.String("Contract re-initialized")
+    pushbytes "Contract re-initialized"
     retsub
 
 
 // smart_contracts.agent_factory.contract.AgentFactory.create_agent(name: bytes, symbol: bytes) -> uint64:
 create_agent:
-    // smart_contracts/agent_factory/contract.py:68-69
-    // @abimethod
-    // def create_agent(self, name: String, symbol: String) -> UInt64:
+    // smart_contracts/agent_factory/contract.py:66-67
+    // @algopy.arc4.abimethod
+    // def create_agent(self, name: algopy.String, symbol: algopy.String) -> algopy.UInt64:
     proto 2 1
     pushbytes ""
-    // smart_contracts/agent_factory/contract.py:74
-    // assert self.paused.value == UInt64(0), "Contract paused"
+    // smart_contracts/agent_factory/contract.py:68
+    // assert self.paused.value == algopy.UInt64(0), "Contract paused"
     intc_0 // 0
-    bytec 6 // "paused"
+    bytec 5 // "paused"
     app_global_get_ex
     assert // check self.paused exists
     !
     assert // Contract paused
-    // smart_contracts/agent_factory/contract.py:76-77
-    // # Check fee payment if required
-    // if self.creation_fee.value > UInt64(0):
+    // smart_contracts/agent_factory/contract.py:70
+    // if self.creation_fee.value > algopy.UInt64(0):
     intc_0 // 0
-    bytec 9 // "creation_fee"
+    bytec 14 // "creation_fee"
     app_global_get_ex
     assert // check self.creation_fee exists
     bz create_agent_after_if_else@2
-    // smart_contracts/agent_factory/contract.py:78
-    // assert Global.group_size >= UInt64(2), "Payment required"
+    // smart_contracts/agent_factory/contract.py:71
+    // assert algopy.Global.group_size >= algopy.UInt64(2), "Payment required"
     global GroupSize
-    intc_3 // 2
+    pushint 2 // 2
     >=
     assert // Payment required
-    // smart_contracts/agent_factory/contract.py:79
-    // payment_txn = gtxn.PaymentTransaction(0)
+    // smart_contracts/agent_factory/contract.py:72
+    // payment_txn = algopy.gtxn.PaymentTransaction(0)
     intc_0 // 0
     gtxns TypeEnum
     intc_1 // pay
     ==
     assert // transaction type is pay
     intc_0 // 0
-    // smart_contracts/agent_factory/contract.py:80
+    // smart_contracts/agent_factory/contract.py:73
     // assert payment_txn.receiver == self.treasury.value, "Wrong receiver"
     gtxns Receiver
     intc_0 // 0
-    bytec 12 // "treasury"
+    bytec 13 // "treasury"
     app_global_get_ex
     assert // check self.treasury exists
     ==
     assert // Wrong receiver
-    // smart_contracts/agent_factory/contract.py:79
-    // payment_txn = gtxn.PaymentTransaction(0)
+    // smart_contracts/agent_factory/contract.py:72
+    // payment_txn = algopy.gtxn.PaymentTransaction(0)
     intc_0 // 0
-    // smart_contracts/agent_factory/contract.py:81
+    // smart_contracts/agent_factory/contract.py:74
     // assert payment_txn.amount >= self.creation_fee.value, "Insufficient payment"
     gtxns Amount
     intc_0 // 0
-    bytec 9 // "creation_fee"
+    bytec 14 // "creation_fee"
     app_global_get_ex
     assert // check self.creation_fee exists
     >=
     assert // Insufficient payment
 
 create_agent_after_if_else@2:
-    // smart_contracts/agent_factory/contract.py:85
+    // smart_contracts/agent_factory/contract.py:77
     // total=self.TOTAL_SUPPLY,
     intc_0 // 0
-    bytec 11 // "TOTAL_SUPPLY"
+    bytec 17 // "TOTAL_SUPPLY"
     app_global_get_ex
     assert // check self.TOTAL_SUPPLY exists
-    // smart_contracts/agent_factory/contract.py:86
+    // smart_contracts/agent_factory/contract.py:78
     // decimals=self.DECIMALS,
     intc_0 // 0
-    bytec 10 // "DECIMALS"
+    bytec 21 // "DECIMALS"
     app_global_get_ex
     assert // check self.DECIMALS exists
-    // smart_contracts/agent_factory/contract.py:89
-    // manager=Global.current_application_address,
+    // smart_contracts/agent_factory/contract.py:81
+    // manager=algopy.Global.current_application_address,
     global CurrentApplicationAddress
-    // smart_contracts/agent_factory/contract.py:90-92
-    // reserve=Global.current_application_address,
-    // freeze=Global.current_application_address,
-    // clawback=Global.current_application_address,
+    // smart_contracts/agent_factory/contract.py:82-84
+    // reserve=algopy.Global.current_application_address,
+    // freeze=algopy.Global.current_application_address,
+    // clawback=algopy.Global.current_application_address,
     dupn 3
-    // smart_contracts/agent_factory/contract.py:95
+    // smart_contracts/agent_factory/contract.py:88
     // asa_id = asa_create_txn.submit().created_asset.id
     itxn_begin
     itxn_field ConfigAssetClawback
@@ -600,341 +906,862 @@ create_agent_after_if_else@2:
     itxn_field ConfigAssetName
     itxn_field ConfigAssetDecimals
     itxn_field ConfigAssetTotal
-    // smart_contracts/agent_factory/contract.py:83-84
-    // # Create ASA via inner transaction
-    // asa_create_txn = itxn.AssetConfig(
+    // smart_contracts/agent_factory/contract.py:76
+    // asa_create_txn = algopy.itxn.AssetConfig(
     pushint 3 // acfg
     itxn_field TypeEnum
-    intc_0 // 0
+    // smart_contracts/agent_factory/contract.py:85
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
     itxn_field Fee
-    // smart_contracts/agent_factory/contract.py:95
+    // smart_contracts/agent_factory/contract.py:88
     // asa_id = asa_create_txn.submit().created_asset.id
     itxn_submit
     itxn CreatedAssetID
+    dup
     frame_bury 0
-    // smart_contracts/agent_factory/contract.py:97-98
-    // # Set first agent ASA as primary ASA_ID
-    // if self.total_agents.value == UInt64(0):
-    intc_0 // 0
-    bytec 7 // "total_agents"
-    app_global_get_ex
-    assert // check self.total_agents exists
-    bnz create_agent_after_if_else@5
-    // smart_contracts/agent_factory/contract.py:99
-    // self.asa_id.value = asa_id
-    bytec 13 // "asa_id"
-    frame_dig 0
-    app_global_put
-
-create_agent_after_if_else@5:
-    // smart_contracts/agent_factory/contract.py:101-107
-    // # Mint initial supply to contract
-    // itxn.AssetTransfer(
+    // smart_contracts/agent_factory/contract.py:90-96
+    // algopy.itxn.AssetTransfer(
     //     xfer_asset=asa_id,
-    //     asset_sender=Global.current_application_address,
-    //     asset_receiver=Global.current_application_address,
-    //     asset_amount=UInt64(1_000_000),  # Initial liquidity
+    //     asset_sender=algopy.Global.current_application_address,
+    //     asset_receiver=algopy.Global.current_application_address,
+    //     asset_amount=algopy.UInt64(0),
+    //     fee=algopy.UInt64(1000),
     // ).submit()
     itxn_begin
-    // smart_contracts/agent_factory/contract.py:104
-    // asset_sender=Global.current_application_address,
+    // smart_contracts/agent_factory/contract.py:92
+    // asset_sender=algopy.Global.current_application_address,
     global CurrentApplicationAddress
-    // smart_contracts/agent_factory/contract.py:105
-    // asset_receiver=Global.current_application_address,
+    // smart_contracts/agent_factory/contract.py:93
+    // asset_receiver=algopy.Global.current_application_address,
     dup
-    // smart_contracts/agent_factory/contract.py:106
-    // asset_amount=UInt64(1_000_000),  # Initial liquidity
-    intc_2 // 1000000
+    // smart_contracts/agent_factory/contract.py:94
+    // asset_amount=algopy.UInt64(0),
+    intc_0 // 0
     itxn_field AssetAmount
     itxn_field AssetReceiver
     itxn_field AssetSender
-    frame_dig 0
-    dup
     itxn_field XferAsset
-    // smart_contracts/agent_factory/contract.py:101-102
-    // # Mint initial supply to contract
-    // itxn.AssetTransfer(
+    // smart_contracts/agent_factory/contract.py:90
+    // algopy.itxn.AssetTransfer(
     pushint 4 // axfer
     itxn_field TypeEnum
-    intc_0 // 0
+    // smart_contracts/agent_factory/contract.py:95
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
     itxn_field Fee
-    // smart_contracts/agent_factory/contract.py:101-107
-    // # Mint initial supply to contract
-    // itxn.AssetTransfer(
+    // smart_contracts/agent_factory/contract.py:90-96
+    // algopy.itxn.AssetTransfer(
     //     xfer_asset=asa_id,
-    //     asset_sender=Global.current_application_address,
-    //     asset_receiver=Global.current_application_address,
-    //     asset_amount=UInt64(1_000_000),  # Initial liquidity
+    //     asset_sender=algopy.Global.current_application_address,
+    //     asset_receiver=algopy.Global.current_application_address,
+    //     asset_amount=algopy.UInt64(0),
+    //     fee=algopy.UInt64(1000),
     // ).submit()
     itxn_submit
-    // smart_contracts/agent_factory/contract.py:109-110
-    // # Increment agent counter
-    // self.total_agents.value += UInt64(1)
+    // smart_contracts/agent_factory/contract.py:98
+    // if self.total_agents.value == algopy.UInt64(0):
     intc_0 // 0
-    bytec 7 // "total_agents"
+    bytec 6 // "total_agents"
+    app_global_get_ex
+    assert // check self.total_agents exists
+    bnz create_agent_after_if_else@6
+    // smart_contracts/agent_factory/contract.py:99
+    // self.asa_id.value = asa_id
+    bytec 12 // "asa_id"
+    frame_dig 0
+    app_global_put
+
+create_agent_after_if_else@6:
+    // smart_contracts/agent_factory/contract.py:101
+    // self.total_agents.value += algopy.UInt64(1)
+    intc_0 // 0
+    bytec 6 // "total_agents"
     app_global_get_ex
     assert // check self.total_agents exists
     intc_1 // 1
     +
-    bytec 7 // "total_agents"
+    bytec 6 // "total_agents"
     swap
     app_global_put
-    // smart_contracts/agent_factory/contract.py:112
+    // smart_contracts/agent_factory/contract.py:103
     // return asa_id
+    frame_dig 0
     swap
     retsub
 
 
 // smart_contracts.agent_factory.contract.AgentFactory.buy_agent_tokens(target_asa_id: uint64) -> uint64:
 buy_agent_tokens:
-    // smart_contracts/agent_factory/contract.py:114-115
-    // @abimethod
-    // def buy_agent_tokens(self, target_asa_id: UInt64) -> UInt64:
+    // smart_contracts/agent_factory/contract.py:105-106
+    // @algopy.arc4.abimethod
+    // def buy_agent_tokens(self, target_asa_id: algopy.UInt64) -> algopy.UInt64:
     proto 1 1
-    // smart_contracts/agent_factory/contract.py:120
-    // assert self.paused.value == UInt64(0), "Contract paused"
+    // smart_contracts/agent_factory/contract.py:107
+    // assert self.paused.value == algopy.UInt64(0), "Contract paused"
     intc_0 // 0
-    bytec 6 // "paused"
+    bytec 5 // "paused"
     app_global_get_ex
     assert // check self.paused exists
     !
     assert // Contract paused
-    // smart_contracts/agent_factory/contract.py:121
-    // assert self.graduated.value == UInt64(0), "Agent graduated"
+    // smart_contracts/agent_factory/contract.py:108
+    // assert self.graduated.value == algopy.UInt64(0), "Agent graduated"
     intc_0 // 0
-    bytec 14 // "graduated"
+    bytec 4 // "graduated"
     app_global_get_ex
     assert // check self.graduated exists
     !
     assert // Agent graduated
-    // smart_contracts/agent_factory/contract.py:123-124
-    // # Get payment amount from grouped transaction
-    // assert Global.group_size >= UInt64(2), "Payment required"
+    // smart_contracts/agent_factory/contract.py:110
+    // assert algopy.Global.group_size >= algopy.UInt64(2), "Payment required"
     global GroupSize
-    intc_3 // 2
+    pushint 2 // 2
     >=
     assert // Payment required
-    // smart_contracts/agent_factory/contract.py:125
-    // payment_txn = gtxn.PaymentTransaction(1)
-    intc_1 // 1
+    // smart_contracts/agent_factory/contract.py:111
+    // payment_txn = algopy.gtxn.PaymentTransaction(0)
+    intc_0 // 0
     gtxns TypeEnum
     intc_1 // pay
     ==
     assert // transaction type is pay
-    intc_1 // 1
-    // smart_contracts/agent_factory/contract.py:126
-    // assert payment_txn.receiver == Global.current_application_address, "Wrong receiver"
+    intc_0 // 0
+    // smart_contracts/agent_factory/contract.py:112
+    // assert payment_txn.receiver == algopy.Global.current_application_address, "Wrong receiver"
     gtxns Receiver
     global CurrentApplicationAddress
     ==
     assert // Wrong receiver
-    // smart_contracts/agent_factory/contract.py:125
-    // payment_txn = gtxn.PaymentTransaction(1)
-    intc_1 // 1
-    // smart_contracts/agent_factory/contract.py:128
+    // smart_contracts/agent_factory/contract.py:111
+    // payment_txn = algopy.gtxn.PaymentTransaction(0)
+    intc_0 // 0
+    // smart_contracts/agent_factory/contract.py:114
     // algo_amount = payment_txn.amount
     gtxns Amount
-    // smart_contracts/agent_factory/contract.py:130-131
-    // # Calculate token amount using bonding curve
+    // smart_contracts/agent_factory/contract.py:116
     // tokens_to_mint = self._calculate_buy_amount(algo_amount)
     dup
     callsub _calculate_buy_amount
-    // smart_contracts/agent_factory/contract.py:133-134
-    // # Update global state
+    // smart_contracts/agent_factory/contract.py:118
     // self.current_supply.value += tokens_to_mint
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
     dig 1
     +
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     swap
     app_global_put
-    // smart_contracts/agent_factory/contract.py:135
+    // smart_contracts/agent_factory/contract.py:119
     // self.reserve_balance.value += algo_amount
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
     uncover 2
     +
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     swap
     app_global_put
-    // smart_contracts/agent_factory/contract.py:137-142
-    // # Transfer tokens to buyer
-    // itxn.AssetTransfer(
-    //     xfer_asset=target_asa_id,
-    //     asset_receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:121-126
+    // algopy.itxn.AssetTransfer(
+    //     xfer_asset=self.asa_id.value,
+    //     asset_receiver=algopy.Txn.sender,
     //     asset_amount=tokens_to_mint,
+    //     fee=algopy.UInt64(1000),
     // ).submit()
     itxn_begin
-    // smart_contracts/agent_factory/contract.py:140
-    // asset_receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:122
+    // xfer_asset=self.asa_id.value,
+    intc_0 // 0
+    bytec 12 // "asa_id"
+    app_global_get_ex
+    assert // check self.asa_id exists
+    // smart_contracts/agent_factory/contract.py:123
+    // asset_receiver=algopy.Txn.sender,
     txn Sender
-    dig 1
+    dig 2
     itxn_field AssetAmount
     itxn_field AssetReceiver
-    frame_dig -1
     itxn_field XferAsset
-    // smart_contracts/agent_factory/contract.py:137-138
-    // # Transfer tokens to buyer
-    // itxn.AssetTransfer(
+    // smart_contracts/agent_factory/contract.py:121
+    // algopy.itxn.AssetTransfer(
     pushint 4 // axfer
     itxn_field TypeEnum
-    intc_0 // 0
+    // smart_contracts/agent_factory/contract.py:125
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
     itxn_field Fee
-    // smart_contracts/agent_factory/contract.py:137-142
-    // # Transfer tokens to buyer
-    // itxn.AssetTransfer(
-    //     xfer_asset=target_asa_id,
-    //     asset_receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:121-126
+    // algopy.itxn.AssetTransfer(
+    //     xfer_asset=self.asa_id.value,
+    //     asset_receiver=algopy.Txn.sender,
     //     asset_amount=tokens_to_mint,
+    //     fee=algopy.UInt64(1000),
     // ).submit()
     itxn_submit
-    // smart_contracts/agent_factory/contract.py:144
+    // smart_contracts/agent_factory/contract.py:128
     // return tokens_to_mint
     retsub
 
 
 // smart_contracts.agent_factory.contract.AgentFactory.sell(token_amount: uint64) -> uint64:
 sell:
-    // smart_contracts/agent_factory/contract.py:146-147
-    // @abimethod
-    // def sell(self, token_amount: UInt64) -> UInt64:
+    // smart_contracts/agent_factory/contract.py:130-131
+    // @algopy.arc4.abimethod
+    // def sell(self, token_amount: algopy.UInt64) -> algopy.UInt64:
     proto 1 1
-    // smart_contracts/agent_factory/contract.py:149
-    // assert self.paused.value == UInt64(0), "Contract paused"
+    // smart_contracts/agent_factory/contract.py:132
+    // assert self.paused.value == algopy.UInt64(0), "Contract paused"
     intc_0 // 0
-    bytec 6 // "paused"
+    bytec 5 // "paused"
     app_global_get_ex
     assert // check self.paused exists
     !
     assert // Contract paused
-    // smart_contracts/agent_factory/contract.py:150
+    // smart_contracts/agent_factory/contract.py:133
+    // assert self.graduated.value == algopy.UInt64(0), "Trading disabled after graduation"
+    intc_0 // 0
+    bytec 4 // "graduated"
+    app_global_get_ex
+    assert // check self.graduated exists
+    !
+    assert // Trading disabled after graduation
+    // smart_contracts/agent_factory/contract.py:134
     // assert self.current_supply.value >= token_amount, "Insufficient supply"
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
     frame_dig -1
     >=
     assert // Insufficient supply
-    // smart_contracts/agent_factory/contract.py:152-153
-    // # Calculate ALGO to return using bonding curve
+    // smart_contracts/agent_factory/contract.py:136
     // algo_to_return = self._calculate_sell_amount(token_amount)
     frame_dig -1
     callsub _calculate_sell_amount
-    // smart_contracts/agent_factory/contract.py:154
+    // smart_contracts/agent_factory/contract.py:137
     // assert self.reserve_balance.value >= algo_to_return, "Insufficient reserves"
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
     dig 1
     >=
     assert // Insufficient reserves
-    // smart_contracts/agent_factory/contract.py:156-157
-    // # Update global state
+    // smart_contracts/agent_factory/contract.py:139
     // self.current_supply.value -= token_amount
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
     frame_dig -1
     -
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     swap
     app_global_put
-    // smart_contracts/agent_factory/contract.py:158
+    // smart_contracts/agent_factory/contract.py:140
     // self.reserve_balance.value -= algo_to_return
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
     dig 1
     -
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     swap
     app_global_put
-    // smart_contracts/agent_factory/contract.py:160-164
-    // # Send ALGO back to seller
-    // itxn.Payment(
-    //     receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:142-146
+    // algopy.itxn.Payment(
+    //     receiver=algopy.Txn.sender,
     //     amount=algo_to_return,
+    //     fee=algopy.UInt64(1000),
     // ).submit()
     itxn_begin
-    // smart_contracts/agent_factory/contract.py:162
-    // receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:143
+    // receiver=algopy.Txn.sender,
     txn Sender
     dig 1
     itxn_field Amount
     itxn_field Receiver
-    // smart_contracts/agent_factory/contract.py:160-161
-    // # Send ALGO back to seller
-    // itxn.Payment(
+    // smart_contracts/agent_factory/contract.py:142
+    // algopy.itxn.Payment(
     intc_1 // pay
     itxn_field TypeEnum
-    intc_0 // 0
+    // smart_contracts/agent_factory/contract.py:145
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
     itxn_field Fee
-    // smart_contracts/agent_factory/contract.py:160-164
-    // # Send ALGO back to seller
-    // itxn.Payment(
-    //     receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:142-146
+    // algopy.itxn.Payment(
+    //     receiver=algopy.Txn.sender,
     //     amount=algo_to_return,
+    //     fee=algopy.UInt64(1000),
     // ).submit()
     itxn_submit
-    // smart_contracts/agent_factory/contract.py:166
+    // smart_contracts/agent_factory/contract.py:148
     // return algo_to_return
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.check_graduation_eligibility() -> uint64, uint64, uint64:
+check_graduation_eligibility:
+    // smart_contracts/agent_factory/contract.py:154
+    // self.reserve_balance.value >= self.GRADUATION_THRESHOLD and
+    intc_0 // 0
+    bytec_0 // "reserve_balance"
+    app_global_get_ex
+    assert // check self.reserve_balance exists
+    intc_0 // 0
+    bytec 10 // "GRADUATION_THRESHOLD"
+    app_global_get_ex
+    assert // check self.GRADUATION_THRESHOLD exists
+    >=
+    // smart_contracts/agent_factory/contract.py:154-156
+    // self.reserve_balance.value >= self.GRADUATION_THRESHOLD and
+    // self.graduated.value == algopy.UInt64(0) and
+    // self.asa_id.value > algopy.UInt64(0)
+    bz check_graduation_eligibility_bool_false@4
+    // smart_contracts/agent_factory/contract.py:155
+    // self.graduated.value == algopy.UInt64(0) and
+    intc_0 // 0
+    bytec 4 // "graduated"
+    app_global_get_ex
+    assert // check self.graduated exists
+    // smart_contracts/agent_factory/contract.py:154-156
+    // self.reserve_balance.value >= self.GRADUATION_THRESHOLD and
+    // self.graduated.value == algopy.UInt64(0) and
+    // self.asa_id.value > algopy.UInt64(0)
+    bnz check_graduation_eligibility_bool_false@4
+    // smart_contracts/agent_factory/contract.py:156
+    // self.asa_id.value > algopy.UInt64(0)
+    intc_0 // 0
+    bytec 12 // "asa_id"
+    app_global_get_ex
+    assert // check self.asa_id exists
+    // smart_contracts/agent_factory/contract.py:154-156
+    // self.reserve_balance.value >= self.GRADUATION_THRESHOLD and
+    // self.graduated.value == algopy.UInt64(0) and
+    // self.asa_id.value > algopy.UInt64(0)
+    bz check_graduation_eligibility_bool_false@4
+    intc_1 // 1
+
+check_graduation_eligibility_bool_merge@5:
+    // smart_contracts/agent_factory/contract.py:159
+    // return (eligible, self.reserve_balance.value, self.GRADUATION_THRESHOLD)
+    intc_0 // 0
+    bytec_0 // "reserve_balance"
+    app_global_get_ex
+    assert // check self.reserve_balance exists
+    intc_0 // 0
+    bytec 10 // "GRADUATION_THRESHOLD"
+    app_global_get_ex
+    assert // check self.GRADUATION_THRESHOLD exists
+    retsub
+
+check_graduation_eligibility_bool_false@4:
+    intc_0 // 0
+    b check_graduation_eligibility_bool_merge@5
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.prepare_graduation() -> uint64, uint64, uint64:
+prepare_graduation:
+    // smart_contracts/agent_factory/contract.py:161-162
+    // @algopy.arc4.abimethod
+    // def prepare_graduation(self) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64]:
+    proto 0 3
+    // smart_contracts/agent_factory/contract.py:164
+    // assert self.reserve_balance.value >= self.GRADUATION_THRESHOLD, "Graduation threshold not met"
+    intc_0 // 0
+    bytec_0 // "reserve_balance"
+    app_global_get_ex
+    assert // check self.reserve_balance exists
+    intc_0 // 0
+    bytec 10 // "GRADUATION_THRESHOLD"
+    app_global_get_ex
+    assert // check self.GRADUATION_THRESHOLD exists
+    dig 1
+    <=
+    assert // Graduation threshold not met
+    // smart_contracts/agent_factory/contract.py:165
+    // assert self.graduated.value == algopy.UInt64(0), "Already graduated"
+    intc_0 // 0
+    bytec 4 // "graduated"
+    app_global_get_ex
+    assert // check self.graduated exists
+    !
+    assert // Already graduated
+    // smart_contracts/agent_factory/contract.py:166
+    // assert algopy.Txn.sender == self.owner.value, "Only owner can prepare graduation"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner can prepare graduation
+    // smart_contracts/agent_factory/contract.py:169
+    // liquidity_algo = (total_reserve * self.LIQUIDITY_PERCENTAGE) // algopy.UInt64(100)
+    intc_0 // 0
+    bytec 19 // "LIQUIDITY_PERCENTAGE"
+    app_global_get_ex
+    assert // check self.LIQUIDITY_PERCENTAGE exists
+    dig 1
+    *
+    pushint 100 // 100
+    /
+    dup
+    uncover 2
+    // smart_contracts/agent_factory/contract.py:170
+    // creator_allocation = (total_reserve * self.CREATOR_PERCENTAGE) // algopy.UInt64(100)
+    intc_0 // 0
+    bytec 20 // "CREATOR_PERCENTAGE"
+    app_global_get_ex
+    assert // check self.CREATOR_PERCENTAGE exists
+    dig 1
+    *
+    pushint 100 // 100
+    /
+    dup
+    cover 3
+    // smart_contracts/agent_factory/contract.py:171
+    // platform_fee = total_reserve - liquidity_algo - creator_allocation
+    swap
+    uncover 2
+    -
+    dig 1
+    -
+    swap
+    // smart_contracts/agent_factory/contract.py:173
+    // self.graduation_initiated.value = algopy.UInt64(1)
+    bytec 7 // "graduation_initiated"
+    intc_1 // 1
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:174
+    // self.graduation_timestamp.value = algopy.Global.latest_timestamp
+    bytec 15 // "graduation_timestamp"
+    global LatestTimestamp
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:176
+    // if creator_allocation > algopy.UInt64(0):
+    bz prepare_graduation_after_if_else@3
+    // smart_contracts/agent_factory/contract.py:177-181
+    // algopy.itxn.Payment(
+    //     receiver=self.owner.value,
+    //     amount=creator_allocation,
+    //     fee=algopy.UInt64(1000),
+    // ).submit()
+    itxn_begin
+    // smart_contracts/agent_factory/contract.py:178
+    // receiver=self.owner.value,
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    frame_dig 1
+    itxn_field Amount
+    itxn_field Receiver
+    // smart_contracts/agent_factory/contract.py:177
+    // algopy.itxn.Payment(
+    intc_1 // pay
+    itxn_field TypeEnum
+    // smart_contracts/agent_factory/contract.py:180
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
+    itxn_field Fee
+    // smart_contracts/agent_factory/contract.py:177-181
+    // algopy.itxn.Payment(
+    //     receiver=self.owner.value,
+    //     amount=creator_allocation,
+    //     fee=algopy.UInt64(1000),
+    // ).submit()
+    itxn_submit
+
+prepare_graduation_after_if_else@3:
+    // smart_contracts/agent_factory/contract.py:183
+    // if platform_fee > algopy.UInt64(0):
+    frame_dig 2
+    bz prepare_graduation_after_if_else@6
+    // smart_contracts/agent_factory/contract.py:184-188
+    // algopy.itxn.Payment(
+    //     receiver=self.treasury.value,
+    //     amount=platform_fee,
+    //     fee=algopy.UInt64(1000),
+    // ).submit()
+    itxn_begin
+    // smart_contracts/agent_factory/contract.py:185
+    // receiver=self.treasury.value,
+    intc_0 // 0
+    bytec 13 // "treasury"
+    app_global_get_ex
+    assert // check self.treasury exists
+    frame_dig 2
+    itxn_field Amount
+    itxn_field Receiver
+    // smart_contracts/agent_factory/contract.py:184
+    // algopy.itxn.Payment(
+    intc_1 // pay
+    itxn_field TypeEnum
+    // smart_contracts/agent_factory/contract.py:187
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
+    itxn_field Fee
+    // smart_contracts/agent_factory/contract.py:184-188
+    // algopy.itxn.Payment(
+    //     receiver=self.treasury.value,
+    //     amount=platform_fee,
+    //     fee=algopy.UInt64(1000),
+    // ).submit()
+    itxn_submit
+
+prepare_graduation_after_if_else@6:
+    // smart_contracts/agent_factory/contract.py:190
+    // self.reserve_balance.value = liquidity_algo
+    bytec_0 // "reserve_balance"
+    frame_dig 0
+    dup
+    cover 2
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:192
+    // return (liquidity_algo, creator_allocation, platform_fee)
+    frame_dig 1
+    frame_dig 2
+    uncover 5
+    uncover 5
+    uncover 5
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.withdraw_graduation_funds(recipient: bytes) -> uint64:
+withdraw_graduation_funds:
+    // smart_contracts/agent_factory/contract.py:194-195
+    // @algopy.arc4.abimethod
+    // def withdraw_graduation_funds(self, recipient: algopy.Account) -> algopy.UInt64:
+    proto 1 1
+    // smart_contracts/agent_factory/contract.py:197
+    // assert self.graduation_initiated.value == algopy.UInt64(1), "Graduation not initiated"
+    intc_0 // 0
+    bytec 7 // "graduation_initiated"
+    app_global_get_ex
+    assert // check self.graduation_initiated exists
+    intc_1 // 1
+    ==
+    assert // Graduation not initiated
+    // smart_contracts/agent_factory/contract.py:198
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner
+    // smart_contracts/agent_factory/contract.py:199
+    // assert self.reserve_balance.value > algopy.UInt64(0), "No funds to withdraw"
+    intc_0 // 0
+    bytec_0 // "reserve_balance"
+    app_global_get_ex
+    assert // check self.reserve_balance exists
+    dup
+    assert // No funds to withdraw
+    // smart_contracts/agent_factory/contract.py:200
+    // assert self.graduation_funds_withdrawn.value == algopy.UInt64(0), "Funds already withdrawn"
+    intc_0 // 0
+    bytec 16 // "graduation_funds_withdrawn"
+    app_global_get_ex
+    assert // check self.graduation_funds_withdrawn exists
+    !
+    assert // Funds already withdrawn
+    // smart_contracts/agent_factory/contract.py:203
+    // self.reserve_balance.value = algopy.UInt64(0)
+    bytec_0 // "reserve_balance"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:204
+    // self.graduation_funds_withdrawn.value = algopy.UInt64(1)
+    bytec 16 // "graduation_funds_withdrawn"
+    intc_1 // 1
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:206-210
+    // algopy.itxn.Payment(
+    //     receiver=recipient,
+    //     amount=amount_to_withdraw,
+    //     fee=algopy.UInt64(1000),
+    // ).submit()
+    itxn_begin
+    dup
+    itxn_field Amount
+    frame_dig -1
+    itxn_field Receiver
+    // smart_contracts/agent_factory/contract.py:206
+    // algopy.itxn.Payment(
+    intc_1 // pay
+    itxn_field TypeEnum
+    // smart_contracts/agent_factory/contract.py:209
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
+    itxn_field Fee
+    // smart_contracts/agent_factory/contract.py:206-210
+    // algopy.itxn.Payment(
+    //     receiver=recipient,
+    //     amount=amount_to_withdraw,
+    //     fee=algopy.UInt64(1000),
+    // ).submit()
+    itxn_submit
+    // smart_contracts/agent_factory/contract.py:212
+    // return amount_to_withdraw
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.mint_graduation_tokens(recipient: bytes, amount: uint64) -> uint64:
+mint_graduation_tokens:
+    // smart_contracts/agent_factory/contract.py:214-215
+    // @algopy.arc4.abimethod
+    // def mint_graduation_tokens(self, recipient: algopy.Account, amount: algopy.UInt64) -> algopy.UInt64:
+    proto 2 1
+    // smart_contracts/agent_factory/contract.py:217
+    // assert self.graduation_initiated.value == algopy.UInt64(1), "Graduation not initiated"
+    intc_0 // 0
+    bytec 7 // "graduation_initiated"
+    app_global_get_ex
+    assert // check self.graduation_initiated exists
+    intc_1 // 1
+    ==
+    assert // Graduation not initiated
+    // smart_contracts/agent_factory/contract.py:218
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner
+    // smart_contracts/agent_factory/contract.py:220
+    // remaining_supply = self.TOTAL_SUPPLY - self.current_supply.value
+    intc_0 // 0
+    bytec 17 // "TOTAL_SUPPLY"
+    app_global_get_ex
+    assert // check self.TOTAL_SUPPLY exists
+    intc_0 // 0
+    bytec_2 // "current_supply"
+    app_global_get_ex
+    assert // check self.current_supply exists
+    swap
+    dig 1
+    -
+    // smart_contracts/agent_factory/contract.py:221
+    // assert amount <= remaining_supply, "Exceeds remaining supply"
+    frame_dig -1
+    >=
+    assert // Exceeds remaining supply
+    // smart_contracts/agent_factory/contract.py:223
+    // self.current_supply.value += amount
+    frame_dig -1
+    +
+    bytec_2 // "current_supply"
+    swap
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:225-230
+    // algopy.itxn.AssetTransfer(
+    //     xfer_asset=self.asa_id.value,
+    //     asset_receiver=recipient,
+    //     asset_amount=amount,
+    //     fee=algopy.UInt64(1000),
+    // ).submit()
+    itxn_begin
+    // smart_contracts/agent_factory/contract.py:226
+    // xfer_asset=self.asa_id.value,
+    intc_0 // 0
+    bytec 12 // "asa_id"
+    app_global_get_ex
+    assert // check self.asa_id exists
+    frame_dig -1
+    itxn_field AssetAmount
+    frame_dig -2
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // smart_contracts/agent_factory/contract.py:225
+    // algopy.itxn.AssetTransfer(
+    pushint 4 // axfer
+    itxn_field TypeEnum
+    // smart_contracts/agent_factory/contract.py:229
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
+    itxn_field Fee
+    // smart_contracts/agent_factory/contract.py:225-230
+    // algopy.itxn.AssetTransfer(
+    //     xfer_asset=self.asa_id.value,
+    //     asset_receiver=recipient,
+    //     asset_amount=amount,
+    //     fee=algopy.UInt64(1000),
+    // ).submit()
+    itxn_submit
+    // smart_contracts/agent_factory/contract.py:232
+    // return amount
+    frame_dig -1
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.confirm_tinyman_pool(pool_address: bytes, pool_token_id: uint64) -> bytes:
+confirm_tinyman_pool:
+    // smart_contracts/agent_factory/contract.py:234-235
+    // @algopy.arc4.abimethod
+    // def confirm_tinyman_pool(self, pool_address: algopy.Account, pool_token_id: algopy.UInt64) -> algopy.String:
+    proto 2 1
+    // smart_contracts/agent_factory/contract.py:237
+    // assert self.graduation_initiated.value == algopy.UInt64(1), "Graduation not initiated"
+    intc_0 // 0
+    bytec 7 // "graduation_initiated"
+    app_global_get_ex
+    assert // check self.graduation_initiated exists
+    intc_1 // 1
+    ==
+    assert // Graduation not initiated
+    // smart_contracts/agent_factory/contract.py:238
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner
+    // smart_contracts/agent_factory/contract.py:240
+    // self.tinyman_pool_address.value = pool_address
+    pushbytes "tinyman_pool_address"
+    frame_dig -2
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:241
+    // self.pool_token_id.value = pool_token_id
+    bytec 18 // "pool_token_id"
+    frame_dig -1
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:242
+    // self.graduated.value = algopy.UInt64(1)
+    bytec 4 // "graduated"
+    intc_1 // 1
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:244
+    // return algopy.String("Tinyman pool confirmed")
+    pushbytes "Tinyman pool confirmed"
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.get_graduation_preview() -> uint64, uint64, uint64, uint64:
+get_graduation_preview:
+    // smart_contracts/agent_factory/contract.py:249
+    // if self.reserve_balance.value < self.GRADUATION_THRESHOLD:
+    intc_0 // 0
+    bytec_0 // "reserve_balance"
+    app_global_get_ex
+    assert // check self.reserve_balance exists
+    intc_0 // 0
+    bytec 10 // "GRADUATION_THRESHOLD"
+    app_global_get_ex
+    assert // check self.GRADUATION_THRESHOLD exists
+    <
+    bz get_graduation_preview_after_if_else@2
+    // smart_contracts/agent_factory/contract.py:250
+    // return (algopy.UInt64(0), algopy.UInt64(0), algopy.UInt64(0), algopy.UInt64(0))
+    intc_0 // 0
+    dupn 3
+    retsub
+
+get_graduation_preview_after_if_else@2:
+    // smart_contracts/agent_factory/contract.py:252
+    // total_reserve = self.reserve_balance.value
+    intc_0 // 0
+    bytec_0 // "reserve_balance"
+    app_global_get_ex
+    assert // check self.reserve_balance exists
+    // smart_contracts/agent_factory/contract.py:253
+    // liquidity_algo = (total_reserve * self.LIQUIDITY_PERCENTAGE) // algopy.UInt64(100)
+    intc_0 // 0
+    bytec 19 // "LIQUIDITY_PERCENTAGE"
+    app_global_get_ex
+    assert // check self.LIQUIDITY_PERCENTAGE exists
+    dig 1
+    *
+    pushint 100 // 100
+    /
+    // smart_contracts/agent_factory/contract.py:254
+    // creator_algo = (total_reserve * self.CREATOR_PERCENTAGE) // algopy.UInt64(100)
+    intc_0 // 0
+    bytec 20 // "CREATOR_PERCENTAGE"
+    app_global_get_ex
+    assert // check self.CREATOR_PERCENTAGE exists
+    dig 2
+    *
+    pushint 100 // 100
+    /
+    // smart_contracts/agent_factory/contract.py:255
+    // platform_fee = total_reserve - liquidity_algo - creator_algo
+    uncover 2
+    dig 2
+    -
+    dig 1
+    -
+    // smart_contracts/agent_factory/contract.py:256
+    // remaining_tokens = self.TOTAL_SUPPLY - self.current_supply.value
+    intc_0 // 0
+    bytec 17 // "TOTAL_SUPPLY"
+    app_global_get_ex
+    assert // check self.TOTAL_SUPPLY exists
+    intc_0 // 0
+    bytec_2 // "current_supply"
+    app_global_get_ex
+    assert // check self.current_supply exists
+    -
+    // smart_contracts/agent_factory/contract.py:258
+    // return (liquidity_algo, creator_algo, platform_fee, remaining_tokens)
     retsub
 
 
 // smart_contracts.agent_factory.contract.AgentFactory._calculate_buy_amount(algo_amount: uint64) -> uint64:
 _calculate_buy_amount:
-    // smart_contracts/agent_factory/contract.py:170-171
-    // @subroutine
-    // def _calculate_buy_amount(self, algo_amount: UInt64) -> UInt64:
+    // smart_contracts/agent_factory/contract.py:261-262
+    // @algopy.subroutine
+    // def _calculate_buy_amount(self, algo_amount: algopy.UInt64) -> algopy.UInt64:
     proto 1 1
     pushbytes ""
-    // smart_contracts/agent_factory/contract.py:176-177
-    // # Current virtual reserves
+    // smart_contracts/agent_factory/contract.py:263
     // virtual_core = self.VIRTUAL_CORE + self.reserve_balance.value
     intc_0 // 0
-    bytec_3 // "VIRTUAL_CORE"
+    bytec 8 // "VIRTUAL_CORE"
     app_global_get_ex
     assert // check self.VIRTUAL_CORE exists
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
     +
     dup
-    // smart_contracts/agent_factory/contract.py:178
+    // smart_contracts/agent_factory/contract.py:264
     // virtual_token = self.VIRTUAL_TOKEN - self.current_supply.value
     intc_0 // 0
-    bytec 4 // "VIRTUAL_TOKEN"
+    bytec 9 // "VIRTUAL_TOKEN"
     app_global_get_ex
     assert // check self.VIRTUAL_TOKEN exists
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
     -
     swap
-    // smart_contracts/agent_factory/contract.py:180-181
-    // # New virtual core after adding ALGO
+    // smart_contracts/agent_factory/contract.py:266
     // new_virtual_core = virtual_core + algo_amount
     frame_dig -1
     +
     dup
-    // smart_contracts/agent_factory/contract.py:183-184
-    // # Calculate new virtual token using constant product: (vc * vt) / new_vc
-    // if new_virtual_core > UInt64(0) and virtual_token > UInt64(0):
+    // smart_contracts/agent_factory/contract.py:268
+    // if new_virtual_core > algopy.UInt64(0) and virtual_token > algopy.UInt64(0):
     bz _calculate_buy_amount_else_body@6
     frame_dig 2
     bz _calculate_buy_amount_else_body@6
-    // smart_contracts/agent_factory/contract.py:185
+    // smart_contracts/agent_factory/contract.py:269
     // new_virtual_token = (virtual_core * virtual_token) // new_virtual_core
     frame_dig 1
     frame_dig 2
@@ -945,8 +1772,8 @@ _calculate_buy_amount:
     /
     dup
     frame_bury 0
-    // smart_contracts/agent_factory/contract.py:186
-    // tokens_out = virtual_token - new_virtual_token if virtual_token > new_virtual_token else UInt64(0)
+    // smart_contracts/agent_factory/contract.py:270
+    // tokens_out = virtual_token - new_virtual_token if virtual_token > new_virtual_token else algopy.UInt64(0)
     >
     bz _calculate_buy_amount_ternary_false@4
     frame_dig 2
@@ -954,14 +1781,14 @@ _calculate_buy_amount:
     -
 
 _calculate_buy_amount_after_if_else@7:
-    // smart_contracts/agent_factory/contract.py:190
+    // smart_contracts/agent_factory/contract.py:274
     // return tokens_out
     frame_bury 0
     retsub
 
 _calculate_buy_amount_ternary_false@4:
-    // smart_contracts/agent_factory/contract.py:186
-    // tokens_out = virtual_token - new_virtual_token if virtual_token > new_virtual_token else UInt64(0)
+    // smart_contracts/agent_factory/contract.py:270
+    // tokens_out = virtual_token - new_virtual_token if virtual_token > new_virtual_token else algopy.UInt64(0)
     intc_0 // 0
     b _calculate_buy_amount_after_if_else@7
 
@@ -972,48 +1799,45 @@ _calculate_buy_amount_else_body@6:
 
 // smart_contracts.agent_factory.contract.AgentFactory._calculate_sell_amount(token_amount: uint64) -> uint64:
 _calculate_sell_amount:
-    // smart_contracts/agent_factory/contract.py:192-193
-    // @subroutine
-    // def _calculate_sell_amount(self, token_amount: UInt64) -> UInt64:
+    // smart_contracts/agent_factory/contract.py:276-277
+    // @algopy.subroutine
+    // def _calculate_sell_amount(self, token_amount: algopy.UInt64) -> algopy.UInt64:
     proto 1 1
     pushbytes ""
-    // smart_contracts/agent_factory/contract.py:197-198
-    // # Current virtual reserves
+    // smart_contracts/agent_factory/contract.py:279
     // virtual_core = self.VIRTUAL_CORE + self.reserve_balance.value
     intc_0 // 0
-    bytec_3 // "VIRTUAL_CORE"
+    bytec 8 // "VIRTUAL_CORE"
     app_global_get_ex
     assert // check self.VIRTUAL_CORE exists
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
     +
-    // smart_contracts/agent_factory/contract.py:199
+    // smart_contracts/agent_factory/contract.py:280
     // virtual_token = self.VIRTUAL_TOKEN - self.current_supply.value
     intc_0 // 0
-    bytec 4 // "VIRTUAL_TOKEN"
+    bytec 9 // "VIRTUAL_TOKEN"
     app_global_get_ex
     assert // check self.VIRTUAL_TOKEN exists
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
     -
     dup
-    // smart_contracts/agent_factory/contract.py:201-202
-    // # New virtual token after adding tokens back
+    // smart_contracts/agent_factory/contract.py:282
     // new_virtual_token = virtual_token + token_amount
     frame_dig -1
     +
     dup
-    // smart_contracts/agent_factory/contract.py:204-205
-    // # Calculate new virtual core using constant product: (vc * vt) / new_vt
-    // if new_virtual_token > UInt64(0) and virtual_core > UInt64(0):
+    // smart_contracts/agent_factory/contract.py:284
+    // if new_virtual_token > algopy.UInt64(0) and virtual_core > algopy.UInt64(0):
     bz _calculate_sell_amount_else_body@6
     frame_dig 1
     bz _calculate_sell_amount_else_body@6
-    // smart_contracts/agent_factory/contract.py:206
+    // smart_contracts/agent_factory/contract.py:285
     // new_virtual_core = (virtual_core * virtual_token) // new_virtual_token
     frame_dig 1
     dup
@@ -1023,8 +1847,8 @@ _calculate_sell_amount:
     /
     dup
     frame_bury 0
-    // smart_contracts/agent_factory/contract.py:207
-    // algo_out = virtual_core - new_virtual_core if virtual_core > new_virtual_core else UInt64(0)
+    // smart_contracts/agent_factory/contract.py:286
+    // algo_out = virtual_core - new_virtual_core if virtual_core > new_virtual_core else algopy.UInt64(0)
     >
     bz _calculate_sell_amount_ternary_false@4
     frame_dig 1
@@ -1032,14 +1856,14 @@ _calculate_sell_amount:
     -
 
 _calculate_sell_amount_after_if_else@7:
-    // smart_contracts/agent_factory/contract.py:211
+    // smart_contracts/agent_factory/contract.py:290
     // return algo_out
     frame_bury 0
     retsub
 
 _calculate_sell_amount_ternary_false@4:
-    // smart_contracts/agent_factory/contract.py:207
-    // algo_out = virtual_core - new_virtual_core if virtual_core > new_virtual_core else UInt64(0)
+    // smart_contracts/agent_factory/contract.py:286
+    // algo_out = virtual_core - new_virtual_core if virtual_core > new_virtual_core else algopy.UInt64(0)
     intc_0 // 0
     b _calculate_sell_amount_after_if_else@7
 
@@ -1050,43 +1874,42 @@ _calculate_sell_amount_else_body@6:
 
 // smart_contracts.agent_factory.contract.AgentFactory._get_current_price() -> uint64:
 _get_current_price:
-    // smart_contracts/agent_factory/contract.py:213-214
-    // @subroutine
-    // def _get_current_price(self) -> UInt64:
+    // smart_contracts/agent_factory/contract.py:292-293
+    // @algopy.subroutine
+    // def _get_current_price(self) -> algopy.UInt64:
     proto 0 1
-    // smart_contracts/agent_factory/contract.py:219
+    // smart_contracts/agent_factory/contract.py:294
     // virtual_core = self.VIRTUAL_CORE + self.reserve_balance.value
     intc_0 // 0
-    bytec_3 // "VIRTUAL_CORE"
+    bytec 8 // "VIRTUAL_CORE"
     app_global_get_ex
     assert // check self.VIRTUAL_CORE exists
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
     +
-    // smart_contracts/agent_factory/contract.py:220
+    // smart_contracts/agent_factory/contract.py:295
     // virtual_token = self.VIRTUAL_TOKEN - self.current_supply.value
     intc_0 // 0
-    bytec 4 // "VIRTUAL_TOKEN"
+    bytec 9 // "VIRTUAL_TOKEN"
     app_global_get_ex
     assert // check self.VIRTUAL_TOKEN exists
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
     -
     dup
-    // smart_contracts/agent_factory/contract.py:222
-    // if virtual_token > UInt64(0) and virtual_core > UInt64(0):
+    // smart_contracts/agent_factory/contract.py:297
+    // if virtual_token > algopy.UInt64(0) and virtual_core > algopy.UInt64(0):
     bz _get_current_price_else_body@3
     frame_dig 0
     bz _get_current_price_else_body@3
-    // smart_contracts/agent_factory/contract.py:223-224
-    // # Price = vc / vt, scaled by 1e6 for decimals
-    // return (virtual_core * UInt64(1_000_000)) // virtual_token
+    // smart_contracts/agent_factory/contract.py:298
+    // return (virtual_core * algopy.UInt64(1_000_000)) // virtual_token
     frame_dig 0
-    intc_2 // 1000000
+    intc_3 // 1000000
     *
     frame_dig 1
     /
@@ -1094,19 +1917,19 @@ _get_current_price:
     retsub
 
 _get_current_price_else_body@3:
-    // smart_contracts/agent_factory/contract.py:226
-    // return UInt64(1_000_000)  # Default price of 1.0
-    intc_2 // 1000000
+    // smart_contracts/agent_factory/contract.py:300
+    // return algopy.UInt64(1_000_000)
+    intc_3 // 1000000
     frame_bury 0
     retsub
 
 
 // smart_contracts.agent_factory.contract.AgentFactory.get_total_agents() -> uint64:
 get_total_agents:
-    // smart_contracts/agent_factory/contract.py:233
+    // smart_contracts/agent_factory/contract.py:304
     // return self.total_agents.value
     intc_0 // 0
-    bytec 7 // "total_agents"
+    bytec 6 // "total_agents"
     app_global_get_ex
     assert // check self.total_agents exists
     retsub
@@ -1114,7 +1937,7 @@ get_total_agents:
 
 // smart_contracts.agent_factory.contract.AgentFactory.get_current_price() -> uint64:
 get_current_price:
-    // smart_contracts/agent_factory/contract.py:238
+    // smart_contracts/agent_factory/contract.py:308
     // return self._get_current_price()
     callsub _get_current_price
     retsub
@@ -1122,66 +1945,65 @@ get_current_price:
 
 // smart_contracts.agent_factory.contract.AgentFactory.get_buy_quote(algo_amount: uint64) -> uint64, uint64, uint64:
 get_buy_quote:
-    // smart_contracts/agent_factory/contract.py:240-241
-    // @abimethod
-    // def get_buy_quote(self, algo_amount: UInt64) -> tuple[UInt64, UInt64, UInt64]:
+    // smart_contracts/agent_factory/contract.py:310-311
+    // @algopy.arc4.abimethod
+    // def get_buy_quote(self, algo_amount: algopy.UInt64) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64]:
     proto 1 3
-    // smart_contracts/agent_factory/contract.py:246
+    // smart_contracts/agent_factory/contract.py:312
     // current_price = self._get_current_price()
     callsub _get_current_price
-    // smart_contracts/agent_factory/contract.py:247
+    // smart_contracts/agent_factory/contract.py:313
     // tokens_out = self._calculate_buy_amount(algo_amount)
     frame_dig -1
     callsub _calculate_buy_amount
     dup
-    // smart_contracts/agent_factory/contract.py:249-250
-    // # Calculate new price after purchase (simulation)
+    // smart_contracts/agent_factory/contract.py:315
     // temp_supply = self.current_supply.value + tokens_out
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
     +
-    // smart_contracts/agent_factory/contract.py:251
+    // smart_contracts/agent_factory/contract.py:316
     // temp_reserve = self.reserve_balance.value + algo_amount
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
     frame_dig -1
     +
-    // smart_contracts/agent_factory/contract.py:253
+    // smart_contracts/agent_factory/contract.py:318
     // virtual_core = self.VIRTUAL_CORE + temp_reserve
     intc_0 // 0
-    bytec_3 // "VIRTUAL_CORE"
+    bytec 8 // "VIRTUAL_CORE"
     app_global_get_ex
     assert // check self.VIRTUAL_CORE exists
     +
     swap
-    // smart_contracts/agent_factory/contract.py:254
+    // smart_contracts/agent_factory/contract.py:319
     // virtual_token = self.VIRTUAL_TOKEN - temp_supply
     intc_0 // 0
-    bytec 4 // "VIRTUAL_TOKEN"
+    bytec 9 // "VIRTUAL_TOKEN"
     app_global_get_ex
     assert // check self.VIRTUAL_TOKEN exists
     swap
     -
     dup
-    // smart_contracts/agent_factory/contract.py:256
-    // if virtual_token > UInt64(0) and virtual_core > UInt64(0):
+    // smart_contracts/agent_factory/contract.py:321
+    // if virtual_token > algopy.UInt64(0) and virtual_core > algopy.UInt64(0):
     bz get_buy_quote_else_body@3
     frame_dig 2
     bz get_buy_quote_else_body@3
-    // smart_contracts/agent_factory/contract.py:257
-    // new_price = (virtual_core * UInt64(1_000_000)) // virtual_token
+    // smart_contracts/agent_factory/contract.py:322
+    // new_price = (virtual_core * algopy.UInt64(1_000_000)) // virtual_token
     frame_dig 2
-    intc_2 // 1000000
+    intc_3 // 1000000
     *
     frame_dig 3
     /
 
 get_buy_quote_after_if_else@4:
-    // smart_contracts/agent_factory/contract.py:261
+    // smart_contracts/agent_factory/contract.py:326
     // return (tokens_out, current_price, new_price)
     frame_dig 1
     frame_dig 0
@@ -1192,75 +2014,74 @@ get_buy_quote_after_if_else@4:
     retsub
 
 get_buy_quote_else_body@3:
-    // smart_contracts/agent_factory/contract.py:259
-    // new_price = UInt64(1_000_000)
-    intc_2 // 1000000
+    // smart_contracts/agent_factory/contract.py:324
+    // new_price = algopy.UInt64(1_000_000)
+    intc_3 // 1000000
     b get_buy_quote_after_if_else@4
 
 
 // smart_contracts.agent_factory.contract.AgentFactory.get_sell_quote(token_amount: uint64) -> uint64, uint64, uint64:
 get_sell_quote:
-    // smart_contracts/agent_factory/contract.py:263-264
-    // @abimethod
-    // def get_sell_quote(self, token_amount: UInt64) -> tuple[UInt64, UInt64, UInt64]:
+    // smart_contracts/agent_factory/contract.py:328-329
+    // @algopy.arc4.abimethod
+    // def get_sell_quote(self, token_amount: algopy.UInt64) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64]:
     proto 1 3
-    // smart_contracts/agent_factory/contract.py:269
+    // smart_contracts/agent_factory/contract.py:330
     // current_price = self._get_current_price()
     callsub _get_current_price
-    // smart_contracts/agent_factory/contract.py:270
+    // smart_contracts/agent_factory/contract.py:331
     // algo_out = self._calculate_sell_amount(token_amount)
     frame_dig -1
     callsub _calculate_sell_amount
     dup
-    // smart_contracts/agent_factory/contract.py:272-273
-    // # Calculate new price after sale (simulation)
+    // smart_contracts/agent_factory/contract.py:333
     // temp_supply = self.current_supply.value - token_amount
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
     frame_dig -1
     -
-    // smart_contracts/agent_factory/contract.py:274
+    // smart_contracts/agent_factory/contract.py:334
     // temp_reserve = self.reserve_balance.value - algo_out
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
     uncover 2
     -
-    // smart_contracts/agent_factory/contract.py:276
+    // smart_contracts/agent_factory/contract.py:336
     // virtual_core = self.VIRTUAL_CORE + temp_reserve
     intc_0 // 0
-    bytec_3 // "VIRTUAL_CORE"
+    bytec 8 // "VIRTUAL_CORE"
     app_global_get_ex
     assert // check self.VIRTUAL_CORE exists
     +
     swap
-    // smart_contracts/agent_factory/contract.py:277
+    // smart_contracts/agent_factory/contract.py:337
     // virtual_token = self.VIRTUAL_TOKEN - temp_supply
     intc_0 // 0
-    bytec 4 // "VIRTUAL_TOKEN"
+    bytec 9 // "VIRTUAL_TOKEN"
     app_global_get_ex
     assert // check self.VIRTUAL_TOKEN exists
     swap
     -
     dup
-    // smart_contracts/agent_factory/contract.py:279
-    // if virtual_token > UInt64(0) and virtual_core > UInt64(0):
+    // smart_contracts/agent_factory/contract.py:339
+    // if virtual_token > algopy.UInt64(0) and virtual_core > algopy.UInt64(0):
     bz get_sell_quote_else_body@3
     frame_dig 2
     bz get_sell_quote_else_body@3
-    // smart_contracts/agent_factory/contract.py:280
-    // new_price = (virtual_core * UInt64(1_000_000)) // virtual_token
+    // smart_contracts/agent_factory/contract.py:340
+    // new_price = (virtual_core * algopy.UInt64(1_000_000)) // virtual_token
     frame_dig 2
-    intc_2 // 1000000
+    intc_3 // 1000000
     *
     frame_dig 3
     /
 
 get_sell_quote_after_if_else@4:
-    // smart_contracts/agent_factory/contract.py:284
+    // smart_contracts/agent_factory/contract.py:344
     // return (algo_out, current_price, new_price)
     frame_dig 1
     frame_dig 0
@@ -1271,110 +2092,279 @@ get_sell_quote_after_if_else@4:
     retsub
 
 get_sell_quote_else_body@3:
-    // smart_contracts/agent_factory/contract.py:282
-    // new_price = UInt64(1_000_000)
-    intc_2 // 1000000
+    // smart_contracts/agent_factory/contract.py:342
+    // new_price = algopy.UInt64(1_000_000)
+    intc_3 // 1000000
     b get_sell_quote_after_if_else@4
 
 
 // smart_contracts.agent_factory.contract.AgentFactory.get_bonding_curve_info() -> uint64, uint64, uint64, uint64:
 get_bonding_curve_info:
-    // smart_contracts/agent_factory/contract.py:293
+    // smart_contracts/agent_factory/contract.py:349
     // self.current_supply.value,
     intc_0 // 0
-    bytec_1 // "current_supply"
+    bytec_2 // "current_supply"
     app_global_get_ex
     assert // check self.current_supply exists
-    // smart_contracts/agent_factory/contract.py:294
+    // smart_contracts/agent_factory/contract.py:350
     // self.reserve_balance.value,
     intc_0 // 0
-    bytec_2 // "reserve_balance"
+    bytec_0 // "reserve_balance"
     app_global_get_ex
     assert // check self.reserve_balance exists
-    // smart_contracts/agent_factory/contract.py:295
+    // smart_contracts/agent_factory/contract.py:351
     // self._get_current_price(),
     callsub _get_current_price
-    // smart_contracts/agent_factory/contract.py:296
-    // self.graduated.value,  # Returns 0 or 1
+    // smart_contracts/agent_factory/contract.py:352
+    // self.graduated.value,
     intc_0 // 0
-    bytec 14 // "graduated"
+    bytec 4 // "graduated"
     app_global_get_ex
     assert // check self.graduated exists
-    // smart_contracts/agent_factory/contract.py:292-297
+    // smart_contracts/agent_factory/contract.py:348-353
     // return (
     //     self.current_supply.value,
     //     self.reserve_balance.value,
     //     self._get_current_price(),
-    //     self.graduated.value,  # Returns 0 or 1
+    //     self.graduated.value,
     // )
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.get_graduation_status() -> uint64, uint64, uint64, uint64:
+get_graduation_status:
+    // smart_contracts/agent_factory/contract.py:357
+    // threshold_met = algopy.UInt64(1) if self.reserve_balance.value >= self.GRADUATION_THRESHOLD else algopy.UInt64(0)
+    intc_0 // 0
+    bytec_0 // "reserve_balance"
+    app_global_get_ex
+    assert // check self.reserve_balance exists
+    intc_0 // 0
+    bytec 10 // "GRADUATION_THRESHOLD"
+    app_global_get_ex
+    assert // check self.GRADUATION_THRESHOLD exists
+    >=
+    // smart_contracts/agent_factory/contract.py:360
+    // self.graduated.value,
+    intc_0 // 0
+    bytec 4 // "graduated"
+    app_global_get_ex
+    assert // check self.graduated exists
+    // smart_contracts/agent_factory/contract.py:362
+    // self.graduation_timestamp.value,
+    intc_0 // 0
+    bytec 15 // "graduation_timestamp"
+    app_global_get_ex
+    assert // check self.graduation_timestamp exists
+    // smart_contracts/agent_factory/contract.py:363
+    // self.pool_token_id.value
+    intc_0 // 0
+    bytec 18 // "pool_token_id"
+    app_global_get_ex
+    assert // check self.pool_token_id exists
+    // smart_contracts/agent_factory/contract.py:359-364
+    // return (
+    //     self.graduated.value,
+    //     threshold_met,
+    //     self.graduation_timestamp.value,
+    //     self.pool_token_id.value
+    // )
+    uncover 2
+    cover 3
     retsub
 
 
 // smart_contracts.agent_factory.contract.AgentFactory.get_metadata() -> uint64, uint64, uint64:
 get_metadata:
-    // smart_contracts/agent_factory/contract.py:306
+    // smart_contracts/agent_factory/contract.py:369
     // self.asa_id.value,
     intc_0 // 0
-    bytec 13 // "asa_id"
+    bytec 12 // "asa_id"
     app_global_get_ex
     assert // check self.asa_id exists
-    // smart_contracts/agent_factory/contract.py:308
+    // smart_contracts/agent_factory/contract.py:371
     // self.total_agents.value,
     intc_0 // 0
-    bytec 7 // "total_agents"
+    bytec 6 // "total_agents"
     app_global_get_ex
     assert // check self.total_agents exists
-    // smart_contracts/agent_factory/contract.py:307
-    // UInt64(1),  # Always active for now
+    // smart_contracts/agent_factory/contract.py:370
+    // algopy.UInt64(1),
     intc_1 // 1
-    // smart_contracts/agent_factory/contract.py:305-309
+    // smart_contracts/agent_factory/contract.py:368-372
     // return (
     //     self.asa_id.value,
-    //     UInt64(1),  # Always active for now
+    //     algopy.UInt64(1),
     //     self.total_agents.value,
     // )
     swap
     retsub
 
 
-// smart_contracts.agent_factory.contract.AgentFactory.distribute_rewards() -> void:
-distribute_rewards:
-    // smart_contracts/agent_factory/contract.py:316
-    // assert Txn.sender == self.owner.value, "Only owner"
+// smart_contracts.agent_factory.contract.AgentFactory.set_treasury(new_treasury: bytes) -> void:
+set_treasury:
+    // smart_contracts/agent_factory/contract.py:374-375
+    // @algopy.arc4.abimethod
+    // def set_treasury(self, new_treasury: algopy.Account) -> None:
+    proto 1 0
+    // smart_contracts/agent_factory/contract.py:376
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
     txn Sender
     intc_0 // 0
-    bytec 5 // "owner"
+    bytec_3 // "owner"
     app_global_get_ex
     assert // check self.owner exists
     ==
     assert // Only owner
-    // smart_contracts/agent_factory/contract.py:317
-    // assert Global.group_size >= UInt64(2), "Payment required"
+    // smart_contracts/agent_factory/contract.py:377
+    // self.treasury.value = new_treasury
+    bytec 13 // "treasury"
+    frame_dig -1
+    app_global_put
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.set_fee(new_fee: uint64) -> void:
+set_fee:
+    // smart_contracts/agent_factory/contract.py:379-380
+    // @algopy.arc4.abimethod
+    // def set_fee(self, new_fee: algopy.UInt64) -> None:
+    proto 1 0
+    // smart_contracts/agent_factory/contract.py:381
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner
+    // smart_contracts/agent_factory/contract.py:382
+    // self.creation_fee.value = new_fee
+    bytec 14 // "creation_fee"
+    frame_dig -1
+    app_global_put
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.pause() -> void:
+pause:
+    // smart_contracts/agent_factory/contract.py:386
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner
+    // smart_contracts/agent_factory/contract.py:387
+    // self.paused.value = algopy.UInt64(1)
+    bytec 5 // "paused"
+    intc_1 // 1
+    app_global_put
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.unpause() -> void:
+unpause:
+    // smart_contracts/agent_factory/contract.py:391
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner
+    // smart_contracts/agent_factory/contract.py:392
+    // self.paused.value = algopy.UInt64(0)
+    bytec 5 // "paused"
+    intc_0 // 0
+    app_global_put
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.emergency_graduation_reset() -> bytes:
+emergency_graduation_reset:
+    // smart_contracts/agent_factory/contract.py:396
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner
+    // smart_contracts/agent_factory/contract.py:398
+    // self.graduation_initiated.value = algopy.UInt64(0)
+    bytec 7 // "graduation_initiated"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:399
+    // self.graduated.value = algopy.UInt64(0)
+    bytec 4 // "graduated"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:400
+    // self.pool_token_id.value = algopy.UInt64(0)
+    bytec 18 // "pool_token_id"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:401
+    // self.graduation_timestamp.value = algopy.UInt64(0)
+    bytec 15 // "graduation_timestamp"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:402
+    // self.graduation_funds_withdrawn.value = algopy.UInt64(0)
+    bytec 16 // "graduation_funds_withdrawn"
+    intc_0 // 0
+    app_global_put
+    // smart_contracts/agent_factory/contract.py:404
+    // return algopy.String("Graduation status reset")
+    pushbytes "Graduation status reset"
+    retsub
+
+
+// smart_contracts.agent_factory.contract.AgentFactory.distribute_rewards() -> void:
+distribute_rewards:
+    // smart_contracts/agent_factory/contract.py:408
+    // assert algopy.Txn.sender == self.owner.value, "Only owner"
+    txn Sender
+    intc_0 // 0
+    bytec_3 // "owner"
+    app_global_get_ex
+    assert // check self.owner exists
+    ==
+    assert // Only owner
+    // smart_contracts/agent_factory/contract.py:409
+    // assert algopy.Global.group_size >= algopy.UInt64(2), "Payment required"
     global GroupSize
-    intc_3 // 2
+    pushint 2 // 2
     >=
     assert // Payment required
-    // smart_contracts/agent_factory/contract.py:319
-    // payment_txn = gtxn.PaymentTransaction(0)
+    // smart_contracts/agent_factory/contract.py:411
+    // payment_txn = algopy.gtxn.PaymentTransaction(0)
     intc_0 // 0
     gtxns TypeEnum
     intc_1 // pay
     ==
     assert // transaction type is pay
-    // smart_contracts/agent_factory/contract.py:321
+    // smart_contracts/agent_factory/contract.py:412
     // self.reward_pool.value += payment_txn.amount
     intc_0 // 0
-    bytec 8 // "reward_pool"
+    bytec 11 // "reward_pool"
     app_global_get_ex
     assert // check self.reward_pool exists
-    // smart_contracts/agent_factory/contract.py:319
-    // payment_txn = gtxn.PaymentTransaction(0)
+    // smart_contracts/agent_factory/contract.py:411
+    // payment_txn = algopy.gtxn.PaymentTransaction(0)
     intc_0 // 0
-    // smart_contracts/agent_factory/contract.py:321
+    // smart_contracts/agent_factory/contract.py:412
     // self.reward_pool.value += payment_txn.amount
     gtxns Amount
     +
-    bytec 8 // "reward_pool"
+    bytec 11 // "reward_pool"
     swap
     app_global_put
     retsub
@@ -1382,62 +2372,62 @@ distribute_rewards:
 
 // smart_contracts.agent_factory.contract.AgentFactory.claim_rewards() -> uint64:
 claim_rewards:
-    // smart_contracts/agent_factory/contract.py:326
+    // smart_contracts/agent_factory/contract.py:416
     // reward_amount = self.reward_pool.value
     intc_0 // 0
-    bytec 8 // "reward_pool"
+    bytec 11 // "reward_pool"
     app_global_get_ex
     assert // check self.reward_pool exists
-    // smart_contracts/agent_factory/contract.py:327
-    // assert reward_amount > UInt64(0), "No rewards available"
+    // smart_contracts/agent_factory/contract.py:417
+    // assert reward_amount > algopy.UInt64(0), "No rewards available"
     dup
     assert // No rewards available
-    // smart_contracts/agent_factory/contract.py:329-333
-    // # Send rewards to claimer
-    // itxn.Payment(
-    //     receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:419-423
+    // algopy.itxn.Payment(
+    //     receiver=algopy.Txn.sender,
     //     amount=reward_amount,
+    //     fee=algopy.UInt64(1000),
     // ).submit()
     itxn_begin
-    // smart_contracts/agent_factory/contract.py:331
-    // receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:420
+    // receiver=algopy.Txn.sender,
     txn Sender
     dig 1
     itxn_field Amount
     itxn_field Receiver
-    // smart_contracts/agent_factory/contract.py:329-330
-    // # Send rewards to claimer
-    // itxn.Payment(
+    // smart_contracts/agent_factory/contract.py:419
+    // algopy.itxn.Payment(
     intc_1 // pay
     itxn_field TypeEnum
-    intc_0 // 0
+    // smart_contracts/agent_factory/contract.py:422
+    // fee=algopy.UInt64(1000),
+    intc_2 // 1000
     itxn_field Fee
-    // smart_contracts/agent_factory/contract.py:329-333
-    // # Send rewards to claimer
-    // itxn.Payment(
-    //     receiver=Txn.sender,
+    // smart_contracts/agent_factory/contract.py:419-423
+    // algopy.itxn.Payment(
+    //     receiver=algopy.Txn.sender,
     //     amount=reward_amount,
+    //     fee=algopy.UInt64(1000),
     // ).submit()
     itxn_submit
-    // smart_contracts/agent_factory/contract.py:335-336
-    // # Reset reward pool
-    // self.reward_pool.value = UInt64(0)
-    bytec 8 // "reward_pool"
+    // smart_contracts/agent_factory/contract.py:425
+    // self.reward_pool.value = algopy.UInt64(0)
+    bytec 11 // "reward_pool"
     intc_0 // 0
     app_global_put
-    // smart_contracts/agent_factory/contract.py:338
+    // smart_contracts/agent_factory/contract.py:426
     // return reward_amount
     retsub
 
 
 // smart_contracts.agent_factory.contract.AgentFactory.hello(name: bytes) -> bytes:
 hello:
-    // smart_contracts/agent_factory/contract.py:342-343
-    // @abimethod
-    // def hello(self, name: String) -> String:
+    // smart_contracts/agent_factory/contract.py:428-429
+    // @algopy.arc4.abimethod
+    // def hello(self, name: algopy.String) -> algopy.String:
     proto 1 1
-    // smart_contracts/agent_factory/contract.py:345
-    // return String("Hello, ") + name
+    // smart_contracts/agent_factory/contract.py:430
+    // return algopy.String("Hello, ") + name
     pushbytes "Hello, "
     frame_dig -1
     concat

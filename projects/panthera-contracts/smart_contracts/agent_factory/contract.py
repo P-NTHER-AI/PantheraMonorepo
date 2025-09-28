@@ -1,350 +1,434 @@
-from algopy import Account, ARC4Contract, itxn, Global, GlobalState, gtxn, String, subroutine, Txn, UInt64
-from algopy.arc4 import abimethod
+import algopy
 
 
-class AgentFactory(ARC4Contract):
+class AgentFactory(algopy.arc4.ARC4Contract):
+
     def __init__(self) -> None:
-        # Global State Variables
-        self.owner = GlobalState(Account)
-        self.treasury = GlobalState(Account)
-        self.creation_fee = GlobalState(UInt64)
-        self.paused = GlobalState(UInt64)
-        self.total_agents = GlobalState(UInt64)
-        self.current_supply = GlobalState(UInt64)
-        self.reserve_balance = GlobalState(UInt64)
-        self.graduated = GlobalState(UInt64)
-        self.reward_pool = GlobalState(UInt64)
-        self.asa_id = GlobalState(UInt64)
+        self.owner = algopy.GlobalState(algopy.Account)
+        self.treasury = algopy.GlobalState(algopy.Account)
+        self.creation_fee = algopy.GlobalState(algopy.UInt64)
+        self.paused = algopy.GlobalState(algopy.UInt64)
+        self.total_agents = algopy.GlobalState(algopy.UInt64)
+        self.current_supply = algopy.GlobalState(algopy.UInt64)
+        self.reserve_balance = algopy.GlobalState(algopy.UInt64)
+        self.graduated = algopy.GlobalState(algopy.UInt64)
+        self.reward_pool = algopy.GlobalState(algopy.UInt64)
+        self.asa_id = algopy.GlobalState(algopy.UInt64)
 
-        # Constants
-        self.DECIMALS = UInt64(6)
-        self.TOTAL_SUPPLY = UInt64(1_000_000_000 * (10**6))  # Pre-calculated
-        self.VIRTUAL_CORE = UInt64(30_000_000)
-        self.VIRTUAL_TOKEN = UInt64(1_073_000_000_000)
-        self.GRADUATION_THRESHOLD = UInt64(30_000_000_000)
-        self.PLATFORM_FEE_BP = UInt64(100)  # 1%
+        self.DECIMALS = algopy.UInt64(6)
+        self.TOTAL_SUPPLY = algopy.UInt64(1_000_000_000 * (10**6))
+        self.VIRTUAL_CORE = algopy.UInt64(30_000)
+        self.VIRTUAL_TOKEN = algopy.UInt64(1_073_000)
+        self.PLATFORM_FEE_BP = algopy.UInt64(100)
 
-    @subroutine
-    def create(self) -> None:
-        """Initialize the contract on creation"""
-        self.owner.value = Txn.sender
-        self.treasury.value = Txn.sender
-        self.creation_fee.value = UInt64(0)
-        self.paused.value = UInt64(0)  # False = 0
-        self.total_agents.value = UInt64(0)
-        self.current_supply.value = UInt64(0)
-        self.reserve_balance.value = UInt64(0)
-        self.graduated.value = UInt64(0)  # False = 0
-        self.reward_pool.value = UInt64(0)
+        self.GRADUATION_THRESHOLD = algopy.UInt64(5_000_000)
+        self.graduation_initiated = algopy.GlobalState(algopy.UInt64)
+        self.graduation_timestamp = algopy.GlobalState(algopy.UInt64)
+        self.tinyman_pool_address = algopy.GlobalState(algopy.Account)
+        self.pool_token_id = algopy.GlobalState(algopy.UInt64)
+        self.graduation_funds_withdrawn = algopy.GlobalState(algopy.UInt64)
 
-    # --- Owner Only Methods ---
+        self.LIQUIDITY_PERCENTAGE = algopy.UInt64(80)
+        self.CREATOR_PERCENTAGE = algopy.UInt64(15)
+        self.PLATFORM_PERCENTAGE = algopy.UInt64(5)
 
-    @abimethod
-    def set_treasury(self, new_treasury: Account) -> None:
-        """Set treasury address (owner only)"""
-        assert Txn.sender == self.owner.value, "Only owner"
-        self.treasury.value = new_treasury
+        self.owner.value = algopy.Txn.sender
+        self.treasury.value = algopy.Txn.sender
+        self.creation_fee.value = algopy.UInt64(0)
+        self.paused.value = algopy.UInt64(0)
+        self.total_agents.value = algopy.UInt64(0)
+        self.current_supply.value = algopy.UInt64(0)
+        self.reserve_balance.value = algopy.UInt64(0)
+        self.graduated.value = algopy.UInt64(0)
+        self.reward_pool.value = algopy.UInt64(0)
+        self.asa_id.value = algopy.UInt64(0)
+        self.graduation_initiated.value = algopy.UInt64(0)
+        self.graduation_timestamp.value = algopy.UInt64(0)
+        self.pool_token_id.value = algopy.UInt64(0)
+        self.graduation_funds_withdrawn.value = algopy.UInt64(0)
 
-    @abimethod
-    def set_fee(self, new_fee: UInt64) -> None:
-        """Set creation fee (owner only)"""
-        assert Txn.sender == self.owner.value, "Only owner"
-        self.creation_fee.value = new_fee
+    @algopy.arc4.abimethod
+    def create(self) -> algopy.String:
+        self.owner.value = algopy.Txn.sender
+        self.treasury.value = algopy.Txn.sender
+        self.creation_fee.value = algopy.UInt64(0)
+        self.paused.value = algopy.UInt64(0)
+        self.total_agents.value = algopy.UInt64(0)
+        self.current_supply.value = algopy.UInt64(0)
+        self.reserve_balance.value = algopy.UInt64(0)
+        self.graduated.value = algopy.UInt64(0)
+        self.reward_pool.value = algopy.UInt64(0)
+        self.graduation_initiated.value = algopy.UInt64(0)
+        self.graduation_timestamp.value = algopy.UInt64(0)
+        self.graduation_funds_withdrawn.value = algopy.UInt64(0)
+        return algopy.String("Contract re-initialized")
 
-    @abimethod
-    def pause(self) -> None:
-        """Pause the contract (owner only)"""
-        assert Txn.sender == self.owner.value, "Only owner"
-        self.paused.value = UInt64(1)  # True = 1
+    @algopy.arc4.abimethod
+    def create_agent(self, name: algopy.String, symbol: algopy.String) -> algopy.UInt64:
+        assert self.paused.value == algopy.UInt64(0), "Contract paused"
 
-    @abimethod
-    def unpause(self) -> None:
-        """Unpause the contract (owner only)"""
-        assert Txn.sender == self.owner.value, "Only owner"
-        self.paused.value = UInt64(0)  # False = 0
-
-    # --- Core Agent Factory Methods ---
-
-    @abimethod
-    def create_agent(self, name: String, symbol: String) -> UInt64:
-        """
-        Create a new agent token (ASA)
-        Multi-Agent Factory Pattern - Each call creates new ASA
-        """
-        assert self.paused.value == UInt64(0), "Contract paused"
-
-        # Check fee payment if required
-        if self.creation_fee.value > UInt64(0):
-            assert Global.group_size >= UInt64(2), "Payment required"
-            payment_txn = gtxn.PaymentTransaction(0)
+        if self.creation_fee.value > algopy.UInt64(0):
+            assert algopy.Global.group_size >= algopy.UInt64(2), "Payment required"
+            payment_txn = algopy.gtxn.PaymentTransaction(0)
             assert payment_txn.receiver == self.treasury.value, "Wrong receiver"
             assert payment_txn.amount >= self.creation_fee.value, "Insufficient payment"
 
-        # Create ASA via inner transaction
-        asa_create_txn = itxn.AssetConfig(
+        asa_create_txn = algopy.itxn.AssetConfig(
             total=self.TOTAL_SUPPLY,
             decimals=self.DECIMALS,
             asset_name=name,
             unit_name=symbol,
-            manager=Global.current_application_address,
-            reserve=Global.current_application_address,
-            freeze=Global.current_application_address,
-            clawback=Global.current_application_address,
+            manager=algopy.Global.current_application_address,
+            reserve=algopy.Global.current_application_address,
+            freeze=algopy.Global.current_application_address,
+            clawback=algopy.Global.current_application_address,
+            fee=algopy.UInt64(1000),
         )
 
         asa_id = asa_create_txn.submit().created_asset.id
 
-        # Set first agent ASA as primary ASA_ID
-        if self.total_agents.value == UInt64(0):
-            self.asa_id.value = asa_id
-
-        # Mint initial supply to contract
-        itxn.AssetTransfer(
+        algopy.itxn.AssetTransfer(
             xfer_asset=asa_id,
-            asset_sender=Global.current_application_address,
-            asset_receiver=Global.current_application_address,
-            asset_amount=UInt64(1_000_000),  # Initial liquidity
+            asset_sender=algopy.Global.current_application_address,
+            asset_receiver=algopy.Global.current_application_address,
+            asset_amount=algopy.UInt64(0),
+            fee=algopy.UInt64(1000),
         ).submit()
 
-        # Increment agent counter
-        self.total_agents.value += UInt64(1)
+        if self.total_agents.value == algopy.UInt64(0):
+            self.asa_id.value = asa_id
+
+        self.total_agents.value += algopy.UInt64(1)
 
         return asa_id
 
-    @abimethod
-    def buy_agent_tokens(self, target_asa_id: UInt64) -> UInt64:
-        """
-        Buy tokens for specific agent with bonding curve pricing
-        Multi-agent buying support
-        """
-        assert self.paused.value == UInt64(0), "Contract paused"
-        assert self.graduated.value == UInt64(0), "Agent graduated"
+    @algopy.arc4.abimethod
+    def buy_agent_tokens(self, target_asa_id: algopy.UInt64) -> algopy.UInt64:
+        assert self.paused.value == algopy.UInt64(0), "Contract paused"
+        assert self.graduated.value == algopy.UInt64(0), "Agent graduated"
 
-        # Get payment amount from grouped transaction
-        assert Global.group_size >= UInt64(2), "Payment required"
-        payment_txn = gtxn.PaymentTransaction(1)
-        assert payment_txn.receiver == Global.current_application_address, "Wrong receiver"
+        assert algopy.Global.group_size >= algopy.UInt64(2), "Payment required"
+        payment_txn = algopy.gtxn.PaymentTransaction(0)
+        assert payment_txn.receiver == algopy.Global.current_application_address, "Wrong receiver"
 
         algo_amount = payment_txn.amount
 
-        # Calculate token amount using bonding curve
         tokens_to_mint = self._calculate_buy_amount(algo_amount)
 
-        # Update global state
         self.current_supply.value += tokens_to_mint
         self.reserve_balance.value += algo_amount
 
-        # Transfer tokens to buyer
-        itxn.AssetTransfer(
-            xfer_asset=target_asa_id,
-            asset_receiver=Txn.sender,
+        algopy.itxn.AssetTransfer(
+            xfer_asset=self.asa_id.value,
+            asset_receiver=algopy.Txn.sender,
             asset_amount=tokens_to_mint,
+            fee=algopy.UInt64(1000),
         ).submit()
 
         return tokens_to_mint
 
-    @abimethod
-    def sell(self, token_amount: UInt64) -> UInt64:
-        """Sell tokens back to bonding curve"""
-        assert self.paused.value == UInt64(0), "Contract paused"
+    @algopy.arc4.abimethod
+    def sell(self, token_amount: algopy.UInt64) -> algopy.UInt64:
+        assert self.paused.value == algopy.UInt64(0), "Contract paused"
+        assert self.graduated.value == algopy.UInt64(0), "Trading disabled after graduation"
         assert self.current_supply.value >= token_amount, "Insufficient supply"
 
-        # Calculate ALGO to return using bonding curve
         algo_to_return = self._calculate_sell_amount(token_amount)
         assert self.reserve_balance.value >= algo_to_return, "Insufficient reserves"
 
-        # Update global state
         self.current_supply.value -= token_amount
         self.reserve_balance.value -= algo_to_return
 
-        # Send ALGO back to seller
-        itxn.Payment(
-            receiver=Txn.sender,
+        algopy.itxn.Payment(
+            receiver=algopy.Txn.sender,
             amount=algo_to_return,
+            fee=algopy.UInt64(1000),
         ).submit()
 
         return algo_to_return
 
-    # --- Bonding Curve Math Methods ---
+    @algopy.arc4.abimethod
+    def check_graduation_eligibility(self) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64]:
 
-    @subroutine
-    def _calculate_buy_amount(self, algo_amount: UInt64) -> UInt64:
-        """
-        Calculate tokens to mint for given ALGO amount using bonding curve
-        Implements: constant product formula x * y = k
-        """
-        # Current virtual reserves
+        eligible = algopy.UInt64(1) if (
+            self.reserve_balance.value >= self.GRADUATION_THRESHOLD and
+            self.graduated.value == algopy.UInt64(0) and
+            self.asa_id.value > algopy.UInt64(0)
+        ) else algopy.UInt64(0)
+
+        return (eligible, self.reserve_balance.value, self.GRADUATION_THRESHOLD)
+
+    @algopy.arc4.abimethod
+    def prepare_graduation(self) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64]:
+
+        assert self.reserve_balance.value >= self.GRADUATION_THRESHOLD, "Graduation threshold not met"
+        assert self.graduated.value == algopy.UInt64(0), "Already graduated"
+        assert algopy.Txn.sender == self.owner.value, "Only owner can prepare graduation"
+
+        total_reserve = self.reserve_balance.value
+        liquidity_algo = (total_reserve * self.LIQUIDITY_PERCENTAGE) // algopy.UInt64(100)
+        creator_allocation = (total_reserve * self.CREATOR_PERCENTAGE) // algopy.UInt64(100)
+        platform_fee = total_reserve - liquidity_algo - creator_allocation
+
+        self.graduation_initiated.value = algopy.UInt64(1)
+        self.graduation_timestamp.value = algopy.Global.latest_timestamp
+
+        if creator_allocation > algopy.UInt64(0):
+            algopy.itxn.Payment(
+                receiver=self.owner.value,
+                amount=creator_allocation,
+                fee=algopy.UInt64(1000),
+            ).submit()
+
+        if platform_fee > algopy.UInt64(0):
+            algopy.itxn.Payment(
+                receiver=self.treasury.value,
+                amount=platform_fee,
+                fee=algopy.UInt64(1000),
+            ).submit()
+
+        self.reserve_balance.value = liquidity_algo
+
+        return (liquidity_algo, creator_allocation, platform_fee)
+
+    @algopy.arc4.abimethod
+    def withdraw_graduation_funds(self, recipient: algopy.Account) -> algopy.UInt64:
+
+        assert self.graduation_initiated.value == algopy.UInt64(1), "Graduation not initiated"
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+        assert self.reserve_balance.value > algopy.UInt64(0), "No funds to withdraw"
+        assert self.graduation_funds_withdrawn.value == algopy.UInt64(0), "Funds already withdrawn"
+
+        amount_to_withdraw = self.reserve_balance.value
+        self.reserve_balance.value = algopy.UInt64(0)
+        self.graduation_funds_withdrawn.value = algopy.UInt64(1)
+
+        algopy.itxn.Payment(
+            receiver=recipient,
+            amount=amount_to_withdraw,
+            fee=algopy.UInt64(1000),
+        ).submit()
+
+        return amount_to_withdraw
+
+    @algopy.arc4.abimethod
+    def mint_graduation_tokens(self, recipient: algopy.Account, amount: algopy.UInt64) -> algopy.UInt64:
+
+        assert self.graduation_initiated.value == algopy.UInt64(1), "Graduation not initiated"
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+
+        remaining_supply = self.TOTAL_SUPPLY - self.current_supply.value
+        assert amount <= remaining_supply, "Exceeds remaining supply"
+
+        self.current_supply.value += amount
+
+        algopy.itxn.AssetTransfer(
+            xfer_asset=self.asa_id.value,
+            asset_receiver=recipient,
+            asset_amount=amount,
+            fee=algopy.UInt64(1000),
+        ).submit()
+
+        return amount
+
+    @algopy.arc4.abimethod
+    def confirm_tinyman_pool(self, pool_address: algopy.Account, pool_token_id: algopy.UInt64) -> algopy.String:
+
+        assert self.graduation_initiated.value == algopy.UInt64(1), "Graduation not initiated"
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+
+        self.tinyman_pool_address.value = pool_address
+        self.pool_token_id.value = pool_token_id
+        self.graduated.value = algopy.UInt64(1)
+
+        return algopy.String("Tinyman pool confirmed")
+
+    @algopy.arc4.abimethod
+    def get_graduation_preview(self) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64, algopy.UInt64]:
+
+        if self.reserve_balance.value < self.GRADUATION_THRESHOLD:
+            return (algopy.UInt64(0), algopy.UInt64(0), algopy.UInt64(0), algopy.UInt64(0))
+
+        total_reserve = self.reserve_balance.value
+        liquidity_algo = (total_reserve * self.LIQUIDITY_PERCENTAGE) // algopy.UInt64(100)
+        creator_algo = (total_reserve * self.CREATOR_PERCENTAGE) // algopy.UInt64(100)
+        platform_fee = total_reserve - liquidity_algo - creator_algo
+        remaining_tokens = self.TOTAL_SUPPLY - self.current_supply.value
+
+        return (liquidity_algo, creator_algo, platform_fee, remaining_tokens)
+
+
+    @algopy.subroutine
+    def _calculate_buy_amount(self, algo_amount: algopy.UInt64) -> algopy.UInt64:
         virtual_core = self.VIRTUAL_CORE + self.reserve_balance.value
         virtual_token = self.VIRTUAL_TOKEN - self.current_supply.value
 
-        # New virtual core after adding ALGO
         new_virtual_core = virtual_core + algo_amount
 
-        # Calculate new virtual token using constant product: (vc * vt) / new_vc
-        if new_virtual_core > UInt64(0) and virtual_token > UInt64(0):
+        if new_virtual_core > algopy.UInt64(0) and virtual_token > algopy.UInt64(0):
             new_virtual_token = (virtual_core * virtual_token) // new_virtual_core
-            tokens_out = virtual_token - new_virtual_token if virtual_token > new_virtual_token else UInt64(0)
+            tokens_out = virtual_token - new_virtual_token if virtual_token > new_virtual_token else algopy.UInt64(0)
         else:
-            tokens_out = algo_amount  # Fallback to 1:1 ratio
+            tokens_out = algo_amount
 
         return tokens_out
 
-    @subroutine
-    def _calculate_sell_amount(self, token_amount: UInt64) -> UInt64:
-        """
-        Calculate ALGO to return for given token amount using bonding curve
-        """
-        # Current virtual reserves
+    @algopy.subroutine
+    def _calculate_sell_amount(self, token_amount: algopy.UInt64) -> algopy.UInt64:
+
         virtual_core = self.VIRTUAL_CORE + self.reserve_balance.value
         virtual_token = self.VIRTUAL_TOKEN - self.current_supply.value
 
-        # New virtual token after adding tokens back
         new_virtual_token = virtual_token + token_amount
 
-        # Calculate new virtual core using constant product: (vc * vt) / new_vt
-        if new_virtual_token > UInt64(0) and virtual_core > UInt64(0):
+        if new_virtual_token > algopy.UInt64(0) and virtual_core > algopy.UInt64(0):
             new_virtual_core = (virtual_core * virtual_token) // new_virtual_token
-            algo_out = virtual_core - new_virtual_core if virtual_core > new_virtual_core else UInt64(0)
+            algo_out = virtual_core - new_virtual_core if virtual_core > new_virtual_core else algopy.UInt64(0)
         else:
-            algo_out = token_amount  # Fallback to 1:1 ratio
+            algo_out = token_amount
 
         return algo_out
 
-    @subroutine
-    def _get_current_price(self) -> UInt64:
-        """
-        Calculate current token price: virtual_core / virtual_token
-        Returns price scaled by 1e6 for 6 decimal places
-        """
+    @algopy.subroutine
+    def _get_current_price(self) -> algopy.UInt64:
         virtual_core = self.VIRTUAL_CORE + self.reserve_balance.value
         virtual_token = self.VIRTUAL_TOKEN - self.current_supply.value
 
-        if virtual_token > UInt64(0) and virtual_core > UInt64(0):
-            # Price = vc / vt, scaled by 1e6 for decimals
-            return (virtual_core * UInt64(1_000_000)) // virtual_token
+        if virtual_token > algopy.UInt64(0) and virtual_core > algopy.UInt64(0):
+            return (virtual_core * algopy.UInt64(1_000_000)) // virtual_token
         else:
-            return UInt64(1_000_000)  # Default price of 1.0
+            return algopy.UInt64(1_000_000)
 
-    # --- View Methods ---
-
-    @abimethod
-    def get_total_agents(self) -> UInt64:
-        """Get total number of created agents"""
+    @algopy.arc4.abimethod
+    def get_total_agents(self) -> algopy.UInt64:
         return self.total_agents.value
 
-    @abimethod
-    def get_current_price(self) -> UInt64:
-        """Get current token price"""
+    @algopy.arc4.abimethod
+    def get_current_price(self) -> algopy.UInt64:
         return self._get_current_price()
 
-    @abimethod
-    def get_buy_quote(self, algo_amount: UInt64) -> tuple[UInt64, UInt64, UInt64]:
-        """
-        Get quote for buying tokens
-        Returns: (tokens_out, current_price, new_price)
-        """
+    @algopy.arc4.abimethod
+    def get_buy_quote(self, algo_amount: algopy.UInt64) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64]:
         current_price = self._get_current_price()
         tokens_out = self._calculate_buy_amount(algo_amount)
 
-        # Calculate new price after purchase (simulation)
         temp_supply = self.current_supply.value + tokens_out
         temp_reserve = self.reserve_balance.value + algo_amount
 
         virtual_core = self.VIRTUAL_CORE + temp_reserve
         virtual_token = self.VIRTUAL_TOKEN - temp_supply
 
-        if virtual_token > UInt64(0) and virtual_core > UInt64(0):
-            new_price = (virtual_core * UInt64(1_000_000)) // virtual_token
+        if virtual_token > algopy.UInt64(0) and virtual_core > algopy.UInt64(0):
+            new_price = (virtual_core * algopy.UInt64(1_000_000)) // virtual_token
         else:
-            new_price = UInt64(1_000_000)
+            new_price = algopy.UInt64(1_000_000)
 
         return (tokens_out, current_price, new_price)
 
-    @abimethod
-    def get_sell_quote(self, token_amount: UInt64) -> tuple[UInt64, UInt64, UInt64]:
-        """
-        Get quote for selling tokens
-        Returns: (algo_out, current_price, new_price)
-        """
+    @algopy.arc4.abimethod
+    def get_sell_quote(self, token_amount: algopy.UInt64) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64]:
         current_price = self._get_current_price()
         algo_out = self._calculate_sell_amount(token_amount)
 
-        # Calculate new price after sale (simulation)
         temp_supply = self.current_supply.value - token_amount
         temp_reserve = self.reserve_balance.value - algo_out
 
         virtual_core = self.VIRTUAL_CORE + temp_reserve
         virtual_token = self.VIRTUAL_TOKEN - temp_supply
 
-        if virtual_token > UInt64(0) and virtual_core > UInt64(0):
-            new_price = (virtual_core * UInt64(1_000_000)) // virtual_token
+        if virtual_token > algopy.UInt64(0) and virtual_core > algopy.UInt64(0):
+            new_price = (virtual_core * algopy.UInt64(1_000_000)) // virtual_token
         else:
-            new_price = UInt64(1_000_000)
+            new_price = algopy.UInt64(1_000_000)
 
         return (algo_out, current_price, new_price)
 
-    @abimethod
-    def get_bonding_curve_info(self) -> tuple[UInt64, UInt64, UInt64, UInt64]:
-        """
-        Get complete bonding curve information
-        Returns: (current_supply, reserve_balance, price, graduated)
-        """
+    @algopy.arc4.abimethod
+    def get_bonding_curve_info(self) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64, algopy.UInt64]:
         return (
             self.current_supply.value,
             self.reserve_balance.value,
             self._get_current_price(),
-            self.graduated.value,  # Returns 0 or 1
+            self.graduated.value,
         )
 
-    @abimethod
-    def get_metadata(self) -> tuple[UInt64, UInt64, UInt64]:
-        """
-        Get basic metadata
-        Returns: (asa_id, active, agent_count)
-        """
+    @algopy.arc4.abimethod
+    def get_graduation_status(self) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64, algopy.UInt64]:
+        threshold_met = algopy.UInt64(1) if self.reserve_balance.value >= self.GRADUATION_THRESHOLD else algopy.UInt64(0)
+
+        return (
+            self.graduated.value,
+            threshold_met,
+            self.graduation_timestamp.value,
+            self.pool_token_id.value
+        )
+
+    @algopy.arc4.abimethod
+    def get_metadata(self) -> tuple[algopy.UInt64, algopy.UInt64, algopy.UInt64]:
         return (
             self.asa_id.value,
-            UInt64(1),  # Always active for now
+            algopy.UInt64(1),
             self.total_agents.value,
         )
 
-    # --- Reward System ---
+    @algopy.arc4.abimethod
+    def set_treasury(self, new_treasury: algopy.Account) -> None:
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+        self.treasury.value = new_treasury
 
-    @abimethod
+    @algopy.arc4.abimethod
+    def set_fee(self, new_fee: algopy.UInt64) -> None:
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+        self.creation_fee.value = new_fee
+
+    @algopy.arc4.abimethod
+    def pause(self) -> None:
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+        self.paused.value = algopy.UInt64(1)
+
+    @algopy.arc4.abimethod
+    def unpause(self) -> None:
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+        self.paused.value = algopy.UInt64(0)
+
+    @algopy.arc4.abimethod
+    def emergency_graduation_reset(self) -> algopy.String:
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+
+        self.graduation_initiated.value = algopy.UInt64(0)
+        self.graduated.value = algopy.UInt64(0)
+        self.pool_token_id.value = algopy.UInt64(0)
+        self.graduation_timestamp.value = algopy.UInt64(0)
+        self.graduation_funds_withdrawn.value = algopy.UInt64(0)
+
+        return algopy.String("Graduation status reset")
+
+    @algopy.arc4.abimethod
     def distribute_rewards(self) -> None:
-        """Distribute rewards (owner only)"""
-        assert Txn.sender == self.owner.value, "Only owner"
-        assert Global.group_size >= UInt64(2), "Payment required"
+        assert algopy.Txn.sender == self.owner.value, "Only owner"
+        assert algopy.Global.group_size >= algopy.UInt64(2), "Payment required"
 
-        payment_txn = gtxn.PaymentTransaction(0)
-
+        payment_txn = algopy.gtxn.PaymentTransaction(0)
         self.reward_pool.value += payment_txn.amount
 
-    @abimethod
-    def claim_rewards(self) -> UInt64:
-        """Claim available rewards"""
+    @algopy.arc4.abimethod
+    def claim_rewards(self) -> algopy.UInt64:
         reward_amount = self.reward_pool.value
-        assert reward_amount > UInt64(0), "No rewards available"
+        assert reward_amount > algopy.UInt64(0), "No rewards available"
 
-        # Send rewards to claimer
-        itxn.Payment(
-            receiver=Txn.sender,
+        algopy.itxn.Payment(
+            receiver=algopy.Txn.sender,
             amount=reward_amount,
+            fee=algopy.UInt64(1000),
         ).submit()
 
-        # Reset reward pool
-        self.reward_pool.value = UInt64(0)
-
+        self.reward_pool.value = algopy.UInt64(0)
         return reward_amount
 
-    # --- Debug/Test Methods ---
+    @algopy.arc4.abimethod
+    def hello(self, name: algopy.String) -> algopy.String:
+        return algopy.String("Hello, ") + name
 
-    @abimethod
-    def hello(self, name: String) -> String:
-        """Test method for deployment verification"""
-        return String("Hello, ") + name
-
-    @abimethod
-    def debug_test(self) -> String:
-        """Debug method that always works"""
-        return String("DEBUG: Method called successfully")
+    @algopy.arc4.abimethod
+    def debug_test(self) -> algopy.String:
+        return algopy.String("DEBUG: Method called successfully")
