@@ -461,6 +461,7 @@ export const useChartData = (
         clearInterval(onChainIntervalRef);
       };
     }
+    return undefined;
   }, [options.autoUpdate, options.interval, fetchHistoricalData, getIntervalMs, updateOnChainPrice]);
 
   useEffect(() => {

@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAgentFactory } from "../hooks/useAgentFactory";
 import { useAgentDetails } from "../hooks/useAgents";
 import { useBondingCurveTrading } from "../hooks/useBondingCurveTrading";
-import { useDEXTrading } from "../hooks/useDEXTrading";
 import { useGraduationStatus } from "../hooks/useGraduationStatus";
 import { useTokenBalance } from "../hooks/useTokenBalance";
 import { useWallet } from "../hooks/useWallet";
@@ -90,8 +89,6 @@ const TradingInterface: React.FC = () => {
 
   // Graduation status and DEX trading
   const graduationStatus = useGraduationStatus(id || "", true);
-  const dexTrading = useDEXTrading(id || "", address);
-
   // PANTHERA Bonding Curve Trading
   const bondingCurveTrading = useBondingCurveTrading(id);
 
@@ -162,36 +159,9 @@ const TradingInterface: React.FC = () => {
       });
 
       if (graduationStatus.isGraduated) {
-        console.log("🎓 Token is graduated, using DEX quote");
-
-        try {
-          const dexQuote = await dexTrading.getDEXQuote(amount, activeTab === "buy", 2);
-
-          // Convert DEX quote to TradingQuote format
-          const tradingQuote: TradingQuote = {
-            coreAmount: activeTab === "buy" ? amount : dexQuote.outputAmount,
-            tokensReceived: activeTab === "buy" ? dexQuote.outputAmount : amount,
-            tokenAmount: activeTab === "sell" ? amount : dexQuote.outputAmount,
-            coreReceived: activeTab === "sell" ? dexQuote.outputAmount : amount,
-            currentPrice: "0", // DEX price is market-driven
-            newPrice: "0",
-            priceImpact: dexQuote.priceImpact,
-            slippage: dexQuote.slippage,
-            fees: {
-              platformFee: "0.003", // 0.3% DEX fee
-              creatorFee: "0",
-              totalFees: "0.003",
-            },
-            minimumReceived: dexQuote.minimumReceived,
-            marketCap: "0",
-            reserve: "0",
-          };
-
-          setQuote(tradingQuote);
-        } catch (dexError) {
-          console.error("DEX quote error:", dexError);
-          setError("DEX quote failed. Please try again.");
-        }
+        console.log("🎓 Token is graduated, but DEX trading is not available yet");
+        setQuote(null);
+        setError("Graduated agents currently require DEX trading, which is not yet supported on Algorand.");
       } else {
         console.log("📈 Token is not graduated, using bonding curve quote");
 
@@ -201,37 +171,9 @@ const TradingInterface: React.FC = () => {
 
           // Check if backend returned graduation error
           if (response.data?.error && response.data.error.includes("graduated")) {
-            console.log("🎓 Backend says token is graduated, switching to DEX");
-
-            try {
-              // Token is actually graduated, use DEX quote
-              const dexQuote = await dexTrading.getDEXQuote(amount, activeTab === "buy", 2);
-
-              const tradingQuote: TradingQuote = {
-                coreAmount: activeTab === "buy" ? amount : dexQuote.outputAmount,
-                tokensReceived: activeTab === "buy" ? dexQuote.outputAmount : amount,
-                tokenAmount: activeTab === "sell" ? amount : dexQuote.outputAmount,
-                coreReceived: activeTab === "sell" ? dexQuote.outputAmount : amount,
-                currentPrice: "0",
-                newPrice: "0",
-                priceImpact: dexQuote.priceImpact,
-                slippage: dexQuote.slippage,
-                fees: {
-                  platformFee: "0.003",
-                  creatorFee: "0",
-                  totalFees: "0.003",
-                },
-                minimumReceived: dexQuote.minimumReceived,
-                marketCap: "0",
-                reserve: "0",
-              };
-
-              setQuote(tradingQuote);
-              console.log("✅ DEX quote generated successfully:", tradingQuote);
-            } catch (dexError) {
-              console.error("❌ DEX quote failed:", dexError);
-              setError("Token is graduated but DEX quote failed. Please try again.");
-            }
+            console.log("🎓 Backend says token is graduated, but DEX trading is not supported");
+            setQuote(null);
+            setError("Graduated agents currently require DEX trading, which is not yet supported on Algorand.");
           } else {
             // Use PANTHERA bonding curve for quote generation
             try {
@@ -278,34 +220,8 @@ const TradingInterface: React.FC = () => {
           if (errorMessage.includes("GRADUATED_TOKEN") || errorMessage.includes("graduated") || errorMessage.includes("DEX")) {
             console.log("🎓 Professional graduation detection via API error, switching to DEX");
 
-            try {
-              const dexQuote = await dexTrading.getDEXQuote(amount, activeTab === "buy", 2);
-
-              const tradingQuote: TradingQuote = {
-                coreAmount: activeTab === "buy" ? amount : dexQuote.outputAmount,
-                tokensReceived: activeTab === "buy" ? dexQuote.outputAmount : amount,
-                tokenAmount: activeTab === "sell" ? amount : dexQuote.outputAmount,
-                coreReceived: activeTab === "sell" ? dexQuote.outputAmount : amount,
-                currentPrice: "0",
-                newPrice: "0",
-                priceImpact: dexQuote.priceImpact,
-                slippage: dexQuote.slippage,
-                fees: {
-                  platformFee: "0.003",
-                  creatorFee: "0",
-                  totalFees: "0.003",
-                },
-                minimumReceived: dexQuote.minimumReceived,
-                marketCap: "0",
-                reserve: "0",
-              };
-
-              setQuote(tradingQuote);
-              console.log("✅ DEX quote generated after API error:", tradingQuote);
-            } catch (dexError) {
-              console.error("❌ DEX quote failed after API error:", dexError);
-              setError("Token appears to be graduated but DEX quote failed. Please try again.");
-            }
+            setError("Graduated agents currently require DEX trading, which is not yet supported on Algorand.");
+            setQuote(null);
           } else {
             console.error("❌ Professional API error not related to graduation:", apiError);
 
@@ -461,6 +377,7 @@ const TradingInterface: React.FC = () => {
     } else {
       setQuote(null);
       setError(null);
+      return undefined;
     }
   }, [amount, activeTab, id, graduationStatus.isGraduated, tokenBalance]);
 
@@ -496,306 +413,62 @@ const TradingInterface: React.FC = () => {
   };
 
   const handleTrade = async () => {
-    // Check wallet connection
-    if (!isConnected) {
-      try {
-        console.log("🔗 Wallet not connected, attempting to connect...");
-        await connectWallet();
-        return;
-      } catch (error) {
-        console.error("❌ Failed to connect wallet:", error);
-        setError(error instanceof Error ? error.message : "Failed to connect wallet");
-        return;
-      }
-    }
-
-    // Check network
-    if (!isOnCoreNetwork) {
-      try {
-        console.log("🔄 Wrong network, switching to preferred Algorand network...");
-        await switchToCore();
-        return;
-      } catch (error) {
-        console.error("❌ Failed to switch network:", error);
-        setError("Please switch to the configured Algorand network to trade");
-        return;
-      }
-    }
-
-    if (!quote || !amount || !id) {
-      setError("Missing trade parameters");
+    if (!id) {
+      setError("Agent not found");
       return;
     }
 
+    if (!isConnected) {
+      try {
+        await connectWallet();
+      } catch (connectErr) {
+        setError(connectErr instanceof Error ? connectErr.message : "Failed to connect wallet");
+      }
+      return;
+    }
+
+    if (!isOnCoreNetwork) {
+      try {
+        await switchToCore();
+      } catch (switchErr) {
+        setError("Please switch to the configured Algorand network to trade");
+      }
+      return;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+      setError("Enter a valid amount before trading");
+      return;
+    }
+
+    if (graduationStatus.isGraduated) {
+      setError("Graduated agents currently require DEX trading, which is not yet supported on Algorand.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
-
-      console.log("🚀 Professional trade execution initiated:", {
-        activeTab,
-        amount,
-        tokenAddress: id,
-        quote,
-        graduationStatus: graduationStatus.isGraduated ? "graduated" : "bonding-curve",
-        tradingMethod: graduationStatus.isGraduated ? "DEX" : "Bonding Curve",
-        slippage: 2,
-        timestamp: new Date().toISOString(),
-      });
-
-      // Check if token is graduated and use appropriate trading method
-      if (graduationStatus.isGraduated) {
-        console.log("🎓 Token is graduated, using DEX trading");
-
-        // 1) DEX quote al
-        const dexQuote = await dexTrading.getDEXQuote(amount, activeTab === "buy", 2);
-
-        // 2) İşlem yap (TEK satır; kopya yok)
-        const txHash = await dexTrading.executeDEXTrade(dexQuote, activeTab === "buy");
-
-        // 3) Backend'e trade kaydı (grafik mumu için)
-        try {
-          // DEX için miktarları dexQuote'tan alalım
-          const coreAmountStr =
-            activeTab === "buy"
-              ? String(amount) // BUY: harcanan ALGO
-              : String(dexQuote.outputAmount); // SELL: alınan ALGO
-
-          const tokenAmountStr =
-            activeTab === "buy"
-              ? String(dexQuote.outputAmount) // BUY: alınan token
-              : String(amount); // SELL: satılan token
-
-          // fiyat = ALGO / token  (küçük sayı olabilir; düz ondalık string’e çevir)
-          let priceNum = safeNumber(coreAmountStr) / safeNumber(tokenAmountStr);
-          if (!Number.isFinite(priceNum)) {
-            priceNum = safeNumber(quote?.currentPrice) || safeNumber(quote?.newPrice) || safeNumber(graduationStatus.currentPrice);
-          }
-          const priceStr = toDecimalString(priceNum); // bilimsel gösterim yok
-
-          console.log("record-trade payload (DEX)", { coreAmountStr, tokenAmountStr, priceNum, priceStr });
-
-          await apiService.post("/trading/record-trade", {
-            agentAddress: id!,
-            transactionHash: txHash,
-            trader: address!,
-            type: activeTab, // 'buy' | 'sell'
-            coreAmount: coreAmountStr, // string
-            tokenAmount: tokenAmountStr, // string
-            price: priceStr, // <-- string gönder
-            timestamp: new Date().toISOString(),
-          });
-          console.log("✅ record-trade ok (DEX)");
-        } catch (e) {
-          console.error("❌ record-trade failed (DEX)", e);
-        }
-
-        // 4) UI mesaj + event
-        console.log("✅ Professional DEX transaction successful:", { txHash });
-
-        setSuccessMessage(
-          `${activeTab === "buy" ? "Bought" : "Sold"} ${formatNumber(amount)} ` +
-            `${activeTab === "buy" ? agent?.tokenSymbol || "tokens" : "ALGO"} successfully via Professional DEX!`
-        );
-        setTimeout(() => setSuccessMessage(null), 5000);
-
-        window.dispatchEvent(
-          new CustomEvent("trading-success", {
-            detail: {
-              type: activeTab,
-              txHash,
-              tokenAddress: id,
-              amount,
-              tradingMethod: "dex",
-            },
-          })
-        );
-      } else {
-        console.log("📈 Token is not graduated, using bonding curve trading");
-
-        // Final backend sanity check to avoid reverted on-chain calls
-        try {
-          if (activeTab === "buy") {
-            await apiService.getBuyQuote(id, "0.0001");
-          } else {
-            await apiService.getSellQuote(id, "0.0001");
-          }
-        } catch (precheckError) {
-          const em = precheckError instanceof Error ? precheckError.message.toLowerCase() : String(precheckError).toLowerCase();
-          if (em.includes("graduated_token") || em.includes("graduated")) {
-            console.log("🎓 Backend precheck indicates graduation. Switching to DEX trading.");
-
-            // Get fresh DEX quote for execution
-            const dexQuote = await dexTrading.getDEXQuote(amount, activeTab === "buy", 2);
-
-            // Use DEX trading for graduated tokens
-            const txHash = await dexTrading.executeDEXTrade(dexQuote, activeTab === "buy");
-
-            console.log("✅ Professional DEX transaction successful (post-precheck):", { txHash });
-            setSuccessMessage(
-              `${activeTab === "buy" ? "Bought" : "Sold"} ${formatNumber(amount)} ${
-                activeTab === "buy" ? agent?.tokenSymbol || "tokens" : "ALGO"
-              } successfully via Professional DEX!`
-            );
-            setTimeout(() => setSuccessMessage(null), 5000);
-            window.dispatchEvent(
-              new CustomEvent("trading-success", {
-                detail: { type: activeTab, txHash, tokenAddress: id, amount, tradingMethod: "dex" },
-              })
-            );
-            return; // stop bonding curve flow
-          }
-        }
-
-        if (activeTab === "buy") {
-          // Buy tokens with ALGO using bonding curve
-          await buyTokens(id, amount, (txHash) => {
-            console.log("✅ Buy transaction successful:", txHash);
-
-            (async () => {
-              try {
-                // BUY: ALGO = girilen amount, TOKEN = quote.tokensReceived
-                const coreAmountStr = String(amount);
-                const tokenAmountStr = String(quote?.tokensReceived ?? "0");
-
-                let priceNum = safeNumber(coreAmountStr) / safeNumber(tokenAmountStr);
-                if (!Number.isFinite(priceNum)) {
-                  priceNum = safeNumber(quote?.currentPrice) || safeNumber(quote?.newPrice) || safeNumber(graduationStatus.currentPrice);
-                }
-                const priceStr = toDecimalString(priceNum);
-
-                console.log("record-trade payload (bonding BUY)", { coreAmountStr, tokenAmountStr, priceNum, priceStr });
-
-                await apiService.post("/trading/record-trade", {
-                  agentAddress: id!,
-                  transactionHash: txHash,
-                  trader: address!,
-                  type: "buy", // BUY
-                  coreAmount: coreAmountStr, // girilen ALGO
-                  tokenAmount: tokenAmountStr, // alınan token
-                  price: priceStr,
-                  timestamp: new Date().toISOString(),
-                });
-
-                console.log("✅ record-trade ok (bonding BUY)");
-              } catch (e) {
-                console.error("❌ record-trade failed (bonding BUY)", e);
-              }
-            })();
-
-            // Set success message
-            setSuccessMessage(`Bought ${formatNumber(amount)} ${agent?.tokenSymbol || "tokens"} successfully via bonding curve!`);
-
-            // Clear success message after 5 seconds
-            setTimeout(() => setSuccessMessage(null), 5000);
-
-            // Dispatch event for chart update
-            window.dispatchEvent(
-              new CustomEvent("trading-success", {
-                detail: {
-                  type: "buy",
-                  txHash,
-                  tokenAddress: id,
-                  amount,
-                  tradingMethod: "bonding-curve",
-                },
-              })
-            );
-          });
-        } else {
-          // Sell tokens for ALGO using bonding curve
-          await sellTokens(id, amount, (txHash) => {
-            console.log("✅ Sell transaction successful:", txHash);
-
-            (async () => {
-              try {
-                // SELL: TOKEN = girilen amount, ALGO = quote.coreReceived
-                const tokenAmountStr = String(amount);
-                const coreAmountStr = String(quote?.coreReceived ?? "0");
-
-                let priceNum = safeNumber(coreAmountStr) / safeNumber(tokenAmountStr);
-                if (!Number.isFinite(priceNum)) {
-                  priceNum = safeNumber(quote?.currentPrice) || safeNumber(quote?.newPrice) || safeNumber(graduationStatus.currentPrice);
-                }
-                const priceStr = toDecimalString(priceNum);
-
-                console.log("record-trade payload (bonding SELL)", { coreAmountStr, tokenAmountStr, priceNum, priceStr });
-
-                await apiService.post("/trading/record-trade", {
-                  agentAddress: id!,
-                  transactionHash: txHash,
-                  trader: address!,
-                  type: "sell", // SELL
-                  coreAmount: coreAmountStr, // alınan ALGO
-                  tokenAmount: tokenAmountStr, // satılan token
-                  price: priceStr,
-                  timestamp: new Date().toISOString(),
-                });
-
-                console.log("✅ record-trade ok (bonding SELL)");
-              } catch (e) {
-                console.error("❌ record-trade failed (bonding SELL)", e);
-              }
-            })();
-
-            // Set success message
-            setSuccessMessage(`Sold ${formatNumber(amount)} ${agent?.tokenSymbol || "tokens"} successfully via bonding curve!`);
-
-            // Clear success message after 5 seconds
-            setTimeout(() => setSuccessMessage(null), 5000);
-
-            // Dispatch event for chart update
-            window.dispatchEvent(
-              new CustomEvent("trading-success", {
-                detail: {
-                  type: "sell",
-                  txHash,
-                  tokenAddress: id,
-                  amount,
-                  tradingMethod: "bonding-curve",
-                },
-              })
-            );
-          });
-        }
+      const success = await bondingCurveTrading.executeTrade(activeTab, amount);
+      if (!success) {
+        const lastError = bondingCurveTrading.error;
+        setError(lastError?.message ?? `Failed to ${activeTab} tokens`);
+        return;
       }
 
-      // Refresh balance after trade
-      await fetchBalance();
+      const successText =
+      activeTab === "buy"
+        ? `Bought ${formatNumber(amount)} ${agent?.tokenSymbol || "tokens"} successfully via bonding curve!`
+        : `Sold ${formatNumber(amount)} ${agent?.tokenSymbol || "tokens"} successfully via bonding curve!`;
 
-      // Clear form
-      setAmount("");
-      setQuote(null);
-    } catch (error) {
-      console.error("❌ Professional trade execution failed:", {
-        error: error instanceof Error ? error.message : "Unknown error",
-        tokenAddress: id,
-        amount,
-        activeTab,
-        graduationStatus: graduationStatus.isGraduated,
-        timestamp: new Date().toISOString(),
-      });
+    setSuccessMessage(successText);
+    setTimeout(() => setSuccessMessage(null), 5000);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      // Professional error message
-      const errorMessage = error instanceof Error ? error.message : "Professional trade execution failed";
-      setError(`Trading Error: ${errorMessage}`);
-
-      // Dispatch error event for analytics
-      window.dispatchEvent(
-        new CustomEvent("trading-error", {
-          detail: {
-            error: errorMessage,
-            tokenAddress: id,
-            amount,
-            type: activeTab,
-            tradingMethod: graduationStatus.isGraduated ? "dex" : "bonding-curve",
-            timestamp: new Date().toISOString(),
-          },
-        })
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (agentLoading) {
     return (

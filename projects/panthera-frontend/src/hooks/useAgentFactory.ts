@@ -87,13 +87,61 @@ export const useAgentFactory = () => {
     [address, networkLabel]
   );
 
-  const buyTokens = useCallback(async () => {
-    throw new Error("Token trading is not yet implemented for this network");
-  }, []);
+  const buyTokens = useCallback(
+    async (tokenAddress: string, coreAmount: string, onPending?: (txHash: string) => void) => {
+      if (!address) {
+        throw new Error("Wallet must be connected to buy tokens");
+      }
 
-  const sellTokens = useCallback(async () => {
-    throw new Error("Token trading is not yet implemented for this network");
-  }, []);
+      const numericAmount = Number(coreAmount);
+      if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+        throw new Error("Invalid amount provided");
+      }
+
+      const response = await apiService.executeBuyOrder({
+        userAddress: address,
+        agentAddress: tokenAddress,
+        coreAmount: numericAmount,
+      });
+
+      const payload = (response?.data as any)?.data ?? response?.data ?? {};
+      const txHash: string | undefined = payload?.transactionHash ?? payload?.txHash;
+      if (txHash) {
+        onPending?.(txHash);
+      }
+
+      return txHash ?? "";
+    },
+    [address]
+  );
+
+  const sellTokens = useCallback(
+    async (tokenAddress: string, tokenAmount: string, onPending?: (txHash: string) => void) => {
+      if (!address) {
+        throw new Error("Wallet must be connected to sell tokens");
+      }
+
+      const numericAmount = Number(tokenAmount);
+      if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+        throw new Error("Invalid token amount provided");
+      }
+
+      const response = await apiService.executeSellOrder({
+        userAddress: address,
+        agentAddress: tokenAddress,
+        tokenAmount: numericAmount,
+      });
+
+      const payload = (response?.data as any)?.data ?? response?.data ?? {};
+      const txHash: string | undefined = payload?.transactionHash ?? payload?.txHash;
+      if (txHash) {
+        onPending?.(txHash);
+      }
+
+      return txHash ?? "";
+    },
+    [address]
+  );
 
   return {
     creationFee,

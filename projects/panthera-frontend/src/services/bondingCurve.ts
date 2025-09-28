@@ -155,16 +155,104 @@ class BondingCurveService {
     return this.mockQuote("sell", amount);
   }
 
-  async buyTokens(_tokenAddress: string, _algoAmount: string): Promise<BondingCurveTrade> {
-    throw new BondingCurveError("NOT_IMPLEMENTED", "Algorand trading is not implemented yet");
+  async buyTokens(tokenAddress: string, algoAmount: string, userAddress: string): Promise<BondingCurveTrade> {
+    const amount = Number(algoAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new BondingCurveError("INVALID_AMOUNT", "Amount must be greater than zero");
+    }
+    if (!userAddress) {
+      throw new BondingCurveError("WALLET_NOT_CONNECTED", "Wallet must be connected");
+    }
+
+    try {
+      const response = await apiService.executeBuyOrder({
+        userAddress,
+        agentAddress: tokenAddress,
+        coreAmount: amount,
+      });
+
+      const payload = (response?.data as any)?.data ?? response?.data ?? {};
+      const transactionHash: string | undefined = payload?.transactionHash ?? payload?.txHash;
+      const tokensReceived: string = payload?.tokensReceived ?? "0";
+      const actualPrice: string | undefined = payload?.actualPrice;
+
+      if (!transactionHash) {
+        return {
+          success: false,
+          error: payload?.error ?? "Transaction hash missing",
+        };
+      }
+
+      return {
+        success: true,
+        transactionHash,
+        tokenAmount: tokensReceived,
+        coreAmount: algoAmount,
+        effectivePrice: actualPrice,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BondingCurveError("TRADE_ERROR", error.message, error);
+      }
+      throw new BondingCurveError("TRADE_ERROR", "Failed to buy tokens", error);
+    }
   }
 
-  async sellTokens(_tokenAddress: string, _tokenAmount: string): Promise<BondingCurveTrade> {
-    throw new BondingCurveError("NOT_IMPLEMENTED", "Algorand trading is not implemented yet");
+  async sellTokens(tokenAddress: string, tokenAmount: string, userAddress: string): Promise<BondingCurveTrade> {
+    const amount = Number(tokenAmount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new BondingCurveError("INVALID_AMOUNT", "Amount must be greater than zero");
+    }
+    if (!userAddress) {
+      throw new BondingCurveError("WALLET_NOT_CONNECTED", "Wallet must be connected");
+    }
+
+    try {
+      const response = await apiService.executeSellOrder({
+        userAddress,
+        agentAddress: tokenAddress,
+        tokenAmount: amount,
+      });
+
+      const payload = (response?.data as any)?.data ?? response?.data ?? {};
+      const transactionHash: string | undefined = payload?.transactionHash ?? payload?.txHash;
+      const coreReceived: string = payload?.coreReceived ?? "0";
+      const actualPrice: string | undefined = payload?.actualPrice;
+
+      if (!transactionHash) {
+        return {
+          success: false,
+          error: payload?.error ?? "Transaction hash missing",
+        };
+      }
+
+      return {
+        success: true,
+        transactionHash,
+        coreAmount: coreReceived,
+        tokenAmount,
+        effectivePrice: actualPrice,
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new BondingCurveError("TRADE_ERROR", error.message, error);
+      }
+      throw new BondingCurveError("TRADE_ERROR", "Failed to sell tokens", error);
+    }
   }
 
-  async getTokenBalance(_tokenAddress: string, _walletAddress: string): Promise<string> {
-    return "0";
+  async getTokenBalance(tokenAddress: string, walletAddress: string): Promise<string> {
+    if (!walletAddress) return "0";
+
+    try {
+      const response = await apiService.getTradingStats(walletAddress);
+      const holdings = (response?.data as any)?.holdings ?? [];
+      const holding = holdings.find((h: any) => h.agentAddress?.toLowerCase() === tokenAddress.toLowerCase());
+      return holding?.tokenAmount ?? "0";
+    } catch (error) {
+      console.warn("Failed to fetch token balance", error);
+      return "0";
+    }
   }
 
   async getGraduationStatus(tokenAddress: string): Promise<GraduationStatus> {

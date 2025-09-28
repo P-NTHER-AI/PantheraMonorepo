@@ -165,9 +165,9 @@ export const useBondingCurveTrading = (tokenAddress?: string) => {
         let result: BondingCurveTrade;
 
         if (type === "buy") {
-          result = await bondingCurveService.buyTokens(tokenAddress, amount);
+          result = await bondingCurveService.buyTokens(tokenAddress, amount, userAddress);
         } else {
-          result = await bondingCurveService.sellTokens(tokenAddress, amount);
+          result = await bondingCurveService.sellTokens(tokenAddress, amount, userAddress);
         }
 
         if (result.success) {
