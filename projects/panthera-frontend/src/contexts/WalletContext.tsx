@@ -5,7 +5,7 @@ import { useAccount, useBalance, useConnect, useDisconnect, useNetwork, useSwitc
 import { coreMainnet, coreTestnet } from "../config/chains";
 
 // Professional balance interface
-interface WalletBalance {
+export interface WalletBalance {
   decimals: number;
   formatted: string;
   symbol: string;
@@ -27,7 +27,7 @@ interface ConnectionResult {
   error?: string;
 }
 
-interface WalletState {
+export interface WalletState {
   // Connection state
   address: string | undefined;
   isConnected: boolean;
@@ -276,6 +276,8 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
       return () => clearTimeout(timeoutId);
     }
+
+    return () => {};
   }, [isConnected, isConnecting, isReconnecting, autoConnectEnabled, lastConnectedWallet, connectionAttempts, connectWallet]);
 
   const isOnCoreNetwork = chain?.id === coreTestnet.id || chain?.id === coreMainnet.id;

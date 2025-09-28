@@ -132,7 +132,7 @@ export const useChartData = (
     priceChange24h: null,
   });
 
-  const publicClient = usePublicClient();
+  // const publicClient = usePublicClient();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { latestTrade } = useTradeEvents(agentAddress);
 
@@ -152,47 +152,44 @@ export const useChartData = (
     }
   }, [agentAddress]);
 
+  // TODO
   // Fetch market data from blockchain
   const fetchMarketData = useCallback(async () => {
-    if (!agentAddress || !publicClient) return null;
-
-    try {
-      console.log(`📊 Fetching market data from blockchain: ${agentAddress}`);
-
-      const bondingCurveInfo = (await publicClient.readContract({
-        address: agentAddress as `0x${string}`,
-        abi: [
-          {
-            name: "getBondingCurveInfo",
-            type: "function",
-            stateMutability: "view",
-            inputs: [],
-            outputs: [
-              { name: "currentSupply_", type: "uint256" },
-              { name: "reserveBalance_", type: "uint256" },
-              { name: "price", type: "uint256" },
-              { name: "marketCap", type: "uint256" },
-              { name: "isGraduated_", type: "bool" },
-            ],
-          },
-        ],
-        functionName: "getBondingCurveInfo",
-      })) as [bigint, bigint, bigint, bigint, boolean];
-
-      const [currentSupply, reserveBalance, price, marketCap, isGraduated] = bondingCurveInfo;
-
-      return {
-        currentSupply: parseFloat((Number(currentSupply) / 1e18).toString()),
-        reserveBalance: parseFloat((Number(reserveBalance) / 1e18).toString()),
-        price: parseFloat((Number(price) / 1e18).toString()),
-        marketCap: parseFloat((Number(marketCap) / 1e18).toString()),
-        isGraduated,
-      };
-    } catch (error) {
-      console.error("❌ Failed to fetch market data from blockchain:", error);
-      return null;
-    }
-  }, [agentAddress, publicClient]);
+    // if (!agentAddress || !publicClient) return null;
+    // try {
+    //   console.log(`📊 Fetching market data from blockchain: ${agentAddress}`);
+    //   const bondingCurveInfo = (await publicClient.readContract({
+    //     address: agentAddress as `0x${string}`,
+    //     abi: [
+    //       {
+    //         name: "getBondingCurveInfo",
+    //         type: "function",
+    //         stateMutability: "view",
+    //         inputs: [],
+    //         outputs: [
+    //           { name: "currentSupply_", type: "uint256" },
+    //           { name: "reserveBalance_", type: "uint256" },
+    //           { name: "price", type: "uint256" },
+    //           { name: "marketCap", type: "uint256" },
+    //           { name: "isGraduated_", type: "bool" },
+    //         ],
+    //       },
+    //     ],
+    //     functionName: "getBondingCurveInfo",
+    //   })) as [bigint, bigint, bigint, bigint, boolean];
+    //   const [currentSupply, reserveBalance, price, marketCap, isGraduated] = bondingCurveInfo;
+    //   return {
+    //     currentSupply: parseFloat((Number(currentSupply) / 1e18).toString()),
+    //     reserveBalance: parseFloat((Number(reserveBalance) / 1e18).toString()),
+    //     price: parseFloat((Number(price) / 1e18).toString()),
+    //     marketCap: parseFloat((Number(marketCap) / 1e18).toString()),
+    //     isGraduated,
+    //   };
+    // } catch (error) {
+    //   console.error("❌ Failed to fetch market data from blockchain:", error);
+    //   return null;
+    // }
+  }, [agentAddress]);
 
   const getIntervalMs = useCallback((interval: string): number => {
     const intervals: Record<string, number> = {
@@ -288,11 +285,12 @@ export const useChartData = (
           };
         });
 
-        // ✅ Market cap'i sadece son muma ekle
-        if (marketData && candles.length > 0) {
-          candles[candles.length - 1].marketCap = marketData.marketCap;
-          console.log("💰 MarketCap injected into last candle:", marketData.marketCap);
-        }
+        // TODO
+        // // ✅ Market cap'i sadece son muma ekle
+        // if (marketData && candles.length > 0) {
+        //   candles[candles.length - 1].marketCap = marketData.marketCap;
+        //   console.log("💰 MarketCap injected into last candle:", marketData.marketCap);
+        // }
       }
 
       const tradesResponse = await apiService.get<{
@@ -350,15 +348,16 @@ export const useChartData = (
         onChainPrice: onChainPrice ?? null,
         priceChange24h,
         connectionStatus: "connected",
-        marketCap: marketData?.marketCap ?? null,
+        // marketCap: marketData?.marketCap ?? null,
+        marketCap: null,
       }));
 
       if (onChainPrice != null) {
         console.log(`💰 On-chain contract price (reference): ${onChainPrice} CORE`);
       }
-      if (marketData) {
-        console.log(`📊 Market data - Cap: ${marketData.marketCap} CORE, Supply: ${marketData.currentSupply}`);
-      }
+      // if (marketData) {
+      //   console.log(`📊 Market data - Cap: ${marketData.marketCap} CORE, Supply: ${marketData.currentSupply}`);
+      // }
 
       if (candles.length === 0 && trades.length === 0) {
         console.log(`⚠️ No real trading data found for ${agentAddress}`);
@@ -385,26 +384,25 @@ export const useChartData = (
   }, [agentAddress, options.interval, options.limit, fetchLivePrice, fetchMarketData]);
 
   const updateOnChainPrice = useCallback(async () => {
-    if (!agentAddress || !publicClient) return;
-
-    try {
-      const onChain = await fetchLivePrice();
-      if (onChain !== null) {
-        setState((prev) => ({
-          ...prev,
-          onChainPrice: onChain,
-          lastUpdate: new Date(),
-          connectionStatus: "connected",
-        }));
-      }
-    } catch (error) {
-      console.error("❌ Failed to update on-chain price:", error);
-      setState((prev) => ({
-        ...prev,
-        connectionStatus: "error",
-      }));
-    }
-  }, [agentAddress, publicClient, fetchLivePrice]);
+    // if (!agentAddress || !publicClient) return;
+    // try {
+    //   const onChain = await fetchLivePrice();
+    //   if (onChain !== null) {
+    //     setState((prev) => ({
+    //       ...prev,
+    //       onChainPrice: onChain,
+    //       lastUpdate: new Date(),
+    //       connectionStatus: "connected",
+    //     }));
+    //   }
+    // } catch (error) {
+    //   console.error("❌ Failed to update on-chain price:", error);
+    //   setState((prev) => ({
+    //     ...prev,
+    //     connectionStatus: "error",
+    //   }));
+    // }
+  }, [agentAddress, fetchLivePrice]);
 
   const updateWithNewTrade = useCallback(
     (trade: TradeData) => {
@@ -484,6 +482,8 @@ export const useChartData = (
         clearInterval(onChainIntervalRef);
       };
     }
+
+    return () => {};
   }, [options.autoUpdate, options.interval, fetchHistoricalData, getIntervalMs, updateOnChainPrice]);
 
   useEffect(() => {

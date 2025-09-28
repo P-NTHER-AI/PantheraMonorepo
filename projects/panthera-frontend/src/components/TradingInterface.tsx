@@ -451,6 +451,8 @@ const TradingInterface: React.FC = () => {
       setQuote(null);
       setError(null);
     }
+
+    return () => {};
   }, [amount, activeTab, id, graduationStatus.isGraduated, tokenBalance]);
 
   // Disabled automatic price updates to prevent constant refreshing

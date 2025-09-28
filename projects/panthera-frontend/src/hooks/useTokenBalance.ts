@@ -1,3 +1,4 @@
+import { useWallet } from "@txnlab/use-wallet-react";
 import { useCallback, useEffect, useState } from "react";
 
 // ERC20 ABI for balanceOf function
@@ -26,48 +27,56 @@ const ERC20_ABI = [
 ] as const;
 
 export const useTokenBalance = (tokenAddress?: string) => {
-  const { address } = useAccount();
+  const { activeAddress } = useWallet();
 
-  const {
-    data: balance,
-    isLoading: balanceLoading,
-    refetch: refetchBalance,
-  } = useContractRead({
-    address: tokenAddress as `0x${string}`,
-    abi: ERC20_ABI,
-    functionName: "balanceOf",
-    args: address ? [address] : undefined,
-    enabled: !!tokenAddress && !!address,
-  });
+  // const {
+  //   data: balance,
+  //   isLoading: balanceLoading,
+  //   refetch: refetchBalance,
+  // } = useContractRead({
+  //   address: tokenAddress as `0x${string}`,
+  //   abi: ERC20_ABI,
+  //   functionName: "balanceOf",
+  //   args: activeAddress ? [activeAddress] : undefined,
+  //   enabled: !!tokenAddress && !!activeAddress,
+  // });
 
-  const { data: symbol } = useContractRead({
-    address: tokenAddress as `0x${string}`,
-    abi: ERC20_ABI,
-    functionName: "symbol",
-    enabled: !!tokenAddress,
-  });
+  // const { data: symbol } = useContractRead({
+  //   address: tokenAddress as `0x${string}`,
+  //   abi: ERC20_ABI,
+  //   functionName: "symbol",
+  //   enabled: !!tokenAddress,
+  // });
 
-  const { data: decimals } = useContractRead({
-    address: tokenAddress as `0x${string}`,
-    abi: ERC20_ABI,
-    functionName: "decimals",
-    enabled: !!tokenAddress,
-  });
+  // const { data: decimals } = useContractRead({
+  //   address: tokenAddress as `0x${string}`,
+  //   abi: ERC20_ABI,
+  //   functionName: "decimals",
+  //   enabled: !!tokenAddress,
+  // });
 
-  const formattedBalance = balance ? formatEther(balance) : "0";
+  // const formattedBalance = balance ? formatEther(balance) : "0";
 
+  // return {
+  //   balance: formattedBalance,
+  //   symbol: symbol || "TOKEN",
+  //   decimals: decimals || 18,
+  //   isLoading: balanceLoading,
+  //   refetch: refetchBalance,
+  // };
   return {
-    balance: formattedBalance,
-    symbol: symbol || "TOKEN",
-    decimals: decimals || 18,
-    isLoading: balanceLoading,
-    refetch: refetchBalance,
+    balance: "0",
+    symbol: "TOKEN",
+    decimals: 18,
+    isLoading: false,
+    refetch: () => {},
   };
 };
 
 // Hook to get all user's agent token balances
 export const useUserTokenBalances = () => {
-  const { address } = useAccount();
+  const { activeAddress } = useWallet();
+
   const [balances, setBalances] = useState<
     Array<{
       tokenAddress: string;
@@ -79,7 +88,7 @@ export const useUserTokenBalances = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchBalances = useCallback(async () => {
-    if (!address) return;
+    if (!activeAddress) return;
 
     setLoading(true);
     try {
@@ -99,7 +108,7 @@ export const useUserTokenBalances = () => {
     } finally {
       setLoading(false);
     }
-  }, [address]);
+  }, [activeAddress]);
 
   useEffect(() => {
     fetchBalances();

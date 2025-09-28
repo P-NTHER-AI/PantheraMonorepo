@@ -205,6 +205,8 @@ export const useNetworkManager = () => {
 
       return () => clearTimeout(timer);
     }
+
+    return () => {};
   }, [chain, autoSwitchEnabled, switchAttempts, switchNetwork, isOnCoreNetwork, switchToCoreTestnet]);
 
   // Switch to Core Mainnet
