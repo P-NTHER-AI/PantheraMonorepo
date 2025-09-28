@@ -93,6 +93,8 @@ export class BondingCurveError extends Error {
   }
 }
 
+const ethers = {};
+
 class BondingCurveService {
   private provider: ethers.Provider | null = null;
   private signer: ethers.Signer | null = null;
@@ -104,7 +106,7 @@ class BondingCurveService {
   private async initializeProvider() {
     try {
       if (typeof window !== "undefined" && window.ethereum) {
-        this.provider = new ethers.BrowserProvider(window.ethereum);
+        // this.provider = new ethers.BrowserProvider(window.ethereum);
       }
     } catch (error) {
       console.error("Failed to initialize provider:", error);

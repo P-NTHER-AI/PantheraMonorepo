@@ -1,4 +1,6 @@
 import { useCallback, useState } from "react";
+import { decodeEventLog, encodeFunctionData, formatEther, parseEther } from "viem";
+import { useContractRead, useNetwork, usePublicClient, useWalletClient } from "wagmi";
 import { apiService } from "../services/api";
 
 export interface AgentCreationParams {

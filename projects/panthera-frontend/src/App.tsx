@@ -1,4 +1,3 @@
-import { SupportedWallet, WalletId, WalletManager, WalletProvider } from "@txnlab/use-wallet-react";
 import { useCallback, useEffect, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { AgentChatRoute } from "./components/AgentChatRoute";
@@ -16,7 +15,6 @@ import TradingInterface from "./components/TradingInterface";
 import WebSocketTest from "./components/WebSocketTest";
 import { useAgents } from "./hooks/useAgents";
 import { useMarketData } from "./hooks/useWebSocket";
-import { getAlgodConfigFromViteEnvironment, getKmdConfigFromViteEnvironment } from "./utils/network/getAlgoClientConfigs";
 
 // Real-time notifications state
 interface AppNotification {
@@ -39,30 +37,6 @@ interface AppNotification {
     tokensAmount?: string;
     [key: string]: unknown;
   };
-}
-
-let supportedWallets: SupportedWallet[];
-if (import.meta.env.VITE_ALGOD_NETWORK === "localnet") {
-  const kmdConfig = getKmdConfigFromViteEnvironment();
-  supportedWallets = [
-    {
-      id: WalletId.KMD,
-      options: {
-        baseServer: kmdConfig.server,
-        token: String(kmdConfig.token),
-        port: String(kmdConfig.port),
-      },
-    },
-  ];
-} else {
-  supportedWallets = [
-    { id: WalletId.DEFLY },
-    { id: WalletId.PERA },
-    { id: WalletId.EXODUS },
-    { id: WalletId.LUTE },
-    // If you are interested in WalletConnect v2 provider
-    // refer to https://github.com/TxnLab/use-wallet for detailed integration instructions
-  ];
 }
 
 export default function App() {
@@ -223,74 +197,53 @@ export default function App() {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
-  const algodConfig = getAlgodConfigFromViteEnvironment();
-
-  const walletManager = new WalletManager({
-    wallets: supportedWallets,
-    defaultNetwork: algodConfig.network,
-    networks: {
-      [algodConfig.network]: {
-        algod: {
-          baseServer: algodConfig.server,
-          port: algodConfig.port,
-          token: String(algodConfig.token),
-        },
-      },
-    },
-    options: {
-      resetNetwork: true,
-    },
-  });
-
   return (
-    <WalletProvider manager={walletManager}>
-      <div className="min-h-screen bg-[#0a0a0a] font-aeonik-regular">
-        <Sidebar activeSection={activeSection} onSectionChange={handleSectionChange} />
+    <div className="min-h-screen bg-[#0a0a0a] font-aeonik-regular">
+      <Sidebar activeSection={activeSection} onSectionChange={handleSectionChange} />
 
-        <Toast toasts={toasts} onDismiss={dismissToast} />
+      <Toast toasts={toasts} onDismiss={dismissToast} />
 
-        <RealtimeNotifications notifications={notifications} onDismiss={handleDismissNotification} />
+      <RealtimeNotifications notifications={notifications} onDismiss={handleDismissNotification} />
 
-        <CreateAgentModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+      <CreateAgentModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <HomePage
-                agents={agents}
-                agentsLoading={agentsLoading}
-                agentsError={agentsError}
-                refetchAgents={refetchAgents}
-                setIsCreateModalOpen={setIsCreateModalOpen}
-                setSearchQuery={setSearchQuery}
-              />
-            }
-          />
-          <Route path="/create" element={<AgentCreation onBack={() => navigate("/")} />} />
-          <Route path="/profile" element={<Profile onBack={() => navigate("/")} />} />
-          <Route path="/more" element={<More onBack={() => navigate("/")} />} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <HomePage
+              agents={agents}
+              agentsLoading={agentsLoading}
+              agentsError={agentsError}
+              refetchAgents={refetchAgents}
+              setIsCreateModalOpen={setIsCreateModalOpen}
+              setSearchQuery={setSearchQuery}
+            />
+          }
+        />
+        <Route path="/create" element={<AgentCreation onBack={() => navigate("/")} />} />
+        <Route path="/profile" element={<Profile onBack={() => navigate("/")} />} />
+        <Route path="/more" element={<More onBack={() => navigate("/")} />} />
 
-          <Route path="/agent/:id" element={<AgentDetail />} />
-          <Route path="/agent/:id/chat" element={<AgentChatRoute />} />
-          <Route path="/agent/:id/trade" element={<TradingInterface />} />
-          <Route path="/portfolio" element={<Portfolio onBack={() => navigate("/")} />} />
-          <Route path="/websocket-test" element={<WebSocketTest />} />
-          <Route
-            path="*"
-            element={
-              <HomePage
-                agents={agents}
-                agentsLoading={agentsLoading}
-                agentsError={agentsError}
-                refetchAgents={refetchAgents}
-                setIsCreateModalOpen={setIsCreateModalOpen}
-                setSearchQuery={setSearchQuery}
-              />
-            }
-          />
-        </Routes>
-      </div>
-    </WalletProvider>
+        <Route path="/agent/:id" element={<AgentDetail />} />
+        <Route path="/agent/:id/chat" element={<AgentChatRoute />} />
+        <Route path="/agent/:id/trade" element={<TradingInterface />} />
+        <Route path="/portfolio" element={<Portfolio onBack={() => navigate("/")} />} />
+        <Route path="/websocket-test" element={<WebSocketTest />} />
+        <Route
+          path="*"
+          element={
+            <HomePage
+              agents={agents}
+              agentsLoading={agentsLoading}
+              agentsError={agentsError}
+              refetchAgents={refetchAgents}
+              setIsCreateModalOpen={setIsCreateModalOpen}
+              setSearchQuery={setSearchQuery}
+            />
+          }
+        />
+      </Routes>
+    </div>
   );
 }

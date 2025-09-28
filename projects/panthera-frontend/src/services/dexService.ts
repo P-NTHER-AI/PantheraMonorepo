@@ -10,6 +10,10 @@ export interface DEXQuote {
   confidence: "high" | "medium" | "low";
 }
 
+const SUSHI_CONFIG = {
+  CORE_MAINNET: {}
+};
+
 // Professional DEX Service for Core Testnet
 export class DEXService {
   static readonly SUSHI_ROUTER_V2_CORE = SUSHI_CONFIG.CORE_MAINNET.ROUTER_V2;
