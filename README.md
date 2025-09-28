@@ -1,8 +1,7 @@
 # PΛNTHERΛ AI Agent Platform
 
 *The First AI Agent + Token Launchpad on Algorand*
-PΛNTHERΛ is a platform that combines AI agents with tokenized economics, built on the Algorand blockchain. 
-
+PΛNTHERΛ is a platform that combines AI agents with tokenized economics, built on the Algorand blockchain.
 
 ## Table of Contents
 
@@ -45,12 +44,12 @@ The vision is simple, PΛNTHERΛ enables users to create, deploy, and interact w
 5. *Creator Economy*: Revenue sharing between platform, creators, and liquidity providers
 
 ## TEAM
+
 <img width="1275" height="719" alt="Ekran Resmi 2025-09-27 21 26 51" src="https://github.com/user-attachments/assets/2b268abc-4fe2-46ed-b344-ccb4b88de092" />
 
 ## Architecture
 
 PΛNTHERΛ follows a modern, scalable architecture with clear separation of concerns:
-
 
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │    Backend      │    │   Blockchain    │
@@ -61,7 +60,6 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 │ • Wallet Conn   │    │ • AI Services   │    │ • Event         │
 │ • Real-time     │    │ • Database      │    │   Listeners     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-
 
 ### Component Breakdown
 
@@ -76,18 +74,21 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 ### Algo Functionality
 
 #### Agent Management
+
 - *Create AI Agents*: Deploy custom agents with unique personalities and instructions
 - *Agent Discovery*: Browse and filter agents by category, performance, and popularity
 - *Agent Interaction*: Chat with agents using natural language processing
 - *Agent Analytics*: Track performance metrics, interaction history, and token economics
 
 #### Token Economics
+
 - *Bonding Curve Pricing*: Automated price discovery based on supply and demand
 - *Token Trading*: Buy and sell agent tokens with real-time price updates
 - *Liquidity Management*: Automated market making with configurable parameters
 - *Fee Distribution*: Platform fees, creator royalties, and liquidity incentives
 
 #### Real-time Features
+
 - *Live Price Updates*: WebSocket-based real-time price feeds
 - *Trading Notifications*: Instant alerts for trades, price changes, and agent activity
 - *Chat Integration*: Real-time messaging with AI agents
@@ -96,12 +97,14 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 ### Advanced Features
 
 #### Analytics Dashboard
+
 - *Portfolio Tracking*: Monitor holdings, P&L, and trading history
 - *Market Overview*: Platform-wide statistics and trending agents
 - *Price Charts*: Interactive candlestick charts with technical indicators
 - *Performance Metrics*: Agent-specific analytics and benchmarking
 
 #### Security & Compliance
+
 - *Rate Limiting*: API and interaction rate limiting for abuse prevention
 - *Input Sanitization*: Comprehensive input validation and sanitization
 - *Wallet Security*: Non-custodial wallet integration with secure transaction signing
@@ -110,6 +113,7 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 ## Technology Stack
 
 ### Frontend Technologies
+
 - *React 18*: Modern React with hooks and concurrent features
 - *TypeScript*: Type-safe development with enhanced IDE support
 - *Vite*: Fast build tool with hot module replacement
@@ -120,6 +124,7 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 - *Lucide React*: Modern icon library with consistent design
 
 ### Backend Technologies
+
 - *Node.js*: JavaScript runtime for server-side development
 - *Express.js*: Web application framework for REST API development
 - *MongoDB*: NoSQL database for flexible data storage
@@ -130,6 +135,7 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 - *Joi*: Schema validation for request/response data
 
 ### Blockchain Technologies
+
 - AlgoKit Python: Algorand smart contract development framework
 - AlgoKit Utils: Algorand SDK and utilities for blockchain interaction
 - Algorand Python Compiler (PuyaPy): Modern smart contract language for AVM
@@ -138,12 +144,14 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 - Algorand AVM: Algorand Virtual Machine for smart contract execution
 
 ### AI & External Services
+
 - *OpenAI API*: GPT-4 and GPT-3.5-turbo language models
 - *Anthropic API*: Claude-3 advanced reasoning capabilities
 - *Google AI API*: Gemini Pro multimodal AI model
 - *Rate Limiting*: Intelligent request throttling and queue management
 
 ### Development Tools
+
 - *ESLint*: Code linting and style enforcement
 - *Prettier*: Code formatting and consistency
 - *Jest*: JavaScript testing framework
@@ -157,10 +165,12 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 
 The PΛNTHERΛ platform consists of two primary smart contracts deployed on Algorand:
 
-#### Agent_Factory.py
+#### agent_factory.py
+
 The factory contract responsible for creating and managing AI agent tokens.
 
 *Key Features:*
+
 - Agent token deployment with customizable parameters
 - Creator registration and agent metadata storage
 - Platform fee collection and treasury management
@@ -179,25 +189,17 @@ AlgoKit Python
   "returns": {"type": "uint64"}
 }
 
+#### token_contract.py
 
-
-#### Token_Contract.py
 Individual ASA (Algorand Standard Asset) tokens for each AI agent with bonding curve mechanics.
 
 *Key Features:*
-- ASA (Algorand Standard Asset)  with additional agent metadata
+
+- ASA (Algorand Standard Asset) with additional agent metadata
 - Bonding curve implementation for automated pricing
 - Buy/sell functions with slippage protection
 - Fee distribution to platform, creator, and liquidity pool
 - Agent interaction tracking and analytics
-
-*Algorand Functions:*
-solidity
-function purchaseTokens() external payable
-function sellTokens(uint256 _tokenAmount) external
-function calculatePurchaseReturn(uint256 _AlgorandAmount) public view returns (uint256)
-function calculateSaleReturn(uint256 _tokenAmount) public view returns (uint256)
-
 
 ### Bonding Curve Mathematics
 
@@ -207,13 +209,12 @@ The platform implements a Bancor-inspired bonding curve formula for price discov
 
 tokensReceived = currentSupply * ((1 + AlgorandAmount/reserveBalance)^(reserveRatio/1000000) - 1)
 
-
 *Sale Formula:*
 
 AlgorandReceived = reserveBalance * (1 - (1 - tokenAmount/currentSupply)^(1000000/reserveRatio))
 
-
 *Parameters:*
+
 - Reserve Ratio: 50% (500,000 PPM)
 - Maximum Supply: 1 billion tokens
 - Platform Fee: 2.5%
@@ -223,12 +224,9 @@ AlgorandReceived = reserveBalance * (1 - (1 - tokenAmount/currentSupply)^(100000
 ### Contract Deployment
 
 *Algorand Testnet:*
+
 - Network: Algorand Testnet (Chain ID: 1114)
 - Explorer: [https://scan.test2.btcs.network](https://lora.algokit.io/localnet)
-
-*Algorand Mainnet:*
-- Network: [Algorand Mainnet (Chain ID: 1116)](https://mainnet-api.algonode.cloud)
-- Explorer: https://scan.Algorand.org
 
 ## Installation
 
@@ -242,65 +240,69 @@ Before setting up PΛNTHERΛ, ensure you have the following installed:
 - *Redis* (v6.0 or higher)
 - *Git* for version control
 
-
 ### Quick Start
 
 1. *Clone the Repository*
-   bash
-   [git clone https://github.com/your-org/PΛNTHERΛ.git](https://github.com/P-NTHER-AI/PantheraMonorepo)
-   cd PΛNTHERΛ
-   
+
+   ```bash
+   git clone https://github.com/P-NTHER-AI/PantheraMonorepo
+   cd PantheraMonorepo
+   ```
 
 2. *Install Dependencies*
-   bash
-   # Install smart contract dependencies
-   npm install
 
-   # Install backend dependencies
-   cd PΛNTHERΛ-backend
-   npm install
+    ```bash
+    # Install smart contract dependencies
+    npm install
 
-   # Install frontend dependencies
-   cd ../PΛNTHERΛ-frontend
-   npm install
-   
+    # Install backend dependencies
+    cd PΛNTHERΛ-backend
+    npm install
+
+    # Install frontend dependencies
+    cd ../PΛNTHERΛ-frontend
+    npm install
+    ```
 
 3. *Environment Configuration*
-   bash
-   # Backend environment
-   cd ../PΛNTHERΛ-backend
-   cp .env.example .env
-   # Edit .env with your configuration
 
-   # Smart contracts environment
-   cd ..
-   cp .env.example .env
-   # Edit .env with your private key and API keys
-   
+    ```bash
+    # Backend environment
+    cd ../PΛNTHERΛ-backend
+    cp .env.example .env
+    # Edit .env with your configuration
+
+    # Smart contracts environment
+    cd ..
+    cp .env.example .env
+    # Edit .env with your private key and API keys
+    ```
 
 4. *Start Services*
-   bash
-   # Start MongoDB and Redis (if not running)
-   # MongoDB: mongod
-   # Redis: redis-server
 
-   # Start backend server
-   cd panthera-backend
-   npm run dev
+    ```bash
+    # Start MongoDB and Redis (if not running)
+    # MongoDB: mongod
+    # Redis: redis-server
 
-   # Start frontend development server
-   cd ../panthera-frontend
-   npm run dev
-   
+    # Start backend server
+    cd panthera-backend
+    npm run dev
+
+    # Start frontend development server
+    cd ../panthera-frontend
+    npm run dev
+    ```
 
 5. *Deploy Smart Contracts* (Optional for development)
-   bash
-   # Compile contracts
-   npm run compile
 
-   # Deploy to testnet
-   npm run deploy:testnet
-   
+    ```bash
+    # Compile contracts
+    npm run compile
+
+    # Deploy to testnet
+    npm run deploy:testnet
+    ```
 
 ## Development Setup
 
@@ -308,7 +310,7 @@ Before setting up PΛNTHERΛ, ensure you have the following installed:
 
 Create and configure the backend environment file:
 
-bash
+```bash
 # panthera-backend/.env
 PORT=3001
 NODE_ENV=development
@@ -335,13 +337,13 @@ RATE_LIMIT_MAX_REQUESTS=100
 # Logging
 LOG_LEVEL=info
 LOG_FILE=logs/panthera-backend.log
-
+```
 
 ### Smart Contract Configuration
 
 Configure the smart contract deployment environment:
 
-bash
+```bash
 # .env (root directory)
 ALGOD_ADDRESS=https://testnet-api.algonode.cloud
 ALGOD_TOKEN=
@@ -350,19 +352,19 @@ DEPLOYER_MNEMONIC=
 TEST_RECEIVER_MNEMONIC=
 APP_ID=
 APP_ADDRESS=
-
+```
 
 ### Frontend Configuration
 
 The frontend automatically connects to the backend API and blockchain through environment variables:
 
-typescript
+```typescript
 // panthera-frontend/src/config/chains.ts
 export const Algorand_TESTNET_CONTRACTS = {
-  AGENT_FACTORY: 'your_deployed_factory_address',
+  AGENT_FACTORY: "your_deployed_factory_address",
   // ... other contract addresses
-}
-
+};
+```
 
 ### Database Setup
 
@@ -388,35 +390,38 @@ Redis is used for:
 ### Development Workflow
 
 1. *Start Development Environment*
-   bash
-   # Terminal 1: Backend
-   cd panthera-backend && npm run dev
 
-   # Terminal 2: Frontend
-   cd panthera-frontend && npm run dev
+    ```bash
+    # Terminal 1: Backend
+    cd panthera-backend && npm run dev
 
-   # Terminal 3: Blockchain (if needed)
-   npx hardhat node
-   
+    # Terminal 2: Frontend
+    cd panthera-frontend && npm run dev
+
+    # Terminal 3: Blockchain (if needed)
+    npx hardhat node
+    ```
 
 2. *Code Quality Checks*
-   bash
-   # Lint frontend code
-   cd panthera-frontend && npm run lint
 
-   # Run tests
-   cd panthera-backend && npm test
-   npx hardhat test
-   
+    ```bash
+    # Lint frontend code
+    cd panthera-frontend && npm run lint
+
+    # Run tests
+    cd panthera-backend && npm test
+    npx hardhat test
+    ```
 
 3. *Build for Production*
-   bash
-   # Build frontend
-   cd panthera-frontend && npm run build
 
-   # Prepare backend
-   cd panthera-backend && npm start
-   
+    ```bash
+    # Build frontend
+    cd panthera-frontend && npm run build
+
+    # Prepare backend
+    cd panthera-backend && npm start
+    ```
 
 ## API Documentation
 
@@ -424,9 +429,9 @@ Redis is used for:
 
 The PΛNTHERΛ API uses JWT-based authentication for protected endpoints:
 
-http
+```http
 Authorization: Bearer <jwt_token>
-
+```
 
 ### Base URL
 
@@ -440,12 +445,13 @@ Authorization: Bearer <jwt_token>
 *GET /api/agents*
 Retrieve a paginated list of all agents.
 
-http
+```http
 GET /api/agents?page=1&limit=20&category=trading&sort=marketCap
-
+```
 
 Response:
-json
+
+```json
 {
   "success": true,
   "data": {
@@ -458,19 +464,19 @@ json
     }
   }
 }
-
+```
 
 *GET /api/agents/:address*
 Get detailed information about a specific agent.
 
-http
+```http
 GET /api/agents/0x1234567890abcdef1234567890abcdef12345678
-
+```
 
 *POST /api/agents*
 Create a new AI agent (requires authentication).
 
-http
+```http
 POST /api/agents
 Content-Type: application/json
 
@@ -483,7 +489,7 @@ Content-Type: application/json
   "category": "trading",
   "creatorAddress": "0x..."
 }
-
+```
 
 #### Chat & AI Interaction
 
@@ -501,9 +507,9 @@ Content-Type: application/json
   "sessionId": "optional-session-id"
 }
 
-
 Response:
-json
+
+```json
 {
   "success": true,
   "response": "Based on current market conditions...",
@@ -522,7 +528,7 @@ json
     "responseLength": 312
   }
 }
-
+```
 
 *GET /api/chat/agents/:address/info*
 Get chat capabilities and information for an agent.
@@ -532,9 +538,9 @@ Get chat capabilities and information for an agent.
 *GET /api/trading/quote*
 Get a trading quote for buying or selling tokens.
 
-http
+```http
 GET /api/trading/quote?agentAddress=0x...&type=buy&amount=1.5
-
+```
 
 *POST /api/trading/execute*
 Execute a trade transaction.
@@ -550,7 +556,6 @@ Content-Type: application/json
   "slippage": 0.5,
   "userAddress": "0x..."
 }
-
 
 #### Blockchain Integration
 
@@ -583,27 +588,30 @@ The platform provides real-time updates through WebSocket connections:
 #### Message Types
 
 *Subscribe to Updates*
-json
+
+```json
 {
   "type": "subscribe",
   "channel": "platform" | "agent:0x..."
 }
-
+```
 
 *Unsubscribe from Updates*
-json
+
+```json
 {
   "type": "unsubscribe",
   "channel": "platform" | "agent:0x..."
 }
-
+```
 
 *Ping/Pong*
-json
+
+```json
 {
   "type": "ping"
 }
-
+```
 
 #### Event Types
 
@@ -620,7 +628,7 @@ json
 
 The frontend follows a modular component architecture with clear separation of concerns:
 
-
+```
 src/
 ├── components/           # Reusable UI components
 │   ├── AgentGrid.tsx    # Agent listing and filtering
@@ -641,14 +649,16 @@ src/
 │   ├── chains.ts       # Blockchain network configuration
 │   └── ...
 └── utils/              # Utility functions and helpers
-
+```
 
 ### Key Components
 
 #### AgentGrid Component
+
 Displays a responsive grid of AI agents with filtering and sorting capabilities.
 
 *Features:*
+
 - Infinite scrolling pagination
 - Real-time price updates
 - Category filtering
@@ -656,9 +666,11 @@ Displays a responsive grid of AI agents with filtering and sorting capabilities.
 - Responsive design for mobile/desktop
 
 #### TradingInterface Component
+
 Comprehensive trading interface for buying and selling agent tokens.
 
 *Features:*
+
 - Real-time price quotes
 - Slippage protection
 - Transaction confirmation
@@ -666,9 +678,11 @@ Comprehensive trading interface for buying and selling agent tokens.
 - Trading history
 
 #### ChatInterface Component
+
 Interactive chat interface for communicating with AI agents.
 
 *Features:*
+
 - Real-time messaging
 - Message history
 - Typing indicators
@@ -676,9 +690,11 @@ Interactive chat interface for communicating with AI agents.
 - Session management
 
 #### PriceChart Component
+
 Interactive price charts with technical analysis tools.
 
 *Features:*
+
 - Candlestick charts
 - Volume indicators
 - Technical overlays
@@ -710,12 +726,14 @@ The frontend is built with mobile-first responsive design principles:
 PΛNTHERΛ supports multiple wallet providers through the Wagmi library:
 
 *Supported Wallets:*
+
 - Pera Wallet
 - Defly Wallet
 - Exodus Wallet
 - Lute Wallet
 
 *Connection Flow:*
+
 1. User clicks "Connect Wallet"
 2. Wallet selection modal appears
 3. User authorizes connection
@@ -726,7 +744,7 @@ PΛNTHERΛ supports multiple wallet providers through the Wagmi library:
 
 The platform interacts with smart contracts through ethers.js and Wagmi hooks:
 
-typescript
+```typescript
 // Example: Purchasing agent tokens
 const { write: purchaseTokens } = useContractWrite({
   address: agentAddress,
@@ -734,24 +752,25 @@ const { write: purchaseTokens } = useContractWrite({
   functionName: 'purchaseTokens',
   value: parseEther(AlgorandAmount),
 })
-
+```
 
 ### Event Listening
 
 Real-time blockchain event processing:
 
-javascript
+```javascript
 // Backend event listener
 this.agentFactory.on('AgentCreated', async (tokenAddress, creator, name, symbol, description, category, event) => {
   // Process agent creation
   // Update database
   // Broadcast to WebSocket clients
 });
-
+```
 
 ### Transaction Management
 
 *Transaction Flow:*
+
 1. User initiates transaction through UI
 2. Frontend prepares transaction parameters
 3. Wallet prompts user for confirmation
@@ -767,25 +786,28 @@ this.agentFactory.on('AgentCreated', async (tokenAddress, creator, name, symbol,
 PΛNTHERΛ integrates with multiple AI providers for diverse capabilities:
 
 #### OpenAI Integration
+
 - *Models*: GPT-4, GPT-3.5-turbo
 - *Use Cases*: General conversation, analysis, creative tasks
 - *Rate Limits*: Configurable per-user limits
 - *Cost Management*: Token usage tracking and optimization
 
 #### Anthropic Claude Integration
+
 - *Models*: Claude-3
 - *Use Cases*: Advanced reasoning, complex analysis, safety-focused responses
 - *Features*: Constitutional AI, harmlessness training
 - *Specialization*: Ethical AI responses and nuanced understanding
 
 #### Google AI Integration
+
 - *Models*: Gemini Pro
 - *Use Cases*: Multimodal understanding, code generation, mathematical reasoning
 - *Features*: Vision capabilities, code execution, advanced reasoning
 
 ### AI Service Architecture
 
-javascript
+```javascript
 class AIService {
   async generateResponse(model, instructions, userMessage, userAddress) {
     // Route to appropriate AI provider
@@ -795,13 +817,14 @@ class AIService {
     // Return formatted response
   }
 }
-
+```
 
 ### Agent Personality System
 
 Each AI agent has customizable personality traits:
 
 *Configuration Parameters:*
+
 - *Instructions*: Algorand personality and behavior guidelines
 - *Model Selection*: Preferred AI model for responses
 - *Response Style*: Formal, casual, technical, creative
@@ -811,6 +834,7 @@ Each AI agent has customizable personality traits:
 ### Safety and Moderation
 
 *Content Filtering:*
+
 - Input sanitization and validation
 - Output content moderation
 - Harmful content detection
@@ -818,6 +842,7 @@ Each AI agent has customizable personality traits:
 - Automated flagging and review
 
 *Rate Limiting:*
+
 - Per-user interaction limits
 - Model-specific rate limiting
 - Cost-based throttling
@@ -835,8 +860,8 @@ The trading system implements an automated market maker using bonding curves:
 
 P(s) = (R / (s * CW)) * (s / S)^((1-CW)/CW)
 
-
 Where:
+
 - P(s) = Price at supply s
 - R = Reserve balance
 - s = Current supply
@@ -846,6 +871,7 @@ Where:
 #### Trading Mechanics
 
 *Buy Process:*
+
 1. User specifies Algorand amount to spend
 2. System calculates tokens to receive using bonding curve
 3. Fees are deducted (platform + creator)
@@ -854,6 +880,7 @@ Where:
 6. Price updates automatically
 
 *Sell Process:*
+
 1. User specifies tokens to sell
 2. System calculates Algorand to receive
 3. Tokens are burned
@@ -864,6 +891,7 @@ Where:
 ### Fee Structure
 
 *Platform Fees:*
+
 - Creation Fee: 2.5 Algorand (fixed)
 - Trading Fee: 2.5% (on each transaction)
 - Creator Royalty: 5% (on each transaction)
@@ -872,12 +900,14 @@ Where:
 ### Slippage Protection
 
 *Slippage Calculation:*
-typescript
+
+```typescript
 const priceImpact = ((newPrice - currentPrice) / currentPrice) * 100;
 const slippage = Math.max(priceImpact, minimumSlippage);
-
+```
 
 *Protection Mechanisms:*
+
 - Maximum slippage limits
 - Price impact warnings
 - Transaction reversion on excessive slippage
@@ -886,6 +916,7 @@ const slippage = Math.max(priceImpact, minimumSlippage);
 ### Trading Analytics
 
 *Metrics Tracked:*
+
 - Volume (24h, 7d, 30d, all-time)
 - Price changes and volatility
 - Holder count and distribution
@@ -898,7 +929,7 @@ const slippage = Math.max(priceImpact, minimumSlippage);
 
 The platform provides comprehensive real-time updates through WebSocket connections:
 
-javascript
+```javascript
 class WebSocketService {
   constructor(server) {
     this.wss = new WebSocket.Server({ server });
@@ -906,18 +937,20 @@ class WebSocketService {
     this.setupEventListeners();
   }
 }
-
+```
 
 ### Subscription Management
 
 *Channel Types:*
+
 - platform: Global platform events
 - agent:0x...: Agent-specific events
 - user:0x...: User-specific events
 - trading: Trading-related events
 
 *Event Broadcasting:*
-javascript
+
+```javascript
 broadcast(event) {
   this.clients.forEach((client, clientId) => {
     if (client.subscriptions.has(event.channel)) {
@@ -925,23 +958,26 @@ broadcast(event) {
     }
   });
 }
-
+```
 
 ### Event Types
 
 *Platform Events:*
+
 - Agent creation notifications
 - Platform statistics updates
 - System announcements
 - Maintenance notifications
 
 *Trading Events:*
+
 - Real-time price updates
 - Trade execution confirmations
 - Volume and liquidity changes
 - Market alerts and notifications
 
 *Agent Events:*
+
 - Interaction notifications
 - Performance metric updates
 - Status changes
@@ -950,6 +986,7 @@ broadcast(event) {
 ### Connection Management
 
 *Features:*
+
 - Automatic reconnection
 - Heartbeat/ping-pong
 - Connection state tracking
@@ -966,7 +1003,7 @@ PΛNTHERΛ employs comprehensive testing across all layers:
 
 *Framework*: Hardhat with Mocha and Chai
 
-javascript
+```javascript
 describe("AgentFactory", function () {
   it("Should create a new agent with correct parameters", async function () {
     const tx = await agentFactory.createAgent(
@@ -982,9 +1019,10 @@ describe("AgentFactory", function () {
     expect(tx).to.emit(agentFactory, "AgentCreated");
   });
 });
-
+```
 
 *Test Coverage:*
+
 - Contract deployment and initialization
 - Agent creation and configuration
 - Token purchase and sale mechanics
@@ -996,7 +1034,7 @@ describe("AgentFactory", function () {
 
 *Framework*: Jest with Supertest
 
-javascript
+```javascript
 describe('POST /api/agents', () => {
   it('should create a new agent with valid data', async () => {
     const response = await request(app)
@@ -1008,9 +1046,10 @@ describe('POST /api/agents', () => {
     expect(response.body.data.contractAddress).toBeDefined();
   });
 });
-
+```
 
 *Test Categories:*
+
 - API endpoint functionality
 - Authentication and authorization
 - Input validation and sanitization
@@ -1023,7 +1062,7 @@ describe('POST /api/agents', () => {
 
 *Framework*: Jest with React Testing Library
 
-typescript
+```typescript
 describe('TradingInterface', () => {
   it('should display correct quote information', () => {
     render(<TradingInterface agent={mockAgent} />);
@@ -1032,9 +1071,10 @@ describe('TradingInterface', () => {
     expect(screen.getByText('0.001 Algorand')).toBeInTheDocument();
   });
 });
-
+```
 
 *Test Types:*
+
 - Component rendering and behavior
 - User interaction flows
 - State management
@@ -1044,7 +1084,7 @@ describe('TradingInterface', () => {
 
 ### Running Tests
 
-bash
+```bash
 # Smart contract tests
 npm test
 
@@ -1058,11 +1098,118 @@ npm test
 
 # Coverage reports
 npm run test:coverage
+```
 
+### Test Outputs
+
+```
+Testing Agent Factory Contract with FIXED Graduation System on TESTNET...
+App ID: 746512710
+Using account: 4FIIQZ5MH5VHVO7AB53M7CFYUP6GLVFTD4MYL44WE6HV2Z4Q7VHUJ6AWRU
+Account balance: 46.373563 ALGO
+App address: 4BX3ZFWWWZYCXWQ5LYYO2ZVAUQEB5NHO3AQ75AOOSFN5QQ3NDPSGOW45BQ
+
+=== Test 0: Reset Contract ===
+✅ Emergency reset: Graduation status reset
+✅ Contract re-initialized: Contract re-initialized
+
+=== Test 1: Create Agent ===
+✅ Transaction ID: AHCHOMALHWUSLWVONGOESEMOVFP6ANFOHZRT4TYGDPPJV54BH7IA
+✅ Created ASA ID: 746516331
+🔗 Explorer: https://lora.algokit.io/testnet/asset/746516331
+🔗 Tx Explorer: https://lora.algokit.io/testnet/transaction/AHCHOMALHWUSLWVONGOESEMOVFP6ANFOHZRT4TYGDPPJV54BH7IA
+
+=== Test 2: Check Initial Graduation Eligibility ===
+Eligible for graduation: 0
+Current reserve: 0.0 ALGO
+Graduation threshold: 5.0 ALGO
+
+=== Test 3: Opt-in to ASA ===
+✅ Opted in to ASA 746516331. TxID: ZDDM4I4HOKU2MQ33ZRJ3ZMZ7HKDVVSRCEQVT5FVSVZDY32ZQMDVA
+🔗 Opt-in Explorer: https://lora.algokit.io/testnet/transaction/ZDDM4I4HOKU2MQ33ZRJ3ZMZ7HKDVVSRCEQVT5FVSVZDY32ZQMDVA
+
+=== Test 4: Buy Agent Tokens (Targeting Graduation) ===
+⚠️ Requested amount (30500.0) exceeds balance (46.373563)
+🔄 Using 41.736206 ALGO instead
+✅ Buy transaction ID: RGYNTWINZVODXPV5CBT3PH2XITJBDVETAC7R3LL7SNYF4KNI7KQA
+✅ Tokens received: 1072230
+✅ Amount spent: 41.736206 ALGO
+🔗 Buy Explorer: https://lora.algokit.io/testnet/transaction/RGYNTWINZVODXPV5CBT3PH2XITJBDVETAC7R3LL7SNYF4KNI7KQA
+
+=== Test 5: Check Graduation Eligibility (After Buy) ===
+Eligible for graduation: 1
+Current reserve: 41.736206 ALGO
+Graduation threshold: 5.0 ALGO
+✅ NOW ELIGIBLE FOR GRADUATION!
+
+=== Test 6: Get Graduation Preview ===
+Preview - Liquidity ALGO: 33.388964
+Preview - Creator allocation: 6.26043
+Preview - Platform fee: 2.086812
+Preview - Remaining tokens: 999999998927770
+
+=== Test 7: Prepare Graduation ===
+✅ Graduation prepared!
+✅ Liquidity allocation: 33.388964 ALGO
+✅ Creator received: 6.26043 ALGO
+✅ Platform fee: 2.086812 ALGO
+🔗 Graduation Explorer: https://lora.algokit.io/testnet/transaction/PTZ4PCXJICXYOCNHRX4L46BGO42X5BIE2EPX3VJBN7KXMO6R53PA
+
+=== Test 8: Check Status After Prepare ===
+Graduated: 0
+Threshold met: 1
+Graduation timestamp: 1759025166
+Pool token ID: 0
+
+=== Test 9: Withdraw Graduation Funds ===
+✅ Withdrawn for liquidity: 33.388964 ALGO
+🔗 Withdraw Explorer: https://lora.algokit.io/testnet/transaction/VRTQIQKYRWQA5X3H2ERBDNZ5PML7U4INAZKRPUSZ347VMPMHAUYA
+
+=== Test 10: Mint Graduation Tokens ===
+✅ Minted for liquidity: 500000000 tokens
+🔗 Mint Explorer: https://lora.algokit.io/testnet/transaction/YQCAOZIBOX4IRFYYZA44S3H6WKB2DUYYWHPW2ZLOBWHCMV5DO4FQ
+
+=== Test 11: Simulate Tinyman Pool Confirmation ===
+✅ Pool confirmation: Tinyman pool confirmed
+🔗 Pool Confirm Explorer: https://lora.algokit.io/testnet/transaction/TILHOODLS67MSLMAVSILORGMHPI5T7VGC22V4QH7MOWG5SRZQTDA
+
+=== Test 12: Final Graduation Status ===
+Final graduated status: 1
+Threshold met: 0
+Graduation timestamp: 1759025166
+Pool token ID: 9999
+
+=== Test 13: Try Trading After Graduation (Should Fail) ===
+✅ Trading correctly blocked after graduation: TransactionPool.Remember: transaction ZBCJXJGUXVR3ZBHQORRVRL4TBF2CJ62KP5RXARUXG57V4CWKGEQQ: logic eval error: assert failed pc=1593. Details: app=746512710, pc=1593, opcodes=assert; !; assert
+
+================================================================================
+🎉 TESTNET GRADUATION SYSTEM TESTS COMPLETED SUCCESSFULLY! 🎉
+================================================================================
+Summary:
+✅ Created agent token: TestnetGradAgent (TGA)
+✅ Bought tokens to reach graduation threshold
+✅ Verified graduation eligibility
+✅ Executed graduation preparation
+✅ Withdrew graduation funds
+✅ Minted tokens for liquidity
+✅ Confirmed Tinyman pool creation
+✅ Verified trading is blocked after graduation
+
+🚀 Agent successfully graduated to Tinyman on TESTNET!
+================================================================================
+🔍 TESTNET LINKS:
+🌐 ASA: https://lora.algokit.io/testnet/asset/746516331
+🌐 App: https://lora.algokit.io/testnet/application/746512710
+🌐 Account: https://lora.algokit.io/testnet/account/4FIIQZ5MH5VHVO7AB53M7CFYUP6GLVFTD4MYL44WE6HV2Z4Q7VHUJ6AWRU
+🔍 Tinyman Testnet: https://testnet.tinyman.org
+🔍 Search for ASA ID: 746516331
+================================================================================
+```
 
 ### Continuous Integration
 
 *GitHub Actions Workflow:*
+
 - Automated testing on pull requests
 - Code quality checks (ESLint, Prettier)
 - Security vulnerability scanning
@@ -1076,6 +1223,7 @@ npm run test:coverage
 #### Infrastructure Requirements
 
 *Server Specifications:*
+
 - *CPU*: 4+ Algorands (8+ recommended)
 - *RAM*: 8GB minimum (16GB+ recommended)
 - *Storage*: 100GB SSD (500GB+ recommended)
@@ -1083,6 +1231,7 @@ npm run test:coverage
 - *OS*: Ubuntu 20.04 LTS or similar
 
 *External Services:*
+
 - *MongoDB Atlas*: Managed MongoDB cluster
 - *Redis Cloud*: Managed Redis instance
 - *CDN*: Content delivery network for static assets
@@ -1092,7 +1241,7 @@ npm run test:coverage
 
 *Production Environment Variables:*
 
-bash
+```bash
 # Backend Production Configuration
 NODE_ENV=production
 PORT=3001
@@ -1106,7 +1255,7 @@ AGENT_FACTORY_ADDRESS=YourMainnetFactoryAddress
 - https://testnet-api.algonode.cloud
 
 Algorand Explorer
-- https://algoexplorer.io / https://testnet.algoexplorer.io
+- https://lora.algokit.io
 
 # AI Services (Production Keys)
 OPENAI_API_KEY=prod_openai_key
@@ -1126,43 +1275,46 @@ RATE_LIMIT_MAX_REQUESTS=100
 LOG_LEVEL=warn
 LOG_FILE=/var/log/panthera/backend.log
 SENTRY_DSN=https://your-sentry-dsn
-
+```
 
 #### Smart Contract Deployment
 
 *Mainnet Deployment Process:*
 
 1. *Prepare Deployment Environment*
-   bash
-   # Set environment variables
-   export PRIVATE_KEY=your_mainnet_private_key
-   export Algorand_SCAN_API_KEY=your_Algorand_scan_api_key
 
-   # Compile contracts
-   npm run compile
-   
+    ```bash
+    # Set environment variables
+    export PRIVATE_KEY=your_mainnet_private_key
+    export Algorand_SCAN_API_KEY=your_Algorand_scan_api_key
+
+    # Compile contracts
+    npm run compile
+    ```
 
 2. *Deploy to Algorand Mainnet*
-   bash
-   # Deploy contracts
-   npm run deploy:mainnet
 
-   # Verify contracts on AlgorandScan
-   npm run verify:mainnet
-   
+    ```bash
+    # Deploy contracts
+    npm run deploy:mainnet
+
+    # Verify contracts on AlgorandScan
+    npm run verify:mainnet
+    ```
 
 3. *Update Configuration*
-   bash
-   # Update frontend configuration
-   # Update backend environment variables
-   # Update API documentation
-   
+
+    ```bash
+    # Update frontend configuration
+    # Update backend environment variables
+    # Update API documentation
+    ```
 
 #### Backend Deployment
 
 *Using PM2 for Process Management:*
 
-bash
+```bash
 # Install PM2 globally
 npm install -g pm2
 
@@ -1190,13 +1342,13 @@ EOF
 pm2 start ecosystem.config.js
 pm2 save
 pm2 startup
-
+```
 
 #### Frontend Deployment
 
 *Build and Deploy Process:*
 
-bash
+```bash
 # Build for production
 cd panthera-frontend
 npm run build
@@ -1207,13 +1359,13 @@ npm run build
 # Example: Deploy to Vercel
 npm install -g vercel
 vercel --prod
-
+```
 
 #### Database Setup
 
 *MongoDB Production Setup:*
 
-javascript
+```javascript
 // Database indexes for production
 db.agents.createIndex({ "contractAddress": 1 }, { unique: true });
 db.agents.createIndex({ "creator": 1 });
@@ -1227,24 +1379,25 @@ db.trades.createIndex({ "timestamp": -1 });
 
 db.interactions.createIndex({ "agentAddress": 1, "timestamp": -1 });
 db.interactions.createIndex({ "userAddress": 1, "timestamp": -1 });
-
+```
 
 *Redis Production Configuration:*
 
-redis
+```redis
 # Redis configuration for production
 maxmemory 2gb
 maxmemory-policy allkeys-lru
 save 900 1
 save 300 10
 save 60 10000
-
+```
 
 ### Monitoring and Observability
 
 #### Application Monitoring
 
 *Metrics to Track:*
+
 - API response times and error rates
 - WebSocket connection counts and stability
 - Database query performance
@@ -1252,6 +1405,7 @@ save 60 10000
 - Blockchain interaction success rates
 
 *Monitoring Tools:*
+
 - *Application Performance*: New Relic, DataDog, or Sentry
 - *Infrastructure*: Prometheus + Grafana
 - *Logs*: ELK Stack (Elasticsearch, Logstash, Kibana)
@@ -1276,10 +1430,10 @@ app.get('/health', async (req, res) => {
   res.json(health);
 });
 
-
 #### Alerting
 
 *Critical Alerts:*
+
 - Service downtime or high error rates
 - Database connection failures
 - Blockchain network issues
@@ -1291,6 +1445,7 @@ app.get('/health', async (req, res) => {
 #### Smart Contract Security
 
 *Security Measures:*
+
 - Comprehensive testing and auditing
 - Reentrancy protection
 - Access control mechanisms
@@ -1298,6 +1453,7 @@ app.get('/health', async (req, res) => {
 - Emergency pause functionality
 
 *Audit Checklist:*
+
 - [ ] Reentrancy vulnerabilities
 - [ ] Integer overflow/underflow
 - [ ] Access control bypasses
@@ -1307,6 +1463,7 @@ app.get('/health', async (req, res) => {
 #### Backend Security
 
 *Security Implementations:*
+
 - Rate limiting and DDoS protection
 - Input validation and sanitization
 - SQL injection prevention
@@ -1317,6 +1474,7 @@ app.get('/health', async (req, res) => {
 #### Frontend Security
 
 *Security Features:*
+
 - Content Security Policy (CSP)
 - Secure wallet integration
 - Input sanitization
@@ -1328,6 +1486,7 @@ app.get('/health', async (req, res) => {
 #### Horizontal Scaling
 
 *Backend Scaling:*
+
 - Load balancer configuration
 - Stateless application design
 - Database connection pooling
@@ -1335,6 +1494,7 @@ app.get('/health', async (req, res) => {
 - Microservices architecture (future)
 
 *Database Scaling:*
+
 - Read replicas for query distribution
 - Sharding for large datasets
 - Caching strategies
@@ -1343,6 +1503,7 @@ app.get('/health', async (req, res) => {
 #### Performance Optimization
 
 *Frontend Optimization:*
+
 - Code splitting and lazy loading
 - Image optimization and compression
 - CDN for static asset delivery
@@ -1350,6 +1511,7 @@ app.get('/health', async (req, res) => {
 - Bundle size optimization
 
 *Backend Optimization:*
+
 - Database query optimization
 - Caching strategies (Redis)
 - API response compression
@@ -1365,6 +1527,7 @@ We welcome contributions to the PΛNTHERΛ platform! Please follow these guideli
 #### Code Standards
 
 *JavaScript/TypeScript:*
+
 - Use ESLint and Prettier for code formatting
 - Follow TypeScript strict mode guidelines
 - Write comprehensive JSDoc comments
@@ -1372,6 +1535,7 @@ We welcome contributions to the PΛNTHERΛ platform! Please follow these guideli
 - Implement proper error handling
 
 *Solidity:*
+
 - Follow Solidity style guide
 - Use NatSpec documentation
 - Implement comprehensive testing
@@ -1381,6 +1545,7 @@ We welcome contributions to the PΛNTHERΛ platform! Please follow these guideli
 #### Git Workflow
 
 *Branch Naming:*
+
 - feature/description - New features
 - bugfix/description - Bug fixes
 - hotfix/description - Critical fixes
@@ -1395,20 +1560,21 @@ fix(api): resolve rate limiting issue for chat endpoints
 docs(readme): update installation instructions
 test(contracts): add comprehensive bonding curve tests
 
-
 #### Pull Request Process
 
 1. *Fork the Repository*
-   bash
-   git clone https://github.com/your-username/panthera.git
-   cd panthera
-   git remote add upstream https://github.com/original-org/panthera.git
-   
+
+    ```bash
+    git clone https://github.com/your-username/panthera.git
+    cd panthera
+    git remote add upstream https://github.com/original-org/panthera.git
+    ```
 
 2. *Create Feature Branch*
-   bash
-   git checkout -b feature/your-feature-name
-   
+
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
 
 3. *Make Changes*
    - Write code following project standards
@@ -1425,12 +1591,14 @@ test(contracts): add comprehensive bonding curve tests
 #### Testing Requirements
 
 *Required Tests:*
+
 - Unit tests for new functions/components
 - Integration tests for API endpoints
 - Smart contract tests for new functionality
 - End-to-end tests for critical user flows
 
 *Test Coverage:*
+
 - Maintain minimum 80% code coverage
 - Test both success and error scenarios
 - Include edge case testing
@@ -1439,12 +1607,14 @@ test(contracts): add comprehensive bonding curve tests
 ### Issue Reporting
 
 *Bug Reports:*
+
 - Use the bug report template
 - Include reproduction steps
 - Provide environment details
 - Include relevant logs/screenshots
 
 *Feature Requests:*
+
 - Use the feature request template
 - Provide clear use case description
 - Include mockups or wireframes if applicable
@@ -1453,12 +1623,14 @@ test(contracts): add comprehensive bonding curve tests
 ### Community Guidelines
 
 *Code of Conduct:*
+
 - Be respectful and inclusive
 - Provide constructive feedback
 - Help newcomers learn and contribute
 - Follow project communication channels
 
 *Communication Channels:*
+
 - GitHub Issues for bugs and features
 - Discord for real-time discussion
 - Twitter for announcements
@@ -1468,7 +1640,7 @@ test(contracts): add comprehensive bonding curve tests
 
 ### MIT License
 
-
+```text
 MIT License
 
 Copyright (c) 2024 PΛNTHERΛ Team
@@ -1490,7 +1662,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
+```
 
 ### Third-Party Licenses
 
