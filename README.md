@@ -51,6 +51,7 @@ The vision is simple, PΛNTHERΛ enables users to create, deploy, and interact w
 
 PΛNTHERΛ follows a modern, scalable architecture with clear separation of concerns:
 
+```text
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │    Backend      │    │   Blockchain    │
 │   (React/TS)    │◄──►│   (Node.js)     │◄──►│   (Algorand)    │
@@ -60,6 +61,7 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 │ • Wallet Conn   │    │ • AI Services   │    │ • Event         │
 │ • Real-time     │    │ • Database      │    │   Listeners     │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
 ### Component Breakdown
 
@@ -163,7 +165,7 @@ PΛNTHERΛ follows a modern, scalable architecture with clear separation of conc
 
 ### Contract Architecture
 
-The PΛNTHERΛ platform consists of two primary smart contracts deployed on Algorand:
+The PΛNTHERΛ platform currently consists of one primary smart contract deployed on Algorand:
 
 #### agent_factory.py
 
@@ -177,41 +179,17 @@ The factory contract responsible for creating and managing AI agent tokens.
 - Agent discovery and enumeration functions
 - Access control and administrative functions
 
-*Algorand Functions:*
-AlgoKit Python
-{
-  "name": "create_agent",
-  "args": [
-    {"type": "string", "name": "name"},
-    {"type": "string", "name": "symbol"},
-    ...
-  ],
-  "returns": {"type": "uint64"}
-}
-
-#### token_contract.py
-
-Individual ASA (Algorand Standard Asset) tokens for each AI agent with bonding curve mechanics.
-
-*Key Features:*
-
-- ASA (Algorand Standard Asset) with additional agent metadata
-- Bonding curve implementation for automated pricing
-- Buy/sell functions with slippage protection
-- Fee distribution to platform, creator, and liquidity pool
-- Agent interaction tracking and analytics
-
 ### Bonding Curve Mathematics
 
 The platform implements a Bancor-inspired bonding curve formula for price discovery:
 
 *Purchase Formula:*
 
-tokensReceived = currentSupply * ((1 + AlgorandAmount/reserveBalance)^(reserveRatio/1000000) - 1)
+`tokensReceived = currentSupply * ((1 + AlgorandAmount/reserveBalance)^(reserveRatio/1000000) - 1)`
 
 *Sale Formula:*
 
-AlgorandReceived = reserveBalance * (1 - (1 - tokenAmount/currentSupply)^(1000000/reserveRatio))
+`AlgorandReceived = reserveBalance * (1 - (1 - tokenAmount/currentSupply)^(1000000/reserveRatio))`
 
 *Parameters:*
 
@@ -226,7 +204,7 @@ AlgorandReceived = reserveBalance * (1 - (1 - tokenAmount/currentSupply)^(100000
 *Algorand Testnet:*
 
 - Network: Algorand Testnet (Chain ID: 1114)
-- Explorer: [https://scan.test2.btcs.network](https://lora.algokit.io/localnet)
+- Explorer: [https://lora.algokit.io/testnet](https://lora.algokit.io/testnet)
 
 ## Installation
 
@@ -256,11 +234,11 @@ Before setting up PΛNTHERΛ, ensure you have the following installed:
     npm install
 
     # Install backend dependencies
-    cd PΛNTHERΛ-backend
+    cd panthera-backend
     npm install
 
     # Install frontend dependencies
-    cd ../PΛNTHERΛ-frontend
+    cd ../panthera-frontend
     npm install
     ```
 
@@ -268,7 +246,7 @@ Before setting up PΛNTHERΛ, ensure you have the following installed:
 
     ```bash
     # Backend environment
-    cd ../PΛNTHERΛ-backend
+    cd ../panthera-backend
     cp .env.example .env
     # Edit .env with your configuration
 
@@ -317,7 +295,7 @@ NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 
 # Algorand Blockchain
-Algorand_RPC_URL= [https://rpc.test2.btcs.network](https://testnet-api.algonode.cloud)
+Algorand_RPC_URL=https://testnet-api.algonode.cloud
 AGENT_FACTORY_ADDRESS=0xYourDeployedFactoryAddress
 
 # AI Service API Keys
@@ -496,7 +474,7 @@ Content-Type: application/json
 *POST /api/chat*
 Send a message to an AI agent.
 
-http
+```http
 POST /api/chat
 Content-Type: application/json
 
@@ -506,6 +484,7 @@ Content-Type: application/json
   "userAddress": "0x...",
   "sessionId": "optional-session-id"
 }
+```
 
 Response:
 
@@ -545,7 +524,7 @@ GET /api/trading/quote?agentAddress=0x...&type=buy&amount=1.5
 *POST /api/trading/execute*
 Execute a trade transaction.
 
-http
+```http
 POST /api/trading/execute
 Content-Type: application/json
 
@@ -556,6 +535,7 @@ Content-Type: application/json
   "slippage": 0.5,
   "userAddress": "0x..."
 }
+```
 
 #### Blockchain Integration
 
@@ -858,7 +838,7 @@ The trading system implements an automated market maker using bonding curves:
 
 *Price Function:*
 
-P(s) = (R / (s * CW)) * (s / S)^((1-CW)/CW)
+`P(s) = (R / (s * CW)) * (s / S)^((1-CW)/CW)`
 
 Where:
 
@@ -1000,26 +980,6 @@ broadcast(event) {
 PΛNTHERΛ employs comprehensive testing across all layers:
 
 #### Smart Contract Testing
-
-*Framework*: Hardhat with Mocha and Chai
-
-```javascript
-describe("AgentFactory", function () {
-  it("Should create a new agent with correct parameters", async function () {
-    const tx = await agentFactory.createAgent(
-      "Test Agent",
-      "TEST",
-      "A test agent",
-      "You are a helpful assistant",
-      "gpt-4",
-      "general",
-      { value: ethers.parseEther("2.5") }
-    );
-
-    expect(tx).to.emit(agentFactory, "AgentCreated");
-  });
-});
-```
 
 *Test Coverage:*
 
@@ -1286,7 +1246,6 @@ SENTRY_DSN=https://your-sentry-dsn
     ```bash
     # Set environment variables
     export PRIVATE_KEY=your_mainnet_private_key
-    export Algorand_SCAN_API_KEY=your_Algorand_scan_api_key
 
     # Compile contracts
     npm run compile
@@ -1414,7 +1373,8 @@ save 60 10000
 #### Health Checks
 
 *Backend Health Endpoint:*
-javascript
+
+```javascript
 app.get('/health', async (req, res) => {
   const health = {
     status: 'healthy',
@@ -1429,6 +1389,7 @@ app.get('/health', async (req, res) => {
 
   res.json(health);
 });
+```
 
 #### Alerting
 
