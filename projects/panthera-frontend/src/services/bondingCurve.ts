@@ -1,13 +1,14 @@
 /**
- * PANTHERA Bonding Curve Service
- * Real implementation for PANTHERA platform bonding curve trading
- * Integrates with AgentToken smart contracts and PANTHERA backend
+ * URSUS Bonding Curve Service
+ * Real implementation for URSUS platform bonding curve trading
+ * Integrates with AgentToken smart contracts and URSUS backend
  */
 
+import { ethers } from "ethers";
 import { apiService } from "./api";
 
-// PANTHERA Chain Configuration
-export const PANTHERA_CHAIN_CONFIG = {
+// URSUS Chain Configuration
+export const URSUS_CHAIN_CONFIG = {
   CORE_DAO_MAINNET: 1116,
   CORE_DAO_TESTNET: 1115,
   BASE_MAINNET: 8453,

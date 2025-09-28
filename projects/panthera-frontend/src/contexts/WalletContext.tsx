@@ -1,5 +1,10 @@
+import { ethers } from "ethers";
 import React, { createContext, useCallback, useEffect, useState } from "react";
+import type { Chain } from "wagmi";
+import { useAccount, useBalance, useConnect, useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { coreMainnet, coreTestnet } from "../config/chains";
 
+// Professional balance interface
 interface WalletBalance {
   decimals: number;
   formatted: string;
@@ -7,13 +12,16 @@ interface WalletBalance {
   value: bigint;
 }
 
-interface WalletConnector {
+// Professional connector interface
+export interface WalletConnector {
   id: string;
   name: string;
   ready: boolean;
   icon?: string;
+  connect: () => void;
 }
 
+// Professional connection result interface
 interface ConnectionResult {
   success: boolean;
   error?: string;
@@ -306,21 +314,19 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       }
     : null;
 
-  const professionalConnectors: WalletConnector[] = connectors.map((connector) => ({
-    id: connector.id,
-    name: connector.name,
-    ready: connector.ready,
-    icon: undefined, // Professional connector icon handling
-  }));
+  // const professionalConnectors: WalletConnector[] = connectors.map(connector => ({
+  //   id: connector.id,
+  //   name: connector.name,
+  //   ready: connector.ready,
+  //   icon: undefined // Professional connector icon handling
+  // }));
 
-  const professionalPendingConnector: WalletConnector | null = pendingConnector
-    ? {
-        id: pendingConnector.id,
-        name: pendingConnector.name,
-        ready: pendingConnector.ready,
-        icon: undefined, // Professional connector icon handling
-      }
-    : null;
+  // const professionalPendingConnector: WalletConnector | null = pendingConnector ? {
+  //   id: pendingConnector.id,
+  //   name: pendingConnector.name,
+  //   ready: pendingConnector.ready,
+  //   icon: undefined // Professional connector icon handling
+  // } : null;
 
   const value: WalletState = {
     // Connection state
@@ -353,8 +359,10 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
     isConnectLoading,
 
     // Available connectors
-    connectors: professionalConnectors,
-    pendingConnector: professionalPendingConnector,
+    // connectors: professionalConnectors,
+    // pendingConnector: professionalPendingConnector,
+    connectors: [],
+    pendingConnector: null,
 
     // Errors
     connectError,

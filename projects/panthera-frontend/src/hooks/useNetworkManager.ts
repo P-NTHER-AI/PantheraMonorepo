@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNetwork, useSwitchNetwork } from "wagmi";
+import { coreMainnet, coreTestnet } from "../config/chains";
 
 // Ethereum provider interface
 interface EthereumProvider {

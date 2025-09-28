@@ -1,3 +1,6 @@
+import { PublicClient } from "viem";
+import { SUSHI_CONFIG } from "../config/chains";
+
 export interface DEXQuote {
   inputAmount: string;
   outputAmount: string;

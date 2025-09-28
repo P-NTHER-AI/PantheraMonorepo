@@ -31,13 +31,17 @@
     "@txnlab/use-wallet-react": "^4.0.0",
     "algosdk": "^3.0.0",
     "d3": "^7.9.0",
+    "ethers": "^6.15.0",
     "lightweight-charts": "^5.0.8",
     "lute-connect": "^1.6.2",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.7.1",
-    "tslib": "^2.6.2"
+    "tailwindcss": "^3.4.1",
+    "tslib": "^2.6.2",
+    "viem": "^1.21.4",
+    "wagmi": "^1.4.13"
   },
   "scripts": {
     "generate:app-clients": "algokit project link --all",

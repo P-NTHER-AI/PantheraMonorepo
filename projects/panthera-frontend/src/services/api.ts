@@ -1,5 +1,6 @@
 // Prefer relative '/api' via Vite proxy in development to avoid CORS and hard deps on 3001
-const API_BASE_URL = import.meta.env.DEV ? "/api" : import.meta.env.VITE_API_URL || "/api";
+// const API_BASE_URL = import.meta.env.DEV ? "/api" : import.meta.env.VITE_API_URL || "/api";
+const API_BASE_URL = "http://localhost:3001/api";
 
 interface ApiResponse<T = unknown> {
   success?: boolean;
