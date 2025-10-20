@@ -1,4 +1,3 @@
-<img width="1273" height="717" alt="Screenshot 2025-10-20 at 19 52 55" src="https://github.com/user-attachments/assets/ed13aa19-9114-49f8-b0f8-631e971c092e" /># PΛNTHERΛ AI Agent Platform
 
 *The First AI Agent + Token Launchpad on Algorand*
 PΛNTHERΛ is a platform that combines AI agents with tokenized economics, built on the Algorand blockchain.
@@ -42,6 +41,9 @@ The vision is simple, PΛNTHERΛ enables users to create, deploy, and interact w
 4. *Cross-Chain Compatibility*: Built on Algorand with potential for multi-chain expansion
 
 5. *Creator Economy*: Revenue sharing between platform, creators, and liquidity providers
+
+## TEAM
+<img width="1273" height="717" alt="Screenshot 2025-10-20 at 19 52 55" src="https://github.com/user-attachments/assets/ed13aa19-9114-49f8-b0f8-631e971c092e" /># PΛNTHERΛ AI Agent Platform
 
 ## Architecture
 
